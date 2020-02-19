@@ -2,9 +2,11 @@ package com.example.congresstracker.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.congresstracker.R;
+import com.example.congresstracker.fragments.CongressFragment;
 import com.example.congresstracker.fragments.LoginFragment;
 import com.example.congresstracker.fragments.SignupFragment;
 
@@ -46,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
 
     @Override
     public void SkipClicked() {
+        Intent congressIntent = new Intent(this,CongressActivity.class);
+        startActivity(congressIntent);
 
     }
     // Sign up Callback methods//
@@ -68,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
 
     @Override
     public void SkipClickedTwo() {
+        Intent congressIntent = new Intent(this,CongressActivity.class);
+        startActivity(congressIntent);
 
     }
     // Login Callback methods//

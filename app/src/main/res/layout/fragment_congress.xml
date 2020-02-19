@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.CongressFragment">
+
+
+
+    <LinearLayout
+        android:id="@+id/header_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toEndOf="@id/vertical_margin_start"
+        app:layout_constraintEnd_toStartOf="@id/vertical_margin_end"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/materialInputlayoutOne"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/search"
+                android:layout_weight="2">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/search_textInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/search_btn"
+                android:layout_width="150dp"
+                android:layout_height="65dp"
+                android:text="@string/search"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <Button
+                android:id="@+id/all_filter_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/all"
+                android:layout_weight="1"
+                android:layout_marginEnd="5dp"/>
+
+            <Button
+                android:id="@+id/senate_filter_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/senate"
+                android:layout_weight="1"
+                android:layout_marginEnd="5dp"/>
+
+            <Button
+                android:id="@+id/house_filter_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/house"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/all_subfilter_btn"
+                android:layout_width="115dp"
+                android:layout_height="wrap_content"
+                android:text="@string/all"
+                app:cornerRadius="48dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="5dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/democrat_subfilter_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Democrat"
+                app:cornerRadius="48dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="5dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/republican_subfilter_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Republican"
+                app:cornerRadius="48dp"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/header_layout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/vertical_margin_start"
+        app:layout_constraintEnd_toStartOf="@id/vertical_margin_end"/>
+    <ProgressBar
+        android:id="@+id/loadin_pb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/header_layout"
+        app:layout_constraintStart_toEndOf="@id/vertical_margin_start"
+        android:layout_marginStart="165dp"
+        android:layout_marginTop="150dp"/>
+
+    
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/vertical_margin_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/vertical_margin_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="20dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

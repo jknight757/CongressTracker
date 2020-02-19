@@ -10,4 +10,8 @@
     <string name="name">Name</string>
     <string name="sign_up">Sign Up</string>
     <string name="re_enter_password">Re-enter Password</string>
+    <string name="search">Search</string>
+    <string name="all">All</string>
+    <string name="senate">Senate</string>
+    <string name="house">House</string>
 </resources>
