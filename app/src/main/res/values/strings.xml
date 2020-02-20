@@ -14,4 +14,26 @@
     <string name="all">All</string>
     <string name="senate">Senate</string>
     <string name="house">House</string>
+    <string name="don_t_have_an_account_sign_up">Don\'t have an account? Sign Up</string>
+
+    <string-array name="top_spinner_items">
+        <item>All</item>
+        <item>Current</item>
+        <item>Retired</item>
+    </string-array>
+
+    <string-array name="mid_spinner_items">
+        <item>All</item>
+        <item>Senate</item>
+        <item>House</item>
+    </string-array>
+
+    <string-array name="bottom_spinner_items">
+        <item>All</item>
+        <item>Democrat</item>
+        <item>Republican</item>
+        <item>Independent</item>
+    </string-array>
+
+
 </resources>

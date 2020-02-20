@@ -17,15 +17,31 @@ public class MemberDataPull extends IntentService {
     private static final String SENATE_API_URL = "https://api.propublica.org/congress/v1/116/senate/members.json";
     private static final String HOUSE_API_URL = "https://api.propublica.org/congress/v1/116/house/members.json";
     public static final String ACTION_RECEIVE_MSG = "com.example.congresstracker.models.action.RECEIVE_MSG";
+    public static final String ACTION_PULL_ALL = "com.example.congresstracker.models.action.PULL_ALL";
     public static final String EXTRA_MEMBERS = "EXTRA_MEMBERS";
     public static final String EXTRA_SENATE = "EXTRA_SENATE";
     public static final String EXTRA_HOUSE = "EXTRA_HOUSE";
+    public static final String EXTRA_PAST_MEMBERS = "EXTRA_PAST_MEMBERS";
+    public static final String EXTRA_ALL_MEMBERS = "EXTRA_ALL_MEMBERS";
     private final String TAG = "MemberDataPull";
 
-    ArrayList<CongressMember> members;
-    ArrayList<CongressMember> pastMembers;
+    ArrayList<CongressMember> currentMembers;
     ArrayList<CongressMember> senate;
     ArrayList<CongressMember> house;
+    ArrayList<CongressMember> senateRepublican;
+    ArrayList<CongressMember> houseRepublican;
+    ArrayList<CongressMember> senateDemocrat;
+    ArrayList<CongressMember> houseDemocrat;
+
+    ArrayList<CongressMember> pastMembers;
+    ArrayList<CongressMember> pastSenate;
+    ArrayList<CongressMember> pastHouse;
+    ArrayList<CongressMember> pastSenateRepublican;
+    ArrayList<CongressMember> pastHouseRepublican;
+    ArrayList<CongressMember> pastSenateDemocrat;
+    ArrayList<CongressMember> pastHouseDemocrat;
+
+    ArrayList<CongressMember> allMembers;
 
 
     public MemberDataPull(){
@@ -35,21 +51,10 @@ public class MemberDataPull extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
 
         if(intent != null){
-            Log.i(TAG, "onHandleIntent: Service Started");
-
-            requestMemberData();
-            if(members != null){
-                for (CongressMember m: members) {
-                    Log.i(TAG, "onHandleIntent: "+ m.getName());
-                    Log.i(TAG, "onHandleIntent: "+ m.getParty());
-                    Log.i(TAG, "onHandleIntent: "+ m.getState());
-                    Log.i(TAG, "onHandleIntent:______________________ ");
-                }
-
-            }else{
-                Log.i(TAG, "onHandleIntent: memberlist null");
+            if(intent.getAction().equals(ACTION_PULL_ALL)){
+                requestMemberData();
+                broadCastResults();
             }
-            broadCastResults();
         }
 
     }
@@ -59,10 +64,11 @@ public class MemberDataPull extends IntentService {
         String data = NetworkUtils.getNetworkData(SENATE_API_URL);
 
         if(NetworkUtils.isConnected(getBaseContext())) {
-            members = new ArrayList<>();
+            currentMembers = new ArrayList<>();
             senate = new ArrayList<>();
             house = new ArrayList<>();
             pastMembers = new ArrayList<>();
+            allMembers = new ArrayList<>();
             try {
 
                 JSONObject response = new JSONObject(data);
@@ -92,15 +98,17 @@ public class MemberDataPull extends IntentService {
                         }else{
                             party = "Independent";
                         }
-
+                        String chamber = "senate";
 
                         if(inOffice){
-                            members.add(new CongressMember(id, name, party, state));
-                            senate.add(new CongressMember(id, name, party, state));
+                            currentMembers.add(new CongressMember(id, name, party, state,chamber));
+                            senate.add(new CongressMember(id, name, party, state, chamber));
+
                         }else{
-                            pastMembers.add(new CongressMember(id, name, party, state));
+                            pastMembers.add(new CongressMember(id, name, party, state, chamber));
                         }
 
+                        allMembers.add(new CongressMember(id, name, party, state, chamber));
 
                     }
 
@@ -128,7 +136,7 @@ public class MemberDataPull extends IntentService {
 
                 for(int x = 0; x < membersJson.length(); x++){
                     JSONObject nestedObj = membersJson.getJSONObject(x);
-                    Boolean inOffice = nestedObj.getBoolean("in_office");
+                    boolean inOffice = nestedObj.getBoolean("in_office");
                     String id = nestedObj.getString("id");
                     String firstName = nestedObj.getString("first_name");
                     String lastName = nestedObj.getString("last_name");
@@ -143,12 +151,16 @@ public class MemberDataPull extends IntentService {
                         party = "Independent";
                     }
 
+                    String chamber = "house";
+
                     if(inOffice){
-                        members.add(new CongressMember(id, name, party, state));
-                        senate.add(new CongressMember(id, name, party, state));
+                        currentMembers.add(new CongressMember(id, name, party, state, chamber));
+                        house.add(new CongressMember(id, name, party, state, chamber));
                     }else{
-                        pastMembers.add(new CongressMember(id, name, party, state));
+                        pastMembers.add(new CongressMember(id, name, party, state, chamber));
                     }
+                    allMembers.add(new CongressMember(id, name, party, state, chamber));
+
                 }
 
             }
@@ -164,9 +176,11 @@ public class MemberDataPull extends IntentService {
 
     public void broadCastResults(){
         Intent broadcastIntent = new Intent(ACTION_RECEIVE_MSG);
-        broadcastIntent.putExtra(EXTRA_MEMBERS,members);
+        broadcastIntent.putExtra(EXTRA_MEMBERS, currentMembers);
         broadcastIntent.putExtra(EXTRA_SENATE,senate);
         broadcastIntent.putExtra(EXTRA_HOUSE,house);
+        broadcastIntent.putExtra(EXTRA_PAST_MEMBERS, pastMembers);
+        broadcastIntent.putExtra(EXTRA_ALL_MEMBERS, allMembers);
         sendBroadcast(broadcastIntent);
     }
 

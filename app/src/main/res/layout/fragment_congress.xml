@@ -46,68 +46,121 @@
 
         </LinearLayout>
 
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:weightSum="3">-->
+
+<!--            <Button-->
+<!--                android:id="@+id/all_filter_btn"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/all"-->
+<!--                android:layout_weight="1"-->
+<!--                android:layout_marginEnd="5dp"/>-->
+
+<!--            <Button-->
+<!--                android:id="@+id/senate_filter_btn"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/senate"-->
+<!--                android:layout_weight="1"-->
+<!--                android:layout_marginEnd="5dp"/>-->
+
+<!--            <Button-->
+<!--                android:id="@+id/house_filter_btn"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/house"-->
+<!--                android:layout_weight="1"/>-->
+
+<!--        </LinearLayout>-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:weightSum="3">-->
+
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/all_subfilter_btn"-->
+<!--                android:layout_width="115dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/all"-->
+<!--                app:cornerRadius="48dp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:layout_marginEnd="5dp"/>-->
+
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/democrat_subfilter_btn"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Democrat"-->
+<!--                app:cornerRadius="48dp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:layout_marginEnd="5dp"/>-->
+
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/republican_subfilter_btn"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Republican"-->
+<!--                app:cornerRadius="48dp"-->
+<!--                android:layout_weight="1"/>-->
+
+<!--        </LinearLayout>-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="3">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Current or Retired"
+            android:textAlignment="center"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Chamber"
+            android:textAlignment="center"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Political party"
+            android:textAlignment="center"/>
+
+    </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="3">
-
-            <Button
-                android:id="@+id/all_filter_btn"
-                android:layout_width="wrap_content"
+            android:weightSum="3"
+            >
+            <Spinner
+                android:id="@+id/top_filter_spinner"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/all"
                 android:layout_weight="1"
-                android:layout_marginEnd="5dp"/>
-
-            <Button
-                android:id="@+id/senate_filter_btn"
-                android:layout_width="wrap_content"
+                android:entries="@array/top_spinner_items" />
+            <Spinner
+                android:id="@+id/mid_filter_spinner"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/senate"
                 android:layout_weight="1"
-                android:layout_marginEnd="5dp"/>
-
-            <Button
-                android:id="@+id/house_filter_btn"
-                android:layout_width="wrap_content"
+                android:entries="@array/mid_spinner_items"/>
+            <Spinner
+                android:id="@+id/bottom_filter_spinner"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/house"
-                android:layout_weight="1"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="3">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/all_subfilter_btn"
-                android:layout_width="115dp"
-                android:layout_height="wrap_content"
-                android:text="@string/all"
-                app:cornerRadius="48dp"
                 android:layout_weight="1"
-                android:layout_marginEnd="5dp"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/democrat_subfilter_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Democrat"
-                app:cornerRadius="48dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="5dp"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/republican_subfilter_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Republican"
-                app:cornerRadius="48dp"
-                android:layout_weight="1"/>
+                android:entries="@array/bottom_spinner_items"/>
 
         </LinearLayout>
 
@@ -131,7 +184,7 @@
         android:layout_marginStart="165dp"
         android:layout_marginTop="150dp"/>
 
-    
+
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/vertical_margin_start"

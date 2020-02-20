@@ -22,6 +22,7 @@ public class CongressActivity extends AppCompatActivity {
                 .add(R.id.congress_fragment_container, CongressFragment.newInstance()).commit();
 
         Intent pullDataIntent = new Intent(this, MemberDataPull.class);
+        pullDataIntent.setAction(MemberDataPull.ACTION_PULL_ALL);
         startService(pullDataIntent);
     }
 }
