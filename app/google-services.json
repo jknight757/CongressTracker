@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "337091363818",
+    "firebase_url": "https://congress-tracker.firebaseio.com",
+    "project_id": "congress-tracker",
+    "storage_bucket": "congress-tracker.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:337091363818:android:4df078ab388bab10fb6893",
+        "android_client_info": {
+          "package_name": "com.example.congresstracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "337091363818-fl4qq8dmki1fttiv39amu5eh6g7vin6v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.congresstracker",
+            "certificate_hash": "cd5ab933b27874ce28521a7b62d3a4728f0c7749"
+          }
+        },
+        {
+          "client_id": "337091363818-vemu94sn8imaes5jqmm7blavofq2r84n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnBIyGHRk81A8zSS9aW0cBPQK3kqKWxOw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "337091363818-vemu94sn8imaes5jqmm7blavofq2r84n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

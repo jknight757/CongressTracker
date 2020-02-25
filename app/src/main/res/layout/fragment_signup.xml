@@ -12,6 +12,8 @@
         app:layout_constraintTop_toBottomOf="@id/horizontal_guideline"
         style="@style/LaunchTheme"
         android:orientation="vertical">
+        
+
 
 
         <TextView
@@ -20,13 +22,19 @@
             android:text="@string/app_name"
             android:textAlignment="center"
             android:textSize="34sp" />
+        <ImageButton
+            android:id="@+id/profile_img_btn"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="10dp"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutOne"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="15dp"
             android:layout_marginBottom="5dp"
             android:hint="@string/email">
 
@@ -82,7 +90,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="16dp"
             android:text="@string/sign_up"
             app:cornerRadius="48dp" />
@@ -118,7 +126,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.1" />
+        app:layout_constraintGuide_percent="0.035" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

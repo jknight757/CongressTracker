@@ -9,11 +9,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.congresstracker.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseUser;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,9 +34,17 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     public final String TAG = "LoginFragment.TAG";
     public LoginListener listener;
 
-    private com.google.android.material.button.MaterialButton loginBtn;
-    private com.google.android.material.button.MaterialButton signupBtn;
-    private com.google.android.material.button.MaterialButton skipbtn;
+    private MaterialButton loginBtn;
+    private MaterialButton signupBtn;
+    private MaterialButton skipbtn;
+
+    private TextInputEditText emailInput;
+    private TextInputEditText passwordInput;
+
+    String email;
+    String password;
+
+    private FirebaseAuth mAuth;
 
 
     public LoginFragment() {
@@ -68,7 +87,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         super.onActivityCreated(savedInstanceState);
 
         if(getView() != null){
-
+            mAuth = FirebaseAuth.getInstance();
             loginBtn = getView().findViewById(R.id.login_btn);
             loginBtn.setOnClickListener(this);
 
@@ -77,6 +96,18 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
             skipbtn = getView().findViewById(R.id.skip_btn);
             skipbtn.setOnClickListener(this);
+            emailInput = getView().findViewById(R.id.email_textInput);
+            passwordInput = getView().findViewById(R.id.password_textInput);
+
+
+            mAuth = FirebaseAuth.getInstance();
+//            FirebaseUser user = mAuth.getCurrentUser();
+//            if(user != null){
+//                //FirebaseAuth.getInstance().signOut();
+//                Toast.makeText(getContext(),"Already logged in", Toast.LENGTH_SHORT).show();
+//                listener.LoginClicked();
+//            }
+
 
         }
     }
@@ -86,7 +117,45 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
         switch (v.getId()){
             case R.id.login_btn:
-                listener.LoginClicked();
+                Toast.makeText(getContext(),"login Clicked", Toast.LENGTH_SHORT).show();
+                if(validateInput()){
+                    FirebaseUser currentUser = mAuth.getCurrentUser();
+                    if(currentUser == null){
+                        Toast.makeText(getContext(),"user null", Toast.LENGTH_SHORT).show();
+                        mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if(task.isSuccessful()){
+                                    Toast.makeText(getContext(),"onComplete: login Successful", Toast.LENGTH_SHORT).show();
+                                    listener.LoginClicked();
+                                }else {
+
+                                    Toast.makeText(getContext(),"onComplete: login unsuccessful", Toast.LENGTH_SHORT).show();
+                                    Log.d(TAG, "onComplete: unsuccessful");
+                                    try {
+                                        throw task.getException();
+
+
+                                    } catch (FirebaseAuthInvalidUserException invalidEmail)
+                                    {
+                                        Log.d(TAG, "onComplete: invalid_email");
+                                    }
+                                    // if user enters wrong password.
+                                    catch (FirebaseAuthInvalidCredentialsException wrongPassword)
+                                    {
+                                        Log.d(TAG, "onComplete: wrong_password");
+
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Log.d(TAG, "onComplete: " + e.getMessage());
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+
                 break;
             case R.id.to_signup_btn:
                 listener.BackToSignup();
@@ -96,5 +165,24 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 break;
         }
 
+    }
+
+    public boolean validateInput(){
+
+        email = emailInput.getText().toString();
+        password = passwordInput.getText().toString();
+
+        if(!email.isEmpty()){
+            if( !password.isEmpty()){
+                return true;
+            }else{
+                Toast.makeText(getContext(),"Enter Password", Toast.LENGTH_SHORT).show();
+            }
+        }else{
+            Toast.makeText(getContext(),"Enter Email", Toast.LENGTH_SHORT).show();
+
+        }
+
+        return false;
     }
 }

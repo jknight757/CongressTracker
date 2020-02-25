@@ -9,8 +9,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,7 +36,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CongressFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class CongressFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener {
 
     public static final String TAG = "CongressFragment";
 
@@ -64,18 +66,20 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
     public static final int R_MEMBERS_FILTER = 2;
     public static final int I_MEMBERS_FILTER = 3;
 
-    public int currentTopFilter = 1;
+//    public int currentTopFilter = 1;
     public int currentMidFilter = 0;
     public int currentBottomFilter = 0;
 
     ProgressBar loadingPB;
     TextInputEditText searchInputField;
     MaterialButton searchBtn;
-    Spinner topFilter;
+//    Spinner topFilter;
     Spinner midFilter;
     Spinner bottomFilter;
 
     ListView membersLV;
+
+    CongressClickListener listener;
 
     private final MembersDataReceiver receiver = new MembersDataReceiver();
 
@@ -90,6 +94,18 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
         CongressFragment fragment = new CongressFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public interface CongressClickListener{
+        void MemberClicked(String id);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if(context instanceof CongressClickListener){
+            listener = (CongressClickListener) context;
+        }
     }
 
     @Override
@@ -112,13 +128,15 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
             searchBtn.setOnClickListener(this);
             searchBtn.setCheckable(false);
 
-            topFilter = getView().findViewById(R.id.top_filter_spinner);
-            topFilter.setOnItemSelectedListener(this);
-            topFilter.setSelection(1);
+//            topFilter = getView().findViewById(R.id.top_filter_spinner);
+//            topFilter.setOnItemSelectedListener(this);
+//            topFilter.setSelection(1);
             midFilter = getView().findViewById(R.id.mid_filter_spinner);
             midFilter.setOnItemSelectedListener(this);
             bottomFilter = getView().findViewById(R.id.bottom_filter_spinner);
             bottomFilter.setOnItemSelectedListener(this);
+
+            membersLV.setOnItemClickListener(this);
 
         }
 
@@ -129,14 +147,16 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
         super.onResume();
         IntentFilter filter = new IntentFilter();
         filter.addAction(MemberDataPull.ACTION_RECEIVE_MSG);
-        getContext().registerReceiver(receiver,filter);
+        //getContext().registerReceiver(receiver,filter);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver,filter);
 
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        getContext().unregisterReceiver(receiver);
+        //getContext().unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(receiver);
     }
 
     @Override
@@ -188,10 +208,12 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
             builder.setNegativeButton("Reset Filters", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    topFilter.setSelection(1);
+//                    topFilter.setSelection(1);
                     midFilter.setSelection(0);
                     bottomFilter.setSelection(0);
                     dialog.cancel();
+                    filteredList = members;
+                    showFilteredList();
                 }
             });
 
@@ -199,6 +221,8 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
+                    //filteredList = members;
+                    showFilteredList();
                 }
             });
             AlertDialog alert = builder.create();
@@ -219,25 +243,17 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
     // Gets the selected item for each filter
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        loadingPB.setVisibility(View.VISIBLE);
 
         switch (parent.getId()){
-            case R.id.top_filter_spinner:
-                Log.i(TAG, "onItemSelected: Spinner 1");
-                currentTopFilter = position;
-                currentMidFilter = midFilter.getSelectedItemPosition();
-                currentBottomFilter = bottomFilter.getSelectedItemPosition();
-                break;
+
 
             case R.id.mid_filter_spinner:
                 currentMidFilter = position;
-                currentTopFilter = topFilter.getSelectedItemPosition();
                 currentBottomFilter = bottomFilter.getSelectedItemPosition();
                 break;
 
             case R.id.bottom_filter_spinner:
                 currentBottomFilter = position;
-                currentTopFilter = topFilter.getSelectedItemPosition();
                 currentMidFilter = midFilter.getSelectedItemPosition();
                 break;
         }
@@ -254,46 +270,38 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
 
     // filters based on selected spinner items
     public void updateFilteredLists(){
-        switch (currentTopFilter){
-            case ALL_MEMBERS_FILTER:
-                filteredList = allMembers;
-                break;
-            case CURRENT_MEMBERS_FILTER:
-                filteredList = members;
-                break;
-            case PAST_MEMBERS_FILTER:
-                filteredList = pastMembers;
-                break;
-        }
+
+        filteredList = members;
+
 
         switch (currentMidFilter){
             case ALL_MEMBERS_FILTER:
                 break;
             case SENATE_MEMBERS_FILTER:
-                if(currentTopFilter == CURRENT_MEMBERS_FILTER){
+
                     filteredList = senate;
-                }else{
-                    ArrayList<CongressMember> tempFilter =  new ArrayList<>();
-                    for (CongressMember m: filteredList) {
-                        if(m.getChamber().equals("senate")){
-                            tempFilter.add(m);
-                        }
-                    }
-                    filteredList = tempFilter;
-                }
+
+//                    ArrayList<CongressMember> tempFilter =  new ArrayList<>();
+//                    for (CongressMember m: filteredList) {
+//                        if(m.getChamber().equals("senate")){
+//                            tempFilter.add(m);
+//                        }
+//                    }
+//                    filteredList = tempFilter;
+//
                 break;
             case HOUSE_MEMBERS_FILTER:
-                if(currentTopFilter == CURRENT_MEMBERS_FILTER){
+
                     filteredList = house;
-                }else{
-                    ArrayList<CongressMember> tempFilter =  new ArrayList<>();
-                    for (CongressMember m: filteredList) {
-                        if(m.getChamber().equals("house")){
-                            tempFilter.add(m);
-                        }
-                    }
-                    filteredList = tempFilter;
-                }
+//
+//                    ArrayList<CongressMember> tempFilter =  new ArrayList<>();
+//                    for (CongressMember m: filteredList) {
+//                        if(m.getChamber().equals("house")){
+//                            tempFilter.add(m);
+//                        }
+//                    }
+//                    filteredList = tempFilter;
+//
                 break;
         }
 
@@ -333,11 +341,21 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
     }
     public void showFilteredList(){
         if (membersLV != null) {
-            loadingPB.setVisibility(View.GONE);
             MemberAdapter adapter = new MemberAdapter(getContext(), filteredList);
             membersLV.setAdapter(adapter);
             searchBtn.setCheckable(true);
         }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.i(TAG, "onItemClick: Position: "+ position);
+
+        CongressMember selectedMember = filteredList.get(position);
+        String memberID = selectedMember.getId();
+        listener.MemberClicked(memberID);
+
+
     }
 
     // Receiver gets filtered congress member lists
