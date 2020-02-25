@@ -21,6 +21,7 @@ public class MemberDataPull extends IntentService {
     public static final String ACTION_SEND_MEM_DETAIL = "com.example.congresstracker.models.action.SEND_MEM_DETAIL";
     public static final String ACTION_PULL_ALL = "com.example.congresstracker.models.action.PULL_ALL";
     public static final String ACTION_PULL_SELECTED = "com.example.congresstracker.models.action.PULL_SELECTED";
+    public static final String ACTION_PULL_VOTES = "com.example.congresstracker.models.action.PULL_VOTES";
     public static final String EXTRA_MEMBERS = "EXTRA_MEMBERS";
     public static final String EXTRA_SENATE = "EXTRA_SENATE";
     public static final String EXTRA_HOUSE = "EXTRA_HOUSE";
@@ -34,10 +35,12 @@ public class MemberDataPull extends IntentService {
     ArrayList<CongressMember> house;
     ArrayList<CongressMember> pastMembers;
     ArrayList<CongressMember> allMembers;
+    ArrayList<BillVote> memberVotes;
     CongressMember selectedMember;
 
     private static final int BROADCAST_ALL_MEM = 0;
     private static final int BROADCAST_SELECTED_MEM = 1;
+    private static final int BROADCAST_MEM_VOTES = 2;
 
     private int broadCastCode;
 
@@ -50,38 +53,70 @@ public class MemberDataPull extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
 
         if(intent != null){
-            if(intent.getAction().equals(ACTION_PULL_ALL)){
-                Log.i(TAG, "onHandleIntent: action Pull All");
-                requestMemberData();
-                broadCastCode = BROADCAST_ALL_MEM;
-                broadCastResults(broadCastCode);
-            }
-            else if(intent.getAction().equals(ACTION_PULL_SELECTED)){
-                String passedId = intent.getStringExtra(EXTRA_SELECTED_MEMBER);
-                Log.i(TAG, "selectedMember: action Pull Member: " + passedId);
-                requestSingleMemberData(passedId);
+            String passedId = "";
+            switch (intent.getAction()){
 
-                if(selectedMember != null){
-                    Log.i(TAG, "selectedMember: name: " + selectedMember.getName());
-                    Log.i(TAG, "selectedMember: party: " + selectedMember.getParty());
-                    Log.i(TAG, "selectedMember: chamber: " + selectedMember.getChamber());
-                    Log.i(TAG, "selectedMember: gender: " + selectedMember.getGender());
-                    Log.i(TAG, "selectedMember: next Election: " + selectedMember.getNextElection());
-                    if(selectedMember.getTerms() != null){
-                        Log.i(TAG, "selectedMember: terms: " + selectedMember.getTerms().size());
-                        if(selectedMember.getTerms().get(0).getCommittees() != null){
-                            Log.i(TAG, "selectedMember: Committees last term: " + selectedMember.getTerms().get(0).getCommittees().size());
-                        }
-
-                    }
-                    broadCastCode = BROADCAST_SELECTED_MEM;
+                // this is the action used to get all congress members
+                case ACTION_PULL_ALL:
+                    Log.i(TAG, "onHandleIntent: action Pull All");
+                    requestMemberData();
+                    broadCastCode = BROADCAST_ALL_MEM;
                     broadCastResults(broadCastCode);
+                    break;
 
-                }else{
-                    Log.i(TAG, "selectedMember: ERROR Member null ");
-                }
+                // this is the action used to get a specific member
+                case ACTION_PULL_SELECTED:
+                    passedId = intent.getStringExtra(EXTRA_SELECTED_MEMBER);
+                    Log.i(TAG, "selectedMember: action Pull Member: " + passedId);
+                    requestSingleMemberData(passedId);
+
+                    if(selectedMember != null){
+                        Log.i(TAG, "selectedMember: name: " + selectedMember.getName());
+                        Log.i(TAG, "selectedMember: party: " + selectedMember.getParty());
+                        Log.i(TAG, "selectedMember: chamber: " + selectedMember.getChamber());
+                        Log.i(TAG, "selectedMember: gender: " + selectedMember.getGender());
+                        Log.i(TAG, "selectedMember: next Election: " + selectedMember.getNextElection());
+                        if(selectedMember.getTerms() != null){
+                            Log.i(TAG, "selectedMember: terms: " + selectedMember.getTerms().size());
+                            if(selectedMember.getTerms().get(0).getCommittees() != null){
+                                Log.i(TAG, "selectedMember: Committees last term: " + selectedMember.getTerms().get(0).getCommittees().size());
+                            }
+
+                        }
+                        broadCastCode = BROADCAST_SELECTED_MEM;
+                        broadCastResults(broadCastCode);
+
+                    }else{
+                        Log.i(TAG, "selectedMember: ERROR Member null ");
+                    }
+                    break;
+
+                // this is the action used to get a member's vote positions
+                case ACTION_PULL_VOTES:
+                    passedId = intent.getStringExtra(EXTRA_SELECTED_MEMBER);
+                    Log.i(TAG, "selectedMember: action Pull Member: " + passedId);
+                    requestMemberVoteData(passedId);
+
+                    if(memberVotes != null){
+
+                        for (BillVote vote: memberVotes) {
+                            Log.i(TAG, "Vote History: BillID: " + vote.getId());
+                            Log.i(TAG, "Vote History: Bill Title: " + vote.getTitle());
+                            Log.i(TAG, "Vote History: Bill Title D: " + vote.getDescription());
+                            Log.i(TAG, "Vote History: Bill Result: " + vote.getResult());
+                            Log.i(TAG, "Vote History: Member Position: " + vote.getPosition());
+
+
+                        }
+                        broadCastCode = BROADCAST_MEM_VOTES;
+                        broadCastResults(broadCastCode);
+                    }
+
+
+                    break;
 
             }
+
         }
 
 
@@ -114,7 +149,6 @@ public class MemberDataPull extends IntentService {
                     }else{
                         party = "Independent";
                     }
-
                     JSONArray nestedArray = obj.getJSONArray("roles");
                     ArrayList<Term> terms = new ArrayList<>();
                     String nextElection = "";
@@ -191,6 +225,50 @@ public class MemberDataPull extends IntentService {
             } catch (JSONException e) {
             e.printStackTrace();
         }
+        }
+
+    }
+
+    public void requestMemberVoteData(String id){
+        String url = "https://api.propublica.org/congress/v1/members/" + id+ "/votes.json";
+        String data = NetworkUtils.getNetworkData(url);
+
+        if(NetworkUtils.isConnected(getBaseContext())) {
+            memberVotes = new ArrayList<>();
+
+            try {
+                JSONObject response = new JSONObject(data);
+                JSONArray resultsJson = response.getJSONArray("results");
+
+
+                for (int i = 0; i < resultsJson.length(); i++) {
+
+                    JSONObject obj = resultsJson.getJSONObject(i);
+                    JSONArray votesJson = obj.getJSONArray("votes");
+
+                    for (int x = 0; x < votesJson.length(); x++) {
+                        JSONObject nestedObj = votesJson.getJSONObject(x);
+                        JSONObject billObj = nestedObj.getJSONObject("bill");
+                        String billId = billObj.getString("number");
+                        String billUri = "";
+                        if(!billObj.isNull("bill_uri")){
+                            billUri = billObj.getString("bill_uri");
+                        }
+
+                        String billTitle = billObj.getString("title");
+                        String billLastAction = billObj.getString("latest_action");
+
+                        String description = nestedObj.getString("description");
+                        String result = nestedObj.getString("result");
+                        String date = nestedObj.getString("date");
+                        String position = nestedObj.getString("position");
+
+                        memberVotes.add(new BillVote(billId,billTitle,billUri,billLastAction,description,result,position,date));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
     }

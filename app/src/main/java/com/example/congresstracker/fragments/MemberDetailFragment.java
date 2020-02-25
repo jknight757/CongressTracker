@@ -2,6 +2,7 @@ package com.example.congresstracker.fragments;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,10 +12,12 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.models.CongressMember;
+import com.example.congresstracker.models.MemberDataPull;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,6 +34,8 @@ public class MemberDetailFragment extends Fragment {
     private TextView missedVotePctTV;
     private TextView voteWPartyTV;
     private TextView voteAPartyTV;
+
+    private ProgressBar progressBar;
 
     MemberDetailListener listener;
 
@@ -83,10 +88,20 @@ public class MemberDetailFragment extends Fragment {
             missedVotePctTV = getView().findViewById(R.id.missed_votes_pct);
             voteWPartyTV = getView().findViewById(R.id.vote_wparty_pct);
             voteAPartyTV = getView().findViewById(R.id.vote_aparty_pct);
+            progressBar = getView().findViewById(R.id.loadin_votes_pb);
 
             if(selectedMember != null){
                 updateUI();
+
+                String id = selectedMember.getId();
+                progressBar.setVisibility(View.VISIBLE);
+                Intent pullDataIntent = new Intent(getContext(), MemberDataPull.class);
+                pullDataIntent.setAction(MemberDataPull.ACTION_PULL_VOTES);
+                pullDataIntent.putExtra(MemberDataPull.EXTRA_SELECTED_MEMBER,id);
+                getContext().startService(pullDataIntent);
             }
+
+
 
 
         }
