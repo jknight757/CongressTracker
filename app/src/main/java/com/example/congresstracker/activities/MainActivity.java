@@ -10,23 +10,36 @@ import com.example.congresstracker.R;
 import com.example.congresstracker.fragments.CongressFragment;
 import com.example.congresstracker.fragments.LoginFragment;
 import com.example.congresstracker.fragments.SignupFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity implements SignupFragment.SignupListener, LoginFragment.LoginListener {
 
     LoginFragment loginFragment;
     SignupFragment signupFragment;
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(getSupportActionBar() != null){
-            getSupportActionBar().setTitle("");
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        if(user == null){
+            if(getSupportActionBar() != null){
+                getSupportActionBar().setTitle("");
+            }
+
+            loginFragment = LoginFragment.newInstance();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.launch_fragment_container,loginFragment,loginFragment.TAG).commit();
+        }else {
+            Intent congressIntent = new Intent(this,CongressActivity.class);
+            startActivity(congressIntent);
         }
 
-        loginFragment = LoginFragment.newInstance();
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.launch_fragment_container,loginFragment,loginFragment.TAG).commit();
+
     }
 
 

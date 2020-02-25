@@ -101,13 +101,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
 
             mAuth = FirebaseAuth.getInstance();
-//            FirebaseUser user = mAuth.getCurrentUser();
-//            if(user != null){
-//                //FirebaseAuth.getInstance().signOut();
-//                Toast.makeText(getContext(),"Already logged in", Toast.LENGTH_SHORT).show();
-//                listener.LoginClicked();
-//            }
-
 
         }
     }

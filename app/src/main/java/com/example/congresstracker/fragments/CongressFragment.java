@@ -122,7 +122,12 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
         if(getView() != null){
             membersLV = getView().findViewById(android.R.id.list);
             loadingPB = getView().findViewById(R.id.loadin_pb);
-            loadingPB.setVisibility(View.VISIBLE);
+            if(loadingPB.getVisibility() == View.VISIBLE){
+                loadingPB.setVisibility(View.GONE);
+            }else {
+                loadingPB.setVisibility(View.VISIBLE);
+            }
+
             searchInputField = getView().findViewById(R.id.search_textInput);
             searchBtn = getView().findViewById(R.id.search_btn);
             searchBtn.setOnClickListener(this);
@@ -137,6 +142,7 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
             bottomFilter.setOnItemSelectedListener(this);
 
             membersLV.setOnItemClickListener(this);
+
 
         }
 

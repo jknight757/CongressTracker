@@ -14,12 +14,18 @@ public class CongressMember implements Serializable {
     private String nextElection;
     private ArrayList<Term> terms;
 
-//    public CongressMember(String id, String name, String party, String state) {
-//        this.id = id;
-//        this.name = name;
-//        this.party = party;
-//        this.state = state;
-//    }
+    private String[] stateAbList = new String[] {"AK","AL","AR","AZ","CA","CO","CT","DC","DE","FL","GA","HI","IA","ID",
+            "IL","IN","KS","KY","LA","MA","MD","ME","MI","MN","MO","MS","MT","NC","ND","NE","NH","NJ","NM","NV","NY",
+            "OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VA","VT","WA","WI","WV","WY"};
+
+    private String[] stateList = new String[] {"Alaska","Alabama","Arkansas","Arizona","California","Colorado","Connecticut",
+            "District of Columbia","Delaware","Florida","Georgia","Hawaii","Iowa","Idaho", "Illinois","Indiana","Kansas",
+            "Kentucky","Louisiana","Massachusetts","Maryland","Maine","Michigan", "Minnesota","Missouri","Mississippi",
+            "Montana","North Carolina","North Dakota","Nebraska","New Hampshire", "New Jersey","New Mexico","Nevada",
+            "New York", "Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota",
+            "Tennessee","Texas","Utah", "Virginia","Vermont","Washington","Wisconsin","West Virginia","Wyoming"};
+
+
     public CongressMember(String id, String name, String party, String state, String chamber) {
         this.id = id;
         this.name = name;
@@ -93,6 +99,73 @@ public class CongressMember implements Serializable {
 
     public void setTerms(ArrayList<Term> terms) {
         this.terms = terms;
+    }
+
+
+    public int getTotalVotes(){
+        if(terms != null){
+            int total = 0;
+            for (int i = 0; i < terms.size(); i++) {
+                total += terms.get(i).totalVotes;
+            }
+            return total;
+        }else{
+            return 0;
+        }
+
+    }
+    public int getMissedVotePctAverage(){
+        if(terms != null){
+            double total = 0;
+            for (int i = 0; i < terms.size(); i++) {
+                total += terms.get(i).getMissVotePct();
+            }
+            total = total/terms.size();
+            int roundedT = (int) Math.rint(total);
+            return roundedT;
+        }else {
+            return 0;
+        }
+    }
+
+    public int getVoteWPPctAverage(){
+        if(terms != null){
+            double total = 0;
+            for (int i = 0; i < terms.size(); i++) {
+                total += terms.get(i).getVoteWPartyPct();
+            }
+            total = total/terms.size();
+            int roundedT = (int) Math.rint(total);
+            return roundedT;
+        }else {
+            return 0;
+        }
+    }
+
+    public int getVoteAPPctAverage(){
+        if(terms != null){
+            double total = 0;
+            for (int i = 0; i < terms.size(); i++) {
+                total += terms.get(i).getVoteAPartyPct();
+            }
+            total = total/terms.size();
+            int roundedT = (int) Math.rint(total);
+            return roundedT;
+        }else {
+            return 0;
+        }
+    }
+
+    public String getUnabreviated(){
+        String state = "";
+        for (int i = 0; i < stateAbList.length; i++) {
+            if(stateAbList[i].equals(getState())){
+                state = stateList[i];
+            }
+
+        }
+
+       return state;
     }
 
 

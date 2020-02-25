@@ -1,8 +1,9 @@
 package com.example.congresstracker.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Term {
+public class Term implements Serializable {
     String chamber;
     String state;
     String startDate;

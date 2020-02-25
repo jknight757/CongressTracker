@@ -14,4 +14,9 @@
         <item name="android:layout_marginEnd">16dp</item>
     </style>
 
+    <style name="ButtonTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="buttonStyle">@android:style/Widget.Button</item>
+    </style>
+
+
 </resources>

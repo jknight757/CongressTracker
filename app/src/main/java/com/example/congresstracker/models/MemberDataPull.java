@@ -18,6 +18,7 @@ public class MemberDataPull extends IntentService {
     private static final String SENATE_API_URL = "https://api.propublica.org/congress/v1/116/senate/members.json";
     private static final String HOUSE_API_URL = "https://api.propublica.org/congress/v1/116/house/members.json";
     public static final String ACTION_RECEIVE_MSG = "com.example.congresstracker.models.action.RECEIVE_MSG";
+    public static final String ACTION_SEND_MEM_DETAIL = "com.example.congresstracker.models.action.SEND_MEM_DETAIL";
     public static final String ACTION_PULL_ALL = "com.example.congresstracker.models.action.PULL_ALL";
     public static final String ACTION_PULL_SELECTED = "com.example.congresstracker.models.action.PULL_SELECTED";
     public static final String EXTRA_MEMBERS = "EXTRA_MEMBERS";
@@ -35,6 +36,12 @@ public class MemberDataPull extends IntentService {
     ArrayList<CongressMember> allMembers;
     CongressMember selectedMember;
 
+    private static final int BROADCAST_ALL_MEM = 0;
+    private static final int BROADCAST_SELECTED_MEM = 1;
+
+    private int broadCastCode;
+
+
 
     public MemberDataPull(){
         super("MemberDataPull");
@@ -46,7 +53,8 @@ public class MemberDataPull extends IntentService {
             if(intent.getAction().equals(ACTION_PULL_ALL)){
                 Log.i(TAG, "onHandleIntent: action Pull All");
                 requestMemberData();
-                broadCastResults();
+                broadCastCode = BROADCAST_ALL_MEM;
+                broadCastResults(broadCastCode);
             }
             else if(intent.getAction().equals(ACTION_PULL_SELECTED)){
                 String passedId = intent.getStringExtra(EXTRA_SELECTED_MEMBER);
@@ -66,6 +74,8 @@ public class MemberDataPull extends IntentService {
                         }
 
                     }
+                    broadCastCode = BROADCAST_SELECTED_MEM;
+                    broadCastResults(broadCastCode);
 
                 }else{
                     Log.i(TAG, "selectedMember: ERROR Member null ");
@@ -97,6 +107,14 @@ public class MemberDataPull extends IntentService {
                     String gender = obj.getString("gender");
                     String personalURL = obj.getString("url");
 
+                    if(party.equals("R")){
+                        party = "Republican";
+                    }else if(party.equals("D")){
+                        party = "Democrat";
+                    }else{
+                        party = "Independent";
+                    }
+
                     JSONArray nestedArray = obj.getJSONArray("roles");
                     ArrayList<Term> terms = new ArrayList<>();
                     String nextElection = "";
@@ -117,8 +135,17 @@ public class MemberDataPull extends IntentService {
                         String termEnd = nestedObj.getString("next_election");
                         int totalVotes = nestedObj.getInt("total_votes");
 
-                        int billsSponsored = nestedObj.getInt("bills_sponsored");
-                        int billsCosponsored = nestedObj.getInt("bills_cosponsored");
+                        int billsSponsored = 0;
+                        int billsCosponsored = 0;
+                        if(!nestedObj.isNull("bills_sponsored")){
+                            billsSponsored = nestedObj.getInt("bills_sponsored");
+                        }
+
+                        if(!nestedObj.isNull("bills_cosponsored")){
+                            billsCosponsored = nestedObj.getInt("bills_cosponsored");
+                        }
+
+
                         double mvp = nestedObj.getDouble("missed_votes_pct");
                         double vwpp = nestedObj.getDouble("votes_with_party_pct");
                         double vapp = nestedObj.getDouble("votes_against_party_pct");
@@ -283,27 +310,26 @@ public class MemberDataPull extends IntentService {
 
     }
 
-    public void broadCastResults(){
-        Intent broadcastIntent = new Intent(ACTION_RECEIVE_MSG);
-        broadcastIntent.putExtra(EXTRA_MEMBERS, currentMembers);
-        broadcastIntent.putExtra(EXTRA_SENATE,senate);
-        broadcastIntent.putExtra(EXTRA_HOUSE,house);
-        broadcastIntent.putExtra(EXTRA_PAST_MEMBERS, pastMembers);
-        broadcastIntent.putExtra(EXTRA_ALL_MEMBERS, allMembers);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
-        //sendBroadcast(broadcastIntent);
+    public void broadCastResults(int code){
+        Intent broadcastIntent;
+        switch (code){
+            case BROADCAST_ALL_MEM:
+                broadcastIntent = new Intent(ACTION_RECEIVE_MSG);
+                broadcastIntent.putExtra(EXTRA_MEMBERS, currentMembers);
+                broadcastIntent.putExtra(EXTRA_SENATE,senate);
+                broadcastIntent.putExtra(EXTRA_HOUSE,house);
+                broadcastIntent.putExtra(EXTRA_PAST_MEMBERS, pastMembers);
+                broadcastIntent.putExtra(EXTRA_ALL_MEMBERS, allMembers);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
+                break;
+            case BROADCAST_SELECTED_MEM:
+                broadcastIntent = new Intent(ACTION_SEND_MEM_DETAIL);
+                broadcastIntent.putExtra(EXTRA_SELECTED_MEMBER, selectedMember);
+                sendBroadcast(broadcastIntent);
+                //LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
+                break;
+        }
+
     }
 
-    private int getIdFromLink(String _link) {
-        int index = _link.lastIndexOf('/');
-        if(index > -1 && (index+1) < _link.length()) {
-            try {
-                return Integer.parseInt(_link.substring(index+1));
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
-        }
-        Log.e("ERROR", "Unable to find ID in string \"" + _link + "\".");
-        return 0;
-    }
 }

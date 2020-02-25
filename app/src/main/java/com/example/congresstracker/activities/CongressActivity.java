@@ -1,16 +1,37 @@
 package com.example.congresstracker.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.fragments.CongressFragment;
+import com.example.congresstracker.fragments.MemberDetailFragment;
+import com.example.congresstracker.models.CongressMember;
+import com.example.congresstracker.models.MemberAdapter;
 import com.example.congresstracker.models.MemberDataPull;
 
-public class CongressActivity extends AppCompatActivity implements CongressFragment.CongressClickListener {
+import java.util.ArrayList;
+
+public class CongressActivity extends AppCompatActivity implements CongressFragment.CongressClickListener, MemberDetailFragment.MemberDetailListener {
+
+    public static final String TAG = "CongressActivity.TAG";
+    public static final String EXTRA_SELECTED_MEMBER = "EXTRA_SELECTED_MEMBER";
+
+
+    private final MemberDataReceiver receiver = new MemberDataReceiver();
+    private CongressFragment congressFragment;
+    private ProgressBar progressBar;
+    private CongressMember selectedMember;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,11 +39,12 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
         setContentView(R.layout.activity_congress);
 
         if(getSupportActionBar() != null){
-            getSupportActionBar().setTitle("");
+            getSupportActionBar().setTitle(" Congress");
         }
+        congressFragment = CongressFragment.newInstance();
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.congress_fragment_container, CongressFragment.newInstance()).commit();
+                .add(R.id.congress_fragment_container, congressFragment).commit();
 
         Intent pullDataIntent = new Intent(this, MemberDataPull.class);
         pullDataIntent.setAction(MemberDataPull.ACTION_PULL_ALL);
@@ -30,10 +52,66 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(MemberDataPull.ACTION_SEND_MEM_DETAIL);
+        registerReceiver(receiver,filter);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+    }
+
+    @Override
     public void MemberClicked(String id) {
+        findViewById(R.id.congress_fragment_container).setVisibility(View.GONE);
+        progressBar = findViewById(R.id.mem_select_pb);
+        progressBar.setVisibility(View.VISIBLE);
+
         Intent pullDataIntent = new Intent(this, MemberDataPull.class);
         pullDataIntent.setAction(MemberDataPull.ACTION_PULL_SELECTED);
         pullDataIntent.putExtra(MemberDataPull.EXTRA_SELECTED_MEMBER,id);
         startService(pullDataIntent);
+    }
+
+    @Override
+    public void updateTitle() {
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setTitle(" Congress");
+        }
+    }
+
+    class MemberDataReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            findViewById(R.id.congress_fragment_container).setVisibility(View.VISIBLE);
+            Log.i(TAG, "onReceive: ");
+            if(intent != null){
+
+                if(intent.getAction().equals( MemberDataPull.ACTION_SEND_MEM_DETAIL)){
+
+                    if(intent.hasExtra(EXTRA_SELECTED_MEMBER)){
+
+                        selectedMember = (CongressMember) intent.getSerializableExtra(EXTRA_SELECTED_MEMBER);
+                        if(getSupportActionBar() != null){
+                            getSupportActionBar().setTitle(" Member Detail");
+                        }
+                        progressBar.setVisibility(View.GONE);
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.congress_fragment_container, MemberDetailFragment.newInstance(selectedMember))
+                                .addToBackStack(congressFragment.TAG)
+                                .commit();
+
+                    }
+                }
+            }
+
+        }
+
     }
 }
