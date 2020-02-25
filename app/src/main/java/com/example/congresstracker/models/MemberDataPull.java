@@ -19,15 +19,21 @@ public class MemberDataPull extends IntentService {
     private static final String HOUSE_API_URL = "https://api.propublica.org/congress/v1/116/house/members.json";
     public static final String ACTION_RECEIVE_MSG = "com.example.congresstracker.models.action.RECEIVE_MSG";
     public static final String ACTION_SEND_MEM_DETAIL = "com.example.congresstracker.models.action.SEND_MEM_DETAIL";
+    public static final String ACTION_SEND_MEM_VOTES = "com.example.congresstracker.models.action.SEND_MEM_VOTES";
+
+
     public static final String ACTION_PULL_ALL = "com.example.congresstracker.models.action.PULL_ALL";
     public static final String ACTION_PULL_SELECTED = "com.example.congresstracker.models.action.PULL_SELECTED";
     public static final String ACTION_PULL_VOTES = "com.example.congresstracker.models.action.PULL_VOTES";
+
     public static final String EXTRA_MEMBERS = "EXTRA_MEMBERS";
     public static final String EXTRA_SENATE = "EXTRA_SENATE";
     public static final String EXTRA_HOUSE = "EXTRA_HOUSE";
     public static final String EXTRA_PAST_MEMBERS = "EXTRA_PAST_MEMBERS";
     public static final String EXTRA_ALL_MEMBERS = "EXTRA_ALL_MEMBERS";
     public static final String EXTRA_SELECTED_MEMBER = "EXTRA_SELECTED_MEMBER";
+    public static final String EXTRA_MEMBER_VOTES = "EXTRA_MEMBER_VOTES";
+
     private final String TAG = "MemberDataPull";
 
     ArrayList<CongressMember> currentMembers;
@@ -405,6 +411,11 @@ public class MemberDataPull extends IntentService {
                 broadcastIntent.putExtra(EXTRA_SELECTED_MEMBER, selectedMember);
                 sendBroadcast(broadcastIntent);
                 //LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
+                break;
+            case BROADCAST_MEM_VOTES:
+                broadcastIntent = new Intent(ACTION_SEND_MEM_VOTES);
+                broadcastIntent.putExtra(EXTRA_MEMBER_VOTES, memberVotes);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
                 break;
         }
 

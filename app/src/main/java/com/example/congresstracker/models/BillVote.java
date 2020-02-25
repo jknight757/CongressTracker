@@ -68,6 +68,10 @@ public class BillVote implements Serializable {
         return position;
     }
 
+    public String getDate() {
+        return date;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }
