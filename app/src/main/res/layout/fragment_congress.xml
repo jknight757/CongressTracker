@@ -173,7 +173,7 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_tab_bar"
-        app:menu="@menu/bottom_navigation_menu"
+        app:menu="@menu/bottom_nav_menu_alpha"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:itemIconTint="@drawable/nav_item_color"

@@ -173,22 +173,37 @@ public class MemberDataPull extends IntentService {
                         String startDate = nestedObj.getString("start_date");
                         String endDate = nestedObj.getString("end_date");
                         String termEnd = nestedObj.getString("next_election");
-                        int totalVotes = nestedObj.getInt("total_votes");
+
+                        int totalVotes = 0;
+                        if(!nestedObj.isNull("total_votes")){
+                            totalVotes = nestedObj.getInt("total_votes");
+                        }
 
                         int billsSponsored = 0;
-                        int billsCosponsored = 0;
                         if(!nestedObj.isNull("bills_sponsored")){
                             billsSponsored = nestedObj.getInt("bills_sponsored");
                         }
 
+                        int billsCosponsored = 0;
                         if(!nestedObj.isNull("bills_cosponsored")){
                             billsCosponsored = nestedObj.getInt("bills_cosponsored");
                         }
 
 
-                        double mvp = nestedObj.getDouble("missed_votes_pct");
-                        double vwpp = nestedObj.getDouble("votes_with_party_pct");
-                        double vapp = nestedObj.getDouble("votes_against_party_pct");
+                        double mvp = 0;
+                        if(!nestedObj.isNull("missed_votes_pct")){
+                            mvp = nestedObj.getDouble("missed_votes_pct");
+                        }
+
+                        double vwpp = 0;
+                        if(!nestedObj.isNull("votes_with_party_pct")){
+                            vwpp = nestedObj.getDouble("votes_with_party_pct");
+                        }
+
+                        double vapp = 0;
+                        if(!nestedObj.isNull("votes_against_party_pct")){
+                            vapp = nestedObj.getDouble("votes_against_party_pct");
+                        }
 
                         if(x == 0){
                             nextElection = termEnd;
@@ -271,6 +286,7 @@ public class MemberDataPull extends IntentService {
 
                         memberVotes.add(new BillVote(billId,billTitle,billUri,billLastAction,description,result,position,date));
                     }
+                    Log.i(TAG, "MemberVoteData: Num Results: " + i);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

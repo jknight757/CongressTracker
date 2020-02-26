@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/congress_tab_item"
+        android:icon="@drawable/ic_account_balance_black_24dp"
+        android:title="congress"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/bill_tab_item"
+        android:icon="@drawable/stack_icon_dark"
+        android:title="Bills"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/local_tab_item"
+        android:icon="@drawable/ic_person_pin_black_24dp"
+        android:title="My Local"
+        app:showAsAction="always"/>
+
+</menu>

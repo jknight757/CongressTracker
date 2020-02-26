@@ -164,7 +164,6 @@ public class CongressMember implements Serializable {
             }
 
         }
-
        return state;
     }
 

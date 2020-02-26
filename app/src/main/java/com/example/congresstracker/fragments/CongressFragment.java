@@ -196,9 +196,9 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
     public void searchMembersList(String _searchTxt){
         ArrayList<CongressMember> searchResults = new ArrayList<>();
         for (CongressMember m:filteredList) {
-            if(m.getName().equals(_searchTxt)){
+            if(m.getName().toUpperCase().equals(_searchTxt.toUpperCase())){
                 searchResults.add(m);
-            }else if(m.getName().contains(_searchTxt)){
+            }else if(m.getName().toUpperCase().contains(_searchTxt.toUpperCase())){
                 searchResults.add(m);
             }
         }
@@ -243,6 +243,7 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
             MemberAdapter adapter = new MemberAdapter(getContext(), _searchResults);
             membersLV.setAdapter(adapter);
             searchBtn.setCheckable(true);
+            filteredList = _searchResults;
         }
     }
 
