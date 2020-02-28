@@ -27,6 +27,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.congresstracker.R;
+import com.example.congresstracker.activities.BillActivity;
 import com.example.congresstracker.activities.CongressActivity;
 import com.example.congresstracker.activities.MyAreaActivity;
 import com.example.congresstracker.models.CongressMember;
@@ -180,6 +181,9 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
             case R.id.congress_tab_item:
                 break;
             case R.id.bill_tab_item:
+                Intent billIntent = new Intent(getContext(), BillActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(billIntent);
                 break;
             case R.id.local_tab_item:
                 Intent congressIntent = new Intent(getContext(), MyAreaActivity.class)

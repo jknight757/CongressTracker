@@ -14,8 +14,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.MyAreaActivity"
-            android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".activities.BillActivity"></activity>
+        <activity
+            android:name=".activities.MyAreaActivity"
+            android:windowSoftInputMode="adjustPan" />
 
         <service
             android:name=".models.MemberDataPull"
@@ -23,16 +25,18 @@
         <service
             android:name=".models.UserDataPull"
             android:exported="false" />
-
+        <service
+            android:name=".models.BillDataPull"
+            android:exported="false" />
 
         <activity
             android:name=".activities.CongressActivity"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".activities.MainActivity" >
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"  />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>

@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.congresstracker.R;
+import com.example.congresstracker.activities.BillActivity;
 import com.example.congresstracker.activities.CongressActivity;
 import com.example.congresstracker.activities.MainActivity;
 import com.example.congresstracker.activities.MyAreaActivity;
@@ -155,6 +156,9 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
                 startActivity(congressIntent);
                 break;
             case R.id.bill_tab_item:
+                Intent billIntent = new Intent(getContext(), BillActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(billIntent);
                 break;
             case R.id.local_tab_item:
                 break;
