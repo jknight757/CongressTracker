@@ -113,7 +113,6 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Toast.makeText(getContext(), "Menu Item: " + item.getItemId(), Toast.LENGTH_SHORT).show();
 
         switch (item.getItemId()){
             case R.id.action_dropdown1:

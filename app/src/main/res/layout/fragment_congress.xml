@@ -141,7 +141,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/vertical_margin_start"
         app:layout_constraintEnd_toStartOf="@id/vertical_margin_end"
-        android:background="@color/white"/>
+        android:background="@color/white"
+        android:layout_marginBottom="58dp"/>
     <ProgressBar
         android:id="@+id/loadin_pb"
         android:layout_width="wrap_content"
@@ -151,8 +152,6 @@
         android:layout_marginStart="165dp"
         android:layout_marginTop="150dp"
         android:visibility="gone"/>
-
-
 
 
 

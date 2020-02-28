@@ -68,7 +68,7 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
 
     @Override
     public void MemberClicked(String id) {
-        findViewById(R.id.congress_fragment_container).setVisibility(View.GONE);
+        //findViewById(R.id.congress_fragment_container).setVisibility(View.GONE);
         progressBar = findViewById(R.id.mem_select_pb);
         progressBar.setVisibility(View.VISIBLE);
 

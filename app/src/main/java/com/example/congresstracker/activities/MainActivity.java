@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
     LoginFragment loginFragment;
     SignupFragment signupFragment;
     private FirebaseAuth mAuth;
+    public static boolean validUser = false;
 
     private LocalNetworkChangeReceiver receiver = new LocalNetworkChangeReceiver();
 
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.launch_fragment_container, loginFragment, loginFragment.TAG).commit();
             } else {
+                validUser = true;
                 Intent congressIntent = new Intent(this, CongressActivity.class);
                 startActivity(congressIntent);
             }
@@ -82,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
 
     @Override
     public void SignUpClicked() {
+        validUser = true;
         Intent congressIntent = new Intent(this,CongressActivity.class);
         startActivity(congressIntent);
     }
@@ -97,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
 
     @Override
     public void SkipClicked() {
+        validUser = false;
         Intent congressIntent = new Intent(this,CongressActivity.class);
         startActivity(congressIntent);
 
@@ -107,8 +111,7 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
 
     @Override
     public void LoginClicked() {
-        Toast.makeText(this,"onComplete: login Successful", Toast.LENGTH_SHORT).show();
-
+        validUser = true;
         Intent congressIntent = new Intent(this,CongressActivity.class);
         startActivity(congressIntent);
     }
@@ -124,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
 
     @Override
     public void SkipClickedTwo() {
+        validUser = false;
         Intent congressIntent = new Intent(this,CongressActivity.class);
         startActivity(congressIntent);
 
@@ -142,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
     public void updateUI(){
         loginFragment = LoginFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.launch_fragment_container, loginFragment, loginFragment.TAG).commit();
+                .replace(R.id.launch_fragment_container, loginFragment, loginFragment.TAG).commit();
         findViewById(R.id.internet_alert_msg).setVisibility(View.GONE);
 
     }

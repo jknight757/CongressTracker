@@ -23,6 +23,7 @@
     <string name="other_info">Other Info</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="logout">Logout</string>
+    <string name="place_holder">Reducing Employer burdens, unleasing innovation, ad labor development act of 2013</string>
 
     <string-array name="top_spinner_items">
         <item>All</item>

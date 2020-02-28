@@ -18,6 +18,11 @@ public class MyAreaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_area);
 
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setTitle(" Profile");
+
+        }
+
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.profile_fragment_container, MyAreaFragment.newInstance()).commit();
 

@@ -14,7 +14,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.BillActivity"></activity>
+        <activity android:name=".activities.BillActivity"
+            android:windowSoftInputMode="adjustPan"></activity>
         <activity
             android:name=".activities.MyAreaActivity"
             android:windowSoftInputMode="adjustPan" />
