@@ -1,15 +1,22 @@
 package com.example.congresstracker.activities;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.congresstracker.R;
-import com.example.congresstracker.fragments.CongressFragment;
 import com.example.congresstracker.fragments.LoginFragment;
 import com.example.congresstracker.fragments.SignupFragment;
+import com.example.congresstracker.models.NetworkUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -19,31 +26,58 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
     SignupFragment signupFragment;
     private FirebaseAuth mAuth;
 
+    private LocalNetworkChangeReceiver receiver = new LocalNetworkChangeReceiver();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
-        if(user == null){
-            if(getSupportActionBar() != null){
-                getSupportActionBar().setTitle("");
+        if(NetworkUtils.isConnected(this)) {
+
+            mAuth = FirebaseAuth.getInstance();
+            FirebaseUser user = mAuth.getCurrentUser();
+            if (user == null) {
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setTitle("");
+                }
+
+                loginFragment = LoginFragment.newInstance();
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.launch_fragment_container, loginFragment, loginFragment.TAG).commit();
+            } else {
+                Intent congressIntent = new Intent(this, CongressActivity.class);
+                startActivity(congressIntent);
             }
-
-            loginFragment = LoginFragment.newInstance();
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.launch_fragment_container,loginFragment,loginFragment.TAG).commit();
         }else {
-            Intent congressIntent = new Intent(this,CongressActivity.class);
-            startActivity(congressIntent);
+            new AlertDialog.Builder(this)
+                    .setTitle("No Internet")
+                    .setMessage("Please connect to the internet if you would like to use this application")
+                    .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //dialog.cancel();
+                        }
+                    })
+                    .show();
+            findViewById(R.id.internet_alert_msg).setVisibility(View.VISIBLE);
+
         }
-
-
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(receiver,filter);
+    }
 
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+    }
     // Sign up Callback methods//
 
     @Override
@@ -96,6 +130,20 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
     }
     // Login Callback methods//
 
+    public class LocalNetworkChangeReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(NetworkUtils.isConnected(getApplicationContext())){
+                updateUI();
+            }
 
+        }
+    }
+    public void updateUI(){
+        loginFragment = LoginFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.launch_fragment_container, loginFragment, loginFragment.TAG).commit();
+        findViewById(R.id.internet_alert_msg).setVisibility(View.GONE);
 
+    }
 }

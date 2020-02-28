@@ -118,20 +118,16 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Fir
 
         switch (v.getId()){
             case R.id.login_btn:
-                Toast.makeText(getContext(),"login Clicked", Toast.LENGTH_SHORT).show();
                 if(validateInput()){
                     FirebaseUser currentUser = mAuth.getCurrentUser();
                     if(currentUser == null){
-                        Toast.makeText(getContext(),"user null", Toast.LENGTH_SHORT).show();
                         mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if(task.isSuccessful()){
-                                    Toast.makeText(getContext(),"onComplete: login Successful", Toast.LENGTH_SHORT).show();
                                     listener.LoginClicked();
                                 }else {
 
-                                    Toast.makeText(getContext(),"onComplete: login unsuccessful", Toast.LENGTH_SHORT).show();
                                     Log.d(TAG, "onComplete: unsuccessful");
                                     try {
                                         throw task.getException();
@@ -154,7 +150,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Fir
                                 }
                             }
                         });
-                        Toast.makeText(getContext(), "after Sign in ", Toast.LENGTH_SHORT).show();
                     }
                 }
 

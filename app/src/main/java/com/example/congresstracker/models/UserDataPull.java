@@ -3,7 +3,6 @@ package com.example.congresstracker.models;
 import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -65,7 +64,6 @@ public class UserDataPull extends IntentService {
             firebaseUsers.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    Toast.makeText(UserDataPull.this, "User Found!", Toast.LENGTH_SHORT).show();
 
                     if(documentSnapshot.exists()){
                         String email = documentSnapshot.getString("email");
@@ -96,7 +94,8 @@ public class UserDataPull extends IntentService {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(UserDataPull.this, "User Not Found!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "onFailure: User not found");
+                    e.printStackTrace();
                 }
             });
 

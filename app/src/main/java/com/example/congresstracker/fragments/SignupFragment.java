@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.models.NetworkUtils;
@@ -171,8 +170,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
                                 public void onComplete(@NonNull Task<AuthResult> task) {
 
                                     if (task.isSuccessful()) {
-                                        Toast.makeText(getContext(), "onComplete: SignUp Successful", Toast.LENGTH_SHORT).show();
-
+                                        Log.i(TAG, "onComplete: successful");
                                     } else {
                                         Log.d(TAG, "onComplete: unsuccessful");
                                         try {
@@ -192,7 +190,6 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
                                         } catch (Exception e) {
                                             Log.d(TAG, "onComplete: " + e.getMessage());
                                         }
-                                        Toast.makeText(getContext(), "SignUp Failed: " + task.getResult().toString(), Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
@@ -243,7 +240,6 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
             firebaseUsers.set(thisUser).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    Toast.makeText(getContext(), "User Info Saved", Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "Info Stored ");
 
                 }
@@ -252,7 +248,6 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.i(TAG, "info not stored ");
-                            Toast.makeText(getContext(), "User Info Not Saved", Toast.LENGTH_SHORT).show();
                         }
                     });
 

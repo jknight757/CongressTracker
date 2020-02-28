@@ -24,6 +24,7 @@
             android:name=".models.UserDataPull"
             android:exported="false" />
 
+
         <activity
             android:name=".activities.CongressActivity"
             android:windowSoftInputMode="adjustPan" />

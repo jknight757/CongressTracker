@@ -10,5 +10,15 @@
         android:id="@+id/launch_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <TextView
+        android:id="@+id/internet_alert_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textAlignment="center"
+        android:textSize="40sp"
+        android:text="No Internet"
+        android:visibility="gone"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
