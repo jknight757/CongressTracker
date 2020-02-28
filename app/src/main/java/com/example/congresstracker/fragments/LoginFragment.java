@@ -29,7 +29,7 @@ import com.google.firebase.auth.FirebaseUser;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LoginFragment extends Fragment implements View.OnClickListener {
+public class LoginFragment extends Fragment implements View.OnClickListener, FirebaseAuth.AuthStateListener {
 
     public final String TAG = "LoginFragment.TAG";
     public LoginListener listener;
@@ -99,9 +99,17 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
             emailInput = getView().findViewById(R.id.email_textInput);
             passwordInput = getView().findViewById(R.id.password_textInput);
 
+            mAuth.addAuthStateListener(this);
 
-            mAuth = FirebaseAuth.getInstance();
+        }
+    }
 
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        if(user != null){
+            listener.LoginClicked();
         }
     }
 
@@ -146,6 +154,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                                 }
                             }
                         });
+                        Toast.makeText(getContext(), "after Sign in ", Toast.LENGTH_SHORT).show();
                     }
                 }
 

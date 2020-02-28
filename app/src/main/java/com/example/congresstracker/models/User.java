@@ -1,12 +1,15 @@
 package com.example.congresstracker.models;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     String name;
     String email;
     String password;
     String party;
     String zip;
     boolean hasProfImg;
+
 
     public User(String name, String email, String password) {
         this.name = name;
@@ -34,7 +37,7 @@ public class User {
         return zip;
     }
 
-    public boolean isHasProfImg() {
+    public boolean getHasProfImg() {
         return hasProfImg;
     }
 
@@ -49,4 +52,5 @@ public class User {
     public void setHasProfImg(boolean hasProfImg) {
         this.hasProfImg = hasProfImg;
     }
+
 }

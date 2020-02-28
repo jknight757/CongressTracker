@@ -16,6 +16,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -23,11 +24,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.congresstracker.R;
+import com.example.congresstracker.activities.CongressActivity;
+import com.example.congresstracker.activities.MyAreaActivity;
 import com.example.congresstracker.models.CongressMember;
 import com.example.congresstracker.models.MemberAdapter;
 import com.example.congresstracker.models.MemberDataPull;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -36,10 +41,9 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CongressFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener {
+public class CongressFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
 
     public static final String TAG = "CongressFragment";
-
     private ArrayList<CongressMember> members;
     private ArrayList<CongressMember> senate;
     private ArrayList<CongressMember> house;
@@ -66,16 +70,16 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
     public static final int R_MEMBERS_FILTER = 2;
     public static final int I_MEMBERS_FILTER = 3;
 
-//    public int currentTopFilter = 1;
+
     public int currentMidFilter = 0;
     public int currentBottomFilter = 0;
 
     ProgressBar loadingPB;
     TextInputEditText searchInputField;
     MaterialButton searchBtn;
-//    Spinner topFilter;
     Spinner midFilter;
     Spinner bottomFilter;
+    BottomNavigationView bottomNav;
 
     ListView membersLV;
 
@@ -95,6 +99,8 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
         fragment.setArguments(args);
         return fragment;
     }
+
+
 
     public interface CongressClickListener{
         void MemberClicked(String id);
@@ -122,24 +128,27 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
         if(getView() != null){
             membersLV = getView().findViewById(android.R.id.list);
             loadingPB = getView().findViewById(R.id.loadin_pb);
-            if(loadingPB.getVisibility() == View.VISIBLE){
-                loadingPB.setVisibility(View.GONE);
-            }else {
+
+            if(members == null){
                 loadingPB.setVisibility(View.VISIBLE);
+            }else {
+                loadingPB.setVisibility(View.GONE);
             }
+
+
 
             searchInputField = getView().findViewById(R.id.search_textInput);
             searchBtn = getView().findViewById(R.id.search_btn);
             searchBtn.setOnClickListener(this);
             searchBtn.setCheckable(false);
 
-//            topFilter = getView().findViewById(R.id.top_filter_spinner);
-//            topFilter.setOnItemSelectedListener(this);
-//            topFilter.setSelection(1);
             midFilter = getView().findViewById(R.id.mid_filter_spinner);
             midFilter.setOnItemSelectedListener(this);
             bottomFilter = getView().findViewById(R.id.bottom_filter_spinner);
             bottomFilter.setOnItemSelectedListener(this);
+
+            bottomNav = getView().findViewById(R.id.bottom_tab_bar);
+            bottomNav.setOnNavigationItemSelectedListener(this);
 
             membersLV.setOnItemClickListener(this);
 
@@ -166,6 +175,24 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
     }
 
     @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.congress_tab_item:
+                break;
+            case R.id.bill_tab_item:
+                break;
+            case R.id.local_tab_item:
+                Intent congressIntent = new Intent(getContext(), MyAreaActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(congressIntent);
+
+                break;
+        }
+
+        return false;
+    }
+
+    @Override
     public void onClick(View v) {
 
         switch (v.getId()){
@@ -181,6 +208,7 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
                     searchMembersList(searchTxt);
                 }
                 break;
+
         }
     }
 
@@ -280,35 +308,14 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
 
         filteredList = members;
 
-
         switch (currentMidFilter){
             case ALL_MEMBERS_FILTER:
                 break;
             case SENATE_MEMBERS_FILTER:
-
                     filteredList = senate;
-
-//                    ArrayList<CongressMember> tempFilter =  new ArrayList<>();
-//                    for (CongressMember m: filteredList) {
-//                        if(m.getChamber().equals("senate")){
-//                            tempFilter.add(m);
-//                        }
-//                    }
-//                    filteredList = tempFilter;
-//
                 break;
             case HOUSE_MEMBERS_FILTER:
-
                     filteredList = house;
-//
-//                    ArrayList<CongressMember> tempFilter =  new ArrayList<>();
-//                    for (CongressMember m: filteredList) {
-//                        if(m.getChamber().equals("house")){
-//                            tempFilter.add(m);
-//                        }
-//                    }
-//                    filteredList = tempFilter;
-//
                 break;
         }
 

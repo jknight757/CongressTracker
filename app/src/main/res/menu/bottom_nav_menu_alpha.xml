@@ -17,7 +17,7 @@
     <item
         android:id="@+id/local_tab_item"
         android:icon="@drawable/ic_person_pin_black_24dp"
-        android:title="My Local"
+        android:title="Profile"
         app:showAsAction="always"/>
 
 </menu>

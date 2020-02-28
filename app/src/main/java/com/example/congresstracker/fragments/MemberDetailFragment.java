@@ -14,25 +14,29 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.congresstracker.R;
+import com.example.congresstracker.activities.MyAreaActivity;
 import com.example.congresstracker.models.BillVote;
 import com.example.congresstracker.models.CongressMember;
 import com.example.congresstracker.models.MemberAdapter;
 import com.example.congresstracker.models.MemberDataPull;
 import com.example.congresstracker.models.VoteAdapter;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MemberDetailFragment extends Fragment {
+public class MemberDetailFragment extends Fragment implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     public static final String TAG = "MemberDetail.TAG";
 
@@ -52,6 +56,7 @@ public class MemberDetailFragment extends Fragment {
     private ListView voteListView;
 
     private ProgressBar progressBar;
+    BottomNavigationView bottomNav;
 
     MemberDetailListener listener;
 
@@ -70,6 +75,8 @@ public class MemberDetailFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+
 
     public interface MemberDetailListener{
         void updateTitle();
@@ -108,6 +115,8 @@ public class MemberDetailFragment extends Fragment {
             voteAPartyTV = getView().findViewById(R.id.vote_aparty_pct);
             progressBar = getView().findViewById(R.id.loadin_votes_pb);
             voteListView = getView().findViewById(android.R.id.list);
+            bottomNav = getView().findViewById(R.id.bottom_tab_bar);
+            bottomNav.setOnNavigationItemSelectedListener(this);
 
             if(selectedMember != null){
                 updateUI();
@@ -124,6 +133,23 @@ public class MemberDetailFragment extends Fragment {
 
 
         }
+    }
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.congress_tab_item:
+
+                break;
+            case R.id.bill_tab_item:
+                break;
+            case R.id.local_tab_item:
+                Intent congressIntent = new Intent(getContext(), MyAreaActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(congressIntent);
+                break;
+        }
+        return false;
     }
 
     public void updateUI()

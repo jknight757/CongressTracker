@@ -21,6 +21,8 @@
     <string name="vote_against_party">Vote Against Party %</string>
     <string name="vote_history">Vote History</string>
     <string name="other_info">Other Info</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="logout">Logout</string>
 
     <string-array name="top_spinner_items">
         <item>All</item>
