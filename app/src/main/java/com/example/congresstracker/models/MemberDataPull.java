@@ -2,6 +2,8 @@ package com.example.congresstracker.models;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -11,6 +13,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class MemberDataPull extends IntentService {
@@ -33,6 +39,7 @@ public class MemberDataPull extends IntentService {
     public static final String EXTRA_ALL_MEMBERS = "EXTRA_ALL_MEMBERS";
     public static final String EXTRA_SELECTED_MEMBER = "EXTRA_SELECTED_MEMBER";
     public static final String EXTRA_MEMBER_VOTES = "EXTRA_MEMBER_VOTES";
+    public static final String EXTRA_MEMBER_IMAGE = "EXTRA_MEMBER_IMAGE";
 
     private final String TAG = "MemberDataPull";
 
@@ -43,6 +50,8 @@ public class MemberDataPull extends IntentService {
     ArrayList<CongressMember> allMembers;
     ArrayList<BillVote> memberVotes;
     CongressMember selectedMember;
+
+    Bitmap memberImage;
 
     private static final int BROADCAST_ALL_MEM = 0;
     private static final int BROADCAST_SELECTED_MEM = 1;
@@ -75,6 +84,7 @@ public class MemberDataPull extends IntentService {
                     passedId = intent.getStringExtra(EXTRA_SELECTED_MEMBER);
                     Log.i(TAG, "selectedMember: action Pull Member: " + passedId);
                     requestSingleMemberData(passedId);
+                    requestMemberImage(passedId);
 
                     if(selectedMember != null){
                         Log.i(TAG, "selectedMember: name: " + selectedMember.getName());
@@ -167,6 +177,7 @@ public class MemberDataPull extends IntentService {
                     for (int x = 0; x < nestedArray.length(); x++) {
 
                         JSONObject nestedObj = nestedArray.getJSONObject(x);
+                        String termId = nestedObj.getString("congress");
                         String chamber = nestedObj.getString("chamber");
                         String state = nestedObj.getString("state");
                         String seniority = nestedObj.getString("seniority");
@@ -225,7 +236,7 @@ public class MemberDataPull extends IntentService {
 
                         Term thisTerm = new Term(chamber,state,startDate,
                                 endDate,seniority,totalVotes,billsSponsored
-                                ,billsCosponsored,mvp,vwpp,vapp);
+                                ,billsCosponsored,mvp,vwpp,vapp,termId);
                         thisTerm.setCommittees(committees);
                         thisTerm.setComCodes(comCodes);
                         terms.add(thisTerm);
@@ -410,6 +421,20 @@ public class MemberDataPull extends IntentService {
 
     }
 
+    public void requestMemberImage(String id){
+
+        String url = "https://theunitedstates.io/images/congress/225x275/" + id + ".jpg";
+
+        try{
+            memberImage = BitmapFactory.decodeStream((InputStream)new URL(url).getContent());
+        }catch (MalformedURLException e){
+            e.printStackTrace();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
+
     public void broadCastResults(int code){
         Intent broadcastIntent;
         switch (code){
@@ -425,6 +450,8 @@ public class MemberDataPull extends IntentService {
             case BROADCAST_SELECTED_MEM:
                 broadcastIntent = new Intent(ACTION_SEND_MEM_DETAIL);
                 broadcastIntent.putExtra(EXTRA_SELECTED_MEMBER, selectedMember);
+                broadcastIntent.putExtra(EXTRA_MEMBER_IMAGE, memberImage);
+
                 sendBroadcast(broadcastIntent);
                 //LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
                 break;

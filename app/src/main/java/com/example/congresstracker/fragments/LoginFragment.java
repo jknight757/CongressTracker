@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.congresstracker.R;
@@ -40,6 +41,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Fir
 
     private TextInputEditText emailInput;
     private TextInputEditText passwordInput;
+
+    private ProgressBar loginPB;
 
     String email;
     String password;
@@ -98,6 +101,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Fir
             skipbtn.setOnClickListener(this);
             emailInput = getView().findViewById(R.id.email_textInput);
             passwordInput = getView().findViewById(R.id.password_textInput);
+            loginPB = getView().findViewById(R.id.login_pb);
 
             mAuth.addAuthStateListener(this);
 
@@ -119,6 +123,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Fir
         switch (v.getId()){
             case R.id.login_btn:
                 if(validateInput()){
+                    loginPB.setVisibility(View.VISIBLE);
                     FirebaseUser currentUser = mAuth.getCurrentUser();
                     if(currentUser == null){
                         mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
@@ -126,6 +131,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Fir
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if(task.isSuccessful()){
                                     listener.LoginClicked();
+                                    loginPB.setVisibility(View.GONE);
                                 }else {
 
                                     Log.d(TAG, "onComplete: unsuccessful");

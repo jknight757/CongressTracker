@@ -59,7 +59,7 @@ public class VoteAdapter extends BaseAdapter {
         if(memberVotes != null){
 
             vh.billIdTV.setText(memberVotes.get(position).getId());
-            vh.billDateTV.setText(memberVotes.get(position).getDate());
+           // vh.billDateTV.setText(memberVotes.get(position).getDate());
             String title = "";
             if(memberVotes.get(position).getTitle().equals("null")){
                 title = memberVotes.get(position).getDescription();
@@ -68,12 +68,19 @@ public class VoteAdapter extends BaseAdapter {
             }
             vh.billTitleTV.setText(title);
 
-            String result = "Result: " + memberVotes.get(position).getResult();
+            String result = "Result\n" + memberVotes.get(position).getResult();
 
             vh.billResultTV.setText(result);
 
-            String votePosition = "Postion: " + memberVotes.get(position).getPosition();
+            String votePosition = "Vote\n" + memberVotes.get(position).getPosition();
             vh.memberPositionTV.setText(votePosition);
+
+            if(memberVotes.get(position).getPosition().equals("Yes")){
+                vh.memberPositionTV.setTextColor(mContext.getResources().getColor( R.color.colorGreenLight));
+
+            }else if(memberVotes.get(position).getPosition().equals("No")){
+                vh.memberPositionTV.setTextColor(mContext.getResources().getColor( R.color.colorAccent));
+            }
 
         }
 

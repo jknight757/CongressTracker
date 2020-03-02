@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -46,6 +48,7 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
 
     private static final String EXTRA_SELECTED_MEMBER = "EXTRA_SELECTED_MEMBER";
     public static final String EXTRA_MEMBER_VOTES = "EXTRA_MEMBER_VOTES";
+    public static final String EXTRA_MEMBER_IMAGE = "EXTRA_MEMBER_IMAGE";
 
     private ArrayList<BillVote> memberVotes;
 
@@ -58,6 +61,9 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
     private TextView voteWPartyTV;
     private TextView voteAPartyTV;
     private ListView voteListView;
+    private ImageView profImage;
+
+    Bitmap memImage;
 
     private ProgressBar progressBar;
     BottomNavigationView bottomNav;
@@ -71,10 +77,11 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
         // Required empty public constructor
     }
 
-    public static MemberDetailFragment newInstance(CongressMember member) {
+    public static MemberDetailFragment newInstance(CongressMember member, Bitmap img) {
 
         Bundle args = new Bundle();
         args.putSerializable(EXTRA_SELECTED_MEMBER,member);
+        args.putParcelable(EXTRA_MEMBER_IMAGE, img);
         MemberDetailFragment fragment = new MemberDetailFragment();
         fragment.setArguments(args);
         return fragment;
@@ -110,6 +117,7 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
         if(getView() != null && getArguments() != null){
 
             selectedMember = (CongressMember) getArguments().getSerializable(EXTRA_SELECTED_MEMBER);
+            memImage = getArguments().getParcelable(EXTRA_MEMBER_IMAGE);
             nameTV = getView().findViewById(R.id.name_txt_lbl);
             partyTV = getView().findViewById(R.id.party_txt_lbl);
             stateTV = getView().findViewById(R.id.state_txt_lbl);
@@ -119,6 +127,7 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
             voteAPartyTV = getView().findViewById(R.id.vote_aparty_pct);
             progressBar = getView().findViewById(R.id.loadin_votes_pb);
             voteListView = getView().findViewById(android.R.id.list);
+            profImage = getView().findViewById(R.id.prof_img);
             bottomNav = getView().findViewById(R.id.bottom_tab_bar);
             bottomNav.setOnNavigationItemSelectedListener(this);
 
@@ -181,16 +190,18 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
 
     public void updateUI()
     {
+        profImage.setImageBitmap(memImage);
         nameTV.setText(selectedMember.getName());
-        partyTV.setText(selectedMember.getParty());
+        String party = selectedMember.getChamber() + ", " + selectedMember.getParty();
+        partyTV.setText(party);
         stateTV.setText(selectedMember.getUnabreviated());
         String totalVStr = selectedMember.getTotalVotes()+ "";
         totalVotesTV.setText(totalVStr);
-        String missVoteStr = selectedMember.getMissedVotePctAverage() + "";
+        String missVoteStr = selectedMember.getMissedVotePctAverage() + "%";
         missedVotePctTV.setText(missVoteStr);
-        String voteWPStr = selectedMember.getVoteWPPctAverage() + "";
+        String voteWPStr = selectedMember.getVoteWPPctAverage() + "%";
         voteWPartyTV.setText(voteWPStr);
-        String voteAPStr = selectedMember.getVoteAPPctAverage() + "";
+        String voteAPStr = selectedMember.getVoteAPPctAverage() + "%";
         voteAPartyTV.setText(voteAPStr);
     }
 
@@ -235,6 +246,7 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
                     VoteAdapter adapter = new VoteAdapter(getContext(), memberVotes);
                     voteListView.setAdapter(adapter);
                 }
+
             }else{
                 Log.i(TAG, "updateList: members list null");
             }

@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,12 +27,14 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
 
     public static final String TAG = "CongressActivity.TAG";
     public static final String EXTRA_SELECTED_MEMBER = "EXTRA_SELECTED_MEMBER";
+    public static final String EXTRA_MEMBER_IMAGE = "EXTRA_MEMBER_IMAGE";
 
 
     private final MemberDataReceiver receiver = new MemberDataReceiver();
     private CongressFragment congressFragment;
     private ProgressBar progressBar;
     private CongressMember selectedMember;
+    private Bitmap memImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,15 +98,17 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
 
                 if(intent.getAction().equals( MemberDataPull.ACTION_SEND_MEM_DETAIL)){
 
-                    if(intent.hasExtra(EXTRA_SELECTED_MEMBER)){
+                    if(intent.hasExtra(EXTRA_SELECTED_MEMBER) && intent.hasExtra(EXTRA_MEMBER_IMAGE)){
 
                         selectedMember = (CongressMember) intent.getSerializableExtra(EXTRA_SELECTED_MEMBER);
+                        memImage = intent.getParcelableExtra(EXTRA_MEMBER_IMAGE);
+
                         if(getSupportActionBar() != null){
                             getSupportActionBar().setTitle(" Member Detail");
                         }
                         progressBar.setVisibility(View.GONE);
                         getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.congress_fragment_container, MemberDetailFragment.newInstance(selectedMember))
+                                .replace(R.id.congress_fragment_container, MemberDetailFragment.newInstance(selectedMember, memImage))
                                 .addToBackStack(congressFragment.TAG)
                                 .commit();
 

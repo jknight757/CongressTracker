@@ -15,16 +15,17 @@
     <string name="senate">Senate</string>
     <string name="house">House</string>
     <string name="don_t_have_an_account_sign_up">Don\'t have an account? Sign Up</string>
-    <string name="total_votes">Total Votes</string>
-    <string name="missed_votes">Missed Votes %</string>
-    <string name="vote_with_party">Vote With Party %</string>
-    <string name="vote_against_party">Vote Against Party %</string>
+    <string name="total_votes">Total</string>
+    <string name="missed_votes">Missed</string>
+    <string name="vote_with_party">With \nParty</string>
+    <string name="vote_against_party">Against Party</string>
     <string name="vote_history">Vote History</string>
     <string name="other_info">Other Info</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="logout">Logout</string>
     <string name="place_holder">Reducing Employer burdens, unleasing innovation, ad labor development act of 2013</string>
     <string name="change_name">Change Name</string>
+    <string name="account_settings">Account Settings</string>
 
     <string-array name="top_spinner_items">
         <item>All</item>

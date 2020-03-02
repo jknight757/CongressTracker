@@ -17,8 +17,9 @@ public class Term implements Serializable {
     double voteAPartyPct;
     ArrayList<String> committees;
     ArrayList<String> comCodes;
+    String termId;
 
-    public Term(String chamber, String state, String startDate, String endDate, String seniority, int totalVotes, int billsSponsored, int billsCosponsored, double missVotePct, double voteWPartyPct, double voteAPartyPct) {
+    public Term(String chamber, String state, String startDate, String endDate, String seniority, int totalVotes, int billsSponsored, int billsCosponsored, double missVotePct, double voteWPartyPct, double voteAPartyPct, String termId) {
         this.chamber = chamber;
         this.state = state;
         this.startDate = startDate;
@@ -30,6 +31,11 @@ public class Term implements Serializable {
         this.missVotePct = missVotePct;
         this.voteWPartyPct = voteWPartyPct;
         this.voteAPartyPct = voteAPartyPct;
+        this.termId = termId;
+    }
+
+    public String getTermId() {
+        return termId;
     }
 
     public String getChamber() {

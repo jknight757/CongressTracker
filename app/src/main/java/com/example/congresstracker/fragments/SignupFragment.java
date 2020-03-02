@@ -11,10 +11,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.models.NetworkUtils;
@@ -46,7 +50,7 @@ import java.io.InputStream;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SignupFragment extends Fragment implements View.OnClickListener, FirebaseAuth.AuthStateListener {
+public class SignupFragment extends Fragment implements View.OnClickListener, FirebaseAuth.AuthStateListener, View.OnFocusChangeListener {
 
     public final String TAG = "SignupFragment.TAG";
     public SignupListener listener;
@@ -60,15 +64,20 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
     private TextInputEditText nameInput;
     private TextInputEditText passwordInput;
     private TextInputEditText confirmPasswordInput;
+    private TextView passRequirement;
+    private TextView passMatch;
+
     String email;
     String name;
     String password;
     String confirmPassword;
+    private ProgressBar signupPB;
 
     private FirebaseAuth mAuth;
     FirebaseUser user;
     private FirebaseFirestore fireStoreDB;
     private StorageReference mStorageRef;
+
 
     private static final int REQUEST_IMAGE = 0x0010;
     private static File folderPath;
@@ -90,7 +99,6 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
         fragment.setArguments(args);
         return fragment;
     }
-
 
 
     public interface SignupListener{
@@ -135,7 +143,14 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
             emailInput = getView().findViewById(R.id.email_textInput);
             nameInput = getView().findViewById(R.id.name_textInput);
             passwordInput = getView().findViewById(R.id.password_textInput);
+            passwordInput.setOnFocusChangeListener(this);
             confirmPasswordInput = getView().findViewById(R.id.reenter_password_textInput);
+            confirmPasswordInput.setOnFocusChangeListener(this);
+            signupPB = getView().findViewById(R.id.signup_pb);
+
+            passRequirement = getView().findViewById(R.id.password_requirement_txt);
+            passMatch = getView().findViewById(R.id.repassword_requirement_txt);
+
 
 
             mAuth = FirebaseAuth.getInstance();
@@ -149,6 +164,52 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
     }
 
     @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+
+        password = passwordInput.getText().toString();
+        confirmPassword = confirmPasswordInput.getText().toString();
+
+        switch (v.getId()){
+            case R.id.password_textInput:
+                if(hasFocus){
+                    if(password.length() > 6){
+                        passRequirement.setVisibility(View.GONE);
+                    }else {
+                        passRequirement.setVisibility(View.VISIBLE);
+                    }
+
+                }else {
+
+                    if(password.length() > 6){
+                        passRequirement.setVisibility(View.GONE);
+                    }else {
+                        passRequirement.setVisibility(View.VISIBLE);
+                    }
+                }
+
+                break;
+            case R.id.reenter_password_textInput:
+
+                if(!hasFocus){
+                    if(!confirmPassword.equals(password)){
+                        passMatch.setVisibility(View.VISIBLE);
+                    }else {
+                        passMatch.setVisibility(View.GONE);
+                    }
+                }else {
+                    if(!confirmPassword.equals(password)){
+                        passMatch.setVisibility(View.VISIBLE);
+                    }else {
+                        passMatch.setVisibility(View.GONE);
+                    }
+                }
+                break;
+        }
+
+    }
+
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.to_login_btn:
@@ -160,7 +221,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
 
                 if(validateInput()){
                     if(NetworkUtils.isConnected(getContext())) {
-
+                        signupPB.setVisibility(View.VISIBLE);
 
                         user = mAuth.getCurrentUser();
 
@@ -171,7 +232,9 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
 
                                     if (task.isSuccessful()) {
                                         Log.i(TAG, "onComplete: successful");
+                                        signupPB.setVisibility(View.GONE);
                                     } else {
+                                        signupPB.setVisibility(View.GONE);
                                         Log.d(TAG, "onComplete: unsuccessful");
                                         try {
                                             throw task.getException();
@@ -304,15 +367,18 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
                             // password not long enough
                         }
                     }else{
+                        Toast.makeText(getContext(), "Passwords don't match", Toast.LENGTH_SHORT).show();
                         //passwords dont match
                     }
                 }else{
                     // passwords can't be empty
                 }
             }else {
+                Toast.makeText(getContext(), "Name can't be empty", Toast.LENGTH_SHORT).show();
                 // name can't be empty
             }
         }else {
+            Toast.makeText(getContext(), "Email can't be empty nor contain spaces", Toast.LENGTH_SHORT).show();
             // email can't be empty nor contain spaces
         }
 

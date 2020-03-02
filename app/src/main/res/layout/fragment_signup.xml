@@ -66,7 +66,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="2dp"
             android:hint="@string/password">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -75,6 +75,15 @@
                 android:layout_height="match_parent"
                 android:inputType="textVisiblePassword"/>
         </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/password_requirement_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Password Must be at least 7 characters long"
+            android:textColor="@color/colorAccent"
+            android:layout_marginBottom="5dp"
+            android:visibility="gone"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutFour"
@@ -89,6 +98,15 @@
                 android:layout_height="match_parent"
                 android:inputType="textVisiblePassword"/>
         </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/repassword_requirement_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Passwords must match"
+            android:textColor="@color/colorAccent"
+            android:layout_marginBottom="5dp"
+            android:visibility="gone"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/signup_btn"
@@ -108,7 +126,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:text="@string/skip"
-            app:cornerRadius="48dp" />
+            app:cornerRadius="48dp"
+            android:backgroundTint="@color/lightBlueFade"
+            android:textColor="@color/darkGreySolid"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/to_login_btn"
@@ -126,12 +146,23 @@
 
     </LinearLayout>
 
+
+    <ProgressBar
+        android:id="@+id/signup_pb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/horizontal_guideline"
+        android:layout_marginTop="150dp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="180dp"
+        android:visibility="gone"/>
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/horizontal_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.035" />
+        app:layout_constraintGuide_percent="0.020" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
