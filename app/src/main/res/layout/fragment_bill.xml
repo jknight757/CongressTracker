@@ -42,7 +42,8 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/search_textInput"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                        android:layout_height="match_parent"
+                        android:inputType="textShortMessage"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
@@ -66,7 +67,8 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="2"
-            app:layout_constraintTop_toBottomOf="@id/header_layout">
+            app:layout_constraintTop_toBottomOf="@id/header_layout"
+            android:visibility="invisible">
 
             <Button
                 android:id="@+id/all_bill_btn"

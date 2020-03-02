@@ -349,8 +349,6 @@ public class SignupFragment extends Fragment implements View.OnClickListener, Fi
                 hasImage = true;
             }
 
-
-
         }
 
     }

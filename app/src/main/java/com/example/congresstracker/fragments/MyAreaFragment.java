@@ -1,8 +1,10 @@
 package com.example.congresstracker.fragments;
 
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -21,6 +23,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,11 +35,22 @@ import com.example.congresstracker.activities.MainActivity;
 import com.example.congresstracker.activities.MyAreaActivity;
 import com.example.congresstracker.models.CongressMember;
 import com.example.congresstracker.models.MemberDataPull;
+import com.example.congresstracker.models.NetworkUtils;
 import com.example.congresstracker.models.User;
 import com.example.congresstracker.models.UserDataPull;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationMenu;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
@@ -55,6 +69,11 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
     private ImageView profileImg;
 
     private BottomNavigationView bottomNavigation;
+
+    private FirebaseAuth mAuth;
+    FirebaseUser user;
+    private FirebaseFirestore fireStoreDB;
+    User thisUser;
 
     private final UserDataReceiver receiver = new UserDataReceiver();
 
@@ -172,8 +191,177 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
 
     }
     public void editProfile(){
+        if(NetworkUtils.isConnected(getContext())){
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+            View view = getLayoutInflater().inflate(R.layout.edit_profile_alert, null);
+
+            final TextInputEditText nameInput = view.findViewById(R.id.name_textInput);
+            final TextInputEditText emailInput = view.findViewById(R.id.email_textInput);
+            final TextInputEditText passwordInput = view.findViewById(R.id.password_textInput);
+            final TextInputEditText partyInput = view.findViewById(R.id.party_textInput);
+            final TextInputEditText zipInput = view.findViewById(R.id.zip_textInput);
+
+            builder.setTitle("Edit Profile");
+
+            builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mAuth = FirebaseAuth.getInstance();
+                    user = mAuth.getCurrentUser();
+                    String userID = user.getUid();
+                    fireStoreDB = FirebaseFirestore.getInstance();
+
+                    String name = nameInput.getText().toString();
+                    final String email = emailInput.getText().toString();
+                    final String password = passwordInput.getText().toString();
+                    String party = partyInput.getText().toString();
+                    String zip = zipInput.getText().toString();
+                    boolean emailChanged = false;
+                    boolean passwordChanged = false;
+                    String oldEmail = thisUser.getEmail();
+                    String oldPassword = thisUser.getPassword();
+
+
+                    if(!name.isEmpty()){
+
+                        thisUser.setName(name);
+
+                    }
+                    if(!email.isEmpty()){
+
+                        thisUser.setEmail(email);
+                        emailChanged = true;
+
+
+                    }
+                    if(!password.isEmpty()){
+                        thisUser.setPassword(password);
+                        passwordChanged = true;
+
+                    }
+                    if(!party.isEmpty()){
+                        thisUser.setParty(party);
+
+                    }
+                    if(!zip.isEmpty()){
+                        thisUser.setZip(zip);
+
+                    }
+
+                    if(name.isEmpty() && email.isEmpty() && password.isEmpty() && party.isEmpty() && zip.isEmpty()){
+                        Toast.makeText(getContext(), "No Changes made!", Toast.LENGTH_SHORT).show();
+                    }else {
+
+                        DocumentReference firebaseUsers = fireStoreDB.collection("Users").document(userID);
+
+                        firebaseUsers.set(thisUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.i(TAG, "Info Stored ");
+
+                            }
+                        })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.i(TAG, "info not stored ");
+                                    }
+                                });
+
+
+                        if(emailChanged && passwordChanged){
+                            AuthCredential credential = EmailAuthProvider.getCredential(oldEmail, oldPassword);
+                            user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    FirebaseUser _user = FirebaseAuth.getInstance().getCurrentUser();
+                                    _user.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Toast.makeText(getContext(), "Account Updated", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                                    _user.updatePassword(password).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+
+                                        }
+                                    });
+                                }
+                            });
+
+
+                        }else {
+                            if(emailChanged){
+                                AuthCredential credential = EmailAuthProvider.getCredential(oldEmail, oldPassword);
+                                user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        FirebaseUser _user = FirebaseAuth.getInstance().getCurrentUser();
+                                        _user.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                Toast.makeText(getContext(), "Email Updated", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+
+                            if(passwordChanged){
+                                AuthCredential credential = EmailAuthProvider.getCredential(oldPassword, oldPassword);
+                                user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        FirebaseUser _user = FirebaseAuth.getInstance().getCurrentUser();
+                                        _user.updatePassword(password).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if(task.isSuccessful()){
+                                                    Toast.makeText(getContext(), "Password Updated", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        }
+
+
+
+                        Intent pullDataIntent = new Intent(getContext(), UserDataPull.class);
+                        pullDataIntent.setAction(UserDataPull.ACTION_PULL_PROFILE);
+                        getContext().startService(pullDataIntent);
+
+                    }
+
+
+
+                }
+            });
+
+
+
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+
+            builder.setView(view);
+            builder.show();
+
+
+
+
+        }
 
     }
+
 
 
 
@@ -184,7 +372,7 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
             Log.i(TAG, "onReceive: ");
 
             if (intent.hasExtra(EXTRA_USER)) {
-                User thisUser = (User) intent.getSerializableExtra(EXTRA_USER);
+                thisUser = (User) intent.getSerializableExtra(EXTRA_USER);
                 byte[] image = null;
 
                 if (thisUser.getHasProfImg()){

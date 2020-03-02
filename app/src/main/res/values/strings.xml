@@ -24,6 +24,7 @@
     <string name="edit_profile">Edit Profile</string>
     <string name="logout">Logout</string>
     <string name="place_holder">Reducing Employer burdens, unleasing innovation, ad labor development act of 2013</string>
+    <string name="change_name">Change Name</string>
 
     <string-array name="top_spinner_items">
         <item>All</item>

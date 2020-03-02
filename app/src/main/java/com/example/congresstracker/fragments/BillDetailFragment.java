@@ -37,6 +37,8 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
     private TextView billNameTV;
     private TextView sponsorTV;
     private TextView statusTV;
+    private TextView dateTV;
+    private TextView summaryTV;
 
     private Bill selectedBill;
 
@@ -83,6 +85,8 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
             billNameTV = getView().findViewById(R.id.bill_txt_lbl);
             sponsorTV = getView().findViewById(R.id.sponsor_txt_lbl);
             statusTV = getView().findViewById(R.id.status_txt_lbl);
+            dateTV = getView().findViewById(R.id.date_intro_txt);
+            summaryTV = getView().findViewById(R.id.summary_txt);
             bottomNav = getView().findViewById(R.id.bottom_tab_bar);
             bottomNav.setSelectedItemId(R.id.bill_tab_item);
             bottomNav.setOnNavigationItemSelectedListener(this);
@@ -102,6 +106,15 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
                     status+= "Inactive";
                 }
                 statusTV.setText(status);
+
+                String date = "Date Introduced: ";
+                date += selectedBill.getDateIntroduced();
+                dateTV.setText(date);
+
+                String sum = "Summary: ";
+
+                sum += selectedBill.getSummary();
+                summaryTV.setText(sum);
             }
 
 

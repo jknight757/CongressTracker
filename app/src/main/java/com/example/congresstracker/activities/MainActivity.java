@@ -26,6 +26,9 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
     SignupFragment signupFragment;
     private FirebaseAuth mAuth;
     public static boolean validUser = false;
+    private int currentFragment;
+    private final int LOGIN_FRAG = 2;
+    private final int SIGNUP_FRAG = 4;
 
     private LocalNetworkChangeReceiver receiver = new LocalNetworkChangeReceiver();
 
@@ -46,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
                 loginFragment = LoginFragment.newInstance();
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.launch_fragment_container, loginFragment, loginFragment.TAG).commit();
+                currentFragment = LOGIN_FRAG;
             } else {
                 validUser = true;
                 Intent congressIntent = new Intent(this, CongressActivity.class);
@@ -95,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
         loginFragment = LoginFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.launch_fragment_container,loginFragment,loginFragment.TAG).commit();
+        currentFragment = LOGIN_FRAG;
 
     }
 
@@ -122,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
         signupFragment = SignupFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.launch_fragment_container,signupFragment, signupFragment.TAG).commit();
+        currentFragment = SIGNUP_FRAG;
 
     }
 
@@ -138,7 +144,9 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
         @Override
         public void onReceive(Context context, Intent intent) {
             if(NetworkUtils.isConnected(getApplicationContext())){
-                updateUI();
+                if(currentFragment == LOGIN_FRAG){
+                    updateUI();
+                }
             }
 
         }
