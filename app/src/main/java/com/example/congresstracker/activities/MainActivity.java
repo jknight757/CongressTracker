@@ -37,6 +37,9 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        /// alpha comment
+
         if(NetworkUtils.isConnected(this)) {
 
             mAuth = FirebaseAuth.getInstance();
