@@ -61,28 +61,50 @@
 
         </LinearLayout>
 
+        <View
+            android:id="@+id/button_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:layout_constraintTop_toBottomOf="@id/header_layout"
+            android:background="@android:color/darker_gray"
+            android:layout_marginTop="10dp"/>
+
         <LinearLayout
             android:id="@+id/button_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="2"
-            app:layout_constraintTop_toBottomOf="@id/header_layout">
+            app:layout_constraintTop_toBottomOf="@id/button_divider">
 
-            <Button
-                android:id="@+id/all_bill_btn"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="All Bills"
-                android:backgroundTint="@color/lightBlueFade"/>
-            <Button
-                android:id="@+id/tracked_bill_btn"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Tracked Bills"
-                android:backgroundTint="@color/lightBlueFade"/>
+
+                <TextView
+                    android:id="@+id/all_bill_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="All Bills"
+                    android:textAlignment="center"
+                    android:textSize="20sp"
+                    android:background="@color/offWhite"
+                    android:clickable="true"
+                    android:focusable="true" />
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/darker_gray"/>
+                <TextView
+                    android:id="@+id/tracked_bill_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Tracked Bills"
+                    android:textAlignment="center"
+                    android:textSize="20sp"
+                    android:background="@color/offWhite"
+                    android:clickable="true"
+                    android:focusable="true"/>
+
 
         </LinearLayout>
 
@@ -93,8 +115,7 @@
             android:background="@android:color/darker_gray"
             app:layout_constraintTop_toBottomOf="@id/button_layout"
             android:layout_marginStart="0dp"
-            android:layout_marginEnd="0dp"
-            android:layout_marginTop="5dp"/>
+            android:layout_marginEnd="0dp" />
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
