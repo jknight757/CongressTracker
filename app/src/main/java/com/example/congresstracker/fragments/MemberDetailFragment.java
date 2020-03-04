@@ -34,6 +34,7 @@ import com.example.congresstracker.models.BillVote;
 import com.example.congresstracker.models.CongressMember;
 import com.example.congresstracker.models.MemberAdapter;
 import com.example.congresstracker.models.MemberDataPull;
+import com.example.congresstracker.models.Term;
 import com.example.congresstracker.models.VoteAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -42,13 +43,18 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MemberDetailFragment extends Fragment implements BottomNavigationView.OnNavigationItemSelectedListener {
+public class MemberDetailFragment extends Fragment implements BottomNavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     public static final String TAG = "MemberDetail.TAG";
 
     private static final String EXTRA_SELECTED_MEMBER = "EXTRA_SELECTED_MEMBER";
     public static final String EXTRA_MEMBER_VOTES = "EXTRA_MEMBER_VOTES";
     public static final String EXTRA_MEMBER_IMAGE = "EXTRA_MEMBER_IMAGE";
+
+    private int selectedSubTab = 0;
+
+    public static final int VOTE_HISTORY_TAB = 0;
+    public static final int OTHER_INFO_TAB = 1;
 
     private ArrayList<BillVote> memberVotes;
 
@@ -62,6 +68,13 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
     private TextView voteAPartyTV;
     private ListView voteListView;
     private ImageView profImage;
+    private TextView voteHistoryBtn;
+    private TextView otherInfoBtn;
+    private View voteBtnSelect;
+    private View otherBtnSelect;
+    private View otherInfoView;
+    private TextView seniorityTV;
+    private TextView committeesTV;
 
     Bitmap memImage;
 
@@ -69,6 +82,7 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
     BottomNavigationView bottomNav;
 
     MemberDetailListener listener;
+
 
     private final MemberVotesReceiver receiver = new MemberVotesReceiver();
 
@@ -86,6 +100,7 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
         fragment.setArguments(args);
         return fragment;
     }
+
 
 
 
@@ -131,6 +146,18 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
             bottomNav = getView().findViewById(R.id.bottom_tab_bar);
             bottomNav.setOnNavigationItemSelectedListener(this);
 
+            voteHistoryBtn = getView().findViewById(R.id.vote_history_btn);
+            voteHistoryBtn.setOnClickListener(this);
+            otherInfoBtn = getView().findViewById(R.id.other_info_btn);
+            otherInfoBtn.setOnClickListener(this);
+
+            voteBtnSelect = getView().findViewById(R.id.vote_his_select);
+            otherBtnSelect = getView().findViewById(R.id.other_info_select);
+
+            otherInfoView = getView().findViewById(R.id.other_info_view);
+            seniorityTV = getView().findViewById(R.id.seniority_txt);
+            committeesTV = getView().findViewById(R.id.committees_txt);
+
             if(selectedMember != null){
                 updateUI();
 
@@ -143,10 +170,61 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
             }
 
 
-
-
         }
     }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()){
+            case R.id.vote_history_btn:
+
+                if(selectedSubTab == OTHER_INFO_TAB){
+                    selectedSubTab = VOTE_HISTORY_TAB;
+                    voteListView.setVisibility(View.VISIBLE);
+                    otherInfoView.setVisibility(View.GONE);
+
+                    voteBtnSelect.setVisibility(View.INVISIBLE);
+                    otherBtnSelect.setVisibility(View.VISIBLE);
+
+
+//                    voteHistoryBtn.setBackgroundColor(getContext().getColor(R.color.offWhite));
+//                    otherInfoBtn.setBackgroundColor(getContext().getColor(R.color.lightBlueFade));
+
+                }
+                break;
+            case R.id.other_info_btn:
+
+                if(selectedSubTab == VOTE_HISTORY_TAB){
+                    selectedSubTab = OTHER_INFO_TAB;
+
+                    voteListView.setVisibility(View.GONE);
+                    otherInfoView.setVisibility(View.VISIBLE);
+
+                    voteBtnSelect.setVisibility(View.VISIBLE);
+                    otherBtnSelect.setVisibility(View.INVISIBLE);
+
+
+                    String seniority =  "Seniority: ";
+                    seniority += selectedMember.getSeniority();
+                    String nextElection = "Next Election: ";
+                    nextElection += selectedMember.getNextElection();
+
+                    ArrayList<Term> terms = selectedMember.getTerms();
+                    ArrayList<String> committees = terms.get(0).getCommittees();
+
+                    seniorityTV.setText(seniority);
+
+
+//                    voteHistoryBtn.setBackgroundColor(getContext().getColor(R.color.lightBlueFade));
+//                    otherInfoBtn.setBackgroundColor(getContext().getColor(R.color.offWhite));
+
+                }
+                break;
+        }
+
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 

@@ -33,10 +33,25 @@ public class Term implements Serializable {
         this.voteAPartyPct = voteAPartyPct;
         this.termId = termId;
     }
+    public Term(String chamber, String state, String startDate, String endDate, int totalVotes, int billsSponsored, int billsCosponsored, double missVotePct, double voteWPartyPct, double voteAPartyPct, String termId) {
+        this.chamber = chamber;
+        this.state = state;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.totalVotes = totalVotes;
+        this.billsSponsored = billsSponsored;
+        this.billsCosponsored = billsCosponsored;
+        this.missVotePct = missVotePct;
+        this.voteWPartyPct = voteWPartyPct;
+        this.voteAPartyPct = voteAPartyPct;
+        this.termId = termId;
+    }
 
     public String getTermId() {
         return termId;
     }
+
+
 
     public String getChamber() {
         return chamber;

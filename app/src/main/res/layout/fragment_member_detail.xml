@@ -27,13 +27,37 @@
             android:background="@color/offWhite"
             app:layout_constraintBottom_toBottomOf="@id/main_linearL"/>
 
-        <View
-            android:id="@+id/divider"
+
+
+        <LinearLayout
+            android:id="@+id/button_select_layout"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/main_linearL"
-            android:background="@android:color/darker_gray" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/button_linearL"
+            android:weightSum="2">
+            <View
+                android:id="@+id/vote_his_select"
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/main_linearL"
+                android:background="@android:color/darker_gray"
+                android:layout_weight="1"
+                android:visibility="invisible"/>
+            <View
+                android:id="@+id/other_info_select"
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/main_linearL"
+                android:background="@android:color/darker_gray"
+                android:layout_weight="1"
+                android:visibility="visible"/>
+
+        </LinearLayout>
+
+
 
 
         <LinearLayout
@@ -80,15 +104,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Republican"
-                        android:textSize="22sp"
-                        />
+                        android:textSize="22sp" />
                     <TextView
                         android:id="@+id/state_txt_lbl"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tennessee"
-                        android:textSize="22sp"
-                        />
+                        android:textSize="22sp" />
 
 
                 </LinearLayout>
@@ -230,6 +252,13 @@
 
 
         </LinearLayout>
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/main_linearL"
+            android:background="@android:color/darker_gray" />
 
         <LinearLayout
             android:id="@+id/button_linearL"
@@ -239,10 +268,9 @@
             android:weightSum="2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintStart_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/main_linearL"
-            android:visibility="gone">
+            app:layout_constraintTop_toBottomOf="@id/divider">
 
-            <Button
+            <TextView
                 android:id="@+id/vote_history_btn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -250,9 +278,14 @@
                 android:text="@string/vote_history"
                 android:textAlignment="center"
                 android:textSize="20sp"
-                style="@android:style/Widget.Button"
-                android:backgroundTint="@color/lightBlueFade" />
-            <Button
+                android:background="@color/offWhite"
+                android:clickable="true"
+                android:focusable="true" />
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@android:color/darker_gray"/>
+            <TextView
                 android:id="@+id/other_info_btn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -260,8 +293,36 @@
                 android:text="@string/other_info"
                 android:textAlignment="center"
                 android:textSize="20sp"
-                style="@android:style/Widget.Button"
-                android:backgroundTint="@color/lightBlueFade"/>
+                android:background="@color/offWhite"
+                android:clickable="true"
+                android:focusable="true"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/other_info_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/button_select_layout"
+            app:layout_constraintStart_toEndOf="@id/vertical_start_guideline"
+            app:layout_constraintEnd_toStartOf="@id/vertical_end_guideline"
+            android:visibility="gone"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/seniority_txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Seniority:"
+                android:textSize="18sp"/>
+            <TextView
+                android:id="@+id/committees_txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Committees:"
+                android:textSize="18sp"/>
 
         </LinearLayout>
 
@@ -269,7 +330,7 @@
             android:id="@android:id/list"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@id/divider"
+            app:layout_constraintTop_toBottomOf="@id/button_select_layout"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/vertical_start_guideline"
             app:layout_constraintEnd_toStartOf="@id/vertical_end_guideline"

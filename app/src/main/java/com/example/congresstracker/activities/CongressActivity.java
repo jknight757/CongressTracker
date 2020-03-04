@@ -35,6 +35,7 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
     private ProgressBar progressBar;
     private CongressMember selectedMember;
     private Bitmap memImage;
+    private String seniority;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +71,11 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
     }
 
     @Override
-    public void MemberClicked(String id) {
+    public void MemberClicked(String id, String _seniority) {
         //findViewById(R.id.congress_fragment_container).setVisibility(View.GONE);
         progressBar = findViewById(R.id.mem_select_pb);
         progressBar.setVisibility(View.VISIBLE);
+        seniority = _seniority;
 
         Intent pullDataIntent = new Intent(this, MemberDataPull.class);
         pullDataIntent.setAction(MemberDataPull.ACTION_PULL_SELECTED);
@@ -101,6 +103,7 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
                     if(intent.hasExtra(EXTRA_SELECTED_MEMBER) && intent.hasExtra(EXTRA_MEMBER_IMAGE)){
 
                         selectedMember = (CongressMember) intent.getSerializableExtra(EXTRA_SELECTED_MEMBER);
+                        selectedMember.setSeniority(seniority);
                         memImage = intent.getParcelableExtra(EXTRA_MEMBER_IMAGE);
 
                         if(getSupportActionBar() != null){

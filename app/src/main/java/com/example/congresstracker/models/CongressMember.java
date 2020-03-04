@@ -12,6 +12,7 @@ public class CongressMember implements Serializable {
     private String gender;
     private String url;
     private String nextElection;
+    private String seniority;
     private ArrayList<Term> terms;
 
     private String[] stateAbList = new String[] {"AK","AL","AR","AZ","CA","CO","CT","DC","DE","FL","GA","HI","IA","ID",
@@ -26,12 +27,14 @@ public class CongressMember implements Serializable {
             "Tennessee","Texas","Utah", "Virginia","Vermont","Washington","Wisconsin","West Virginia","Wyoming"};
 
 
-    public CongressMember(String id, String name, String party, String state, String chamber) {
+    public CongressMember(String id, String name, String party, String state, String chamber, String seniority, String nextElection) {
         this.id = id;
         this.name = name;
         this.party = party;
         this.state = state;
         this.chamber = chamber;
+        this.seniority = seniority;
+        this.nextElection = nextElection;
     }
     public CongressMember(String id, String name,String gender, String url) {
         this.id = id;
@@ -101,6 +104,13 @@ public class CongressMember implements Serializable {
         this.terms = terms;
     }
 
+    public String getSeniority() {
+        return seniority;
+    }
+
+    public void setSeniority(String seniority) {
+        this.seniority = seniority;
+    }
 
     public int getTotalVotes(){
         if(terms != null){

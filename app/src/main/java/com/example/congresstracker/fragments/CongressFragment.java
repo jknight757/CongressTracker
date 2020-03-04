@@ -105,7 +105,7 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
 
 
     public interface CongressClickListener{
-        void MemberClicked(String id);
+        void MemberClicked(String id, String _seniority);
     }
 
     @Override
@@ -390,7 +390,8 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         CongressMember selectedMember = filteredList.get(position);
         String memberID = selectedMember.getId();
-        listener.MemberClicked(memberID);
+        String seniority = selectedMember.getSeniority();
+        listener.MemberClicked(memberID, seniority);
 
 
     }

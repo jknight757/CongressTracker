@@ -92,6 +92,7 @@ public class MemberDataPull extends IntentService {
                         Log.i(TAG, "selectedMember: chamber: " + selectedMember.getChamber());
                         Log.i(TAG, "selectedMember: gender: " + selectedMember.getGender());
                         Log.i(TAG, "selectedMember: next Election: " + selectedMember.getNextElection());
+                        Log.i(TAG, "selectedMember: Seniority: " + selectedMember.getSeniority());
                         if(selectedMember.getTerms() != null){
                             Log.i(TAG, "selectedMember: terms: " + selectedMember.getTerms().size());
                             if(selectedMember.getTerms().get(0).getCommittees() != null){
@@ -180,7 +181,7 @@ public class MemberDataPull extends IntentService {
                         String termId = nestedObj.getString("congress");
                         String chamber = nestedObj.getString("chamber");
                         String state = nestedObj.getString("state");
-                        String seniority = nestedObj.getString("seniority");
+                        //String seniority = nestedObj.getString("seniority");
                         String startDate = nestedObj.getString("start_date");
                         String endDate = nestedObj.getString("end_date");
                         String termEnd = nestedObj.getString("next_election");
@@ -235,7 +236,7 @@ public class MemberDataPull extends IntentService {
                         }
 
                         Term thisTerm = new Term(chamber,state,startDate,
-                                endDate,seniority,totalVotes,billsSponsored
+                                endDate,totalVotes,billsSponsored
                                 ,billsCosponsored,mvp,vwpp,vapp,termId);
                         thisTerm.setCommittees(committees);
                         thisTerm.setComCodes(comCodes);
@@ -248,7 +249,6 @@ public class MemberDataPull extends IntentService {
                     selectedMember.setChamber(_chamber);
                     selectedMember.setState(_state);
                     selectedMember.setTerms(terms);
-
 
                 }
 
@@ -336,6 +336,12 @@ public class MemberDataPull extends IntentService {
                         String lastName = nestedObj.getString("last_name");
                         String party = nestedObj.getString("party");
                         String state = nestedObj.getString("state");
+
+                        String seniority = "0";
+                        if(!nestedObj.isNull("seniority")){
+                            seniority = nestedObj.getString("seniority");
+                        }
+                        String nextElection = nestedObj.getString("next_election");
                         String name = firstName + " " + lastName;
 
                         if(party.equals("R")){
@@ -348,14 +354,14 @@ public class MemberDataPull extends IntentService {
                         String chamber = "senate";
 
                         if(inOffice){
-                            currentMembers.add(new CongressMember(id, name, party, state,chamber));
-                            senate.add(new CongressMember(id, name, party, state, chamber));
+                            currentMembers.add(new CongressMember(id, name, party, state,chamber,seniority, nextElection));
+                            senate.add(new CongressMember(id, name, party, state, chamber, seniority, nextElection));
 
                         }else{
-                            pastMembers.add(new CongressMember(id, name, party, state, chamber));
+                            pastMembers.add(new CongressMember(id, name, party, state, chamber, seniority, nextElection));
                         }
 
-                        allMembers.add(new CongressMember(id, name, party, state, chamber));
+                        allMembers.add(new CongressMember(id, name, party, state, chamber, seniority, nextElection));
 
                     }
 
@@ -389,6 +395,13 @@ public class MemberDataPull extends IntentService {
                     String lastName = nestedObj.getString("last_name");
                     String party = nestedObj.getString("party");
                     String state = nestedObj.getString("state");
+
+                    String seniority = "0";
+                    if(!nestedObj.isNull("seniority")){
+                        seniority = nestedObj.getString("seniority");
+                    }
+
+                    String nextElection = nestedObj.getString("next_election");
                     String name = firstName + " "+lastName;
                     if(party.equals("R")){
                         party = "Republican";
@@ -401,12 +414,12 @@ public class MemberDataPull extends IntentService {
                     String chamber = "house";
 
                     if(inOffice){
-                        currentMembers.add(new CongressMember(id, name, party, state, chamber));
-                        house.add(new CongressMember(id, name, party, state, chamber));
+                        currentMembers.add(new CongressMember(id, name, party, state, chamber, seniority, nextElection));
+                        house.add(new CongressMember(id, name, party, state, chamber, seniority, nextElection));
                     }else{
-                        pastMembers.add(new CongressMember(id, name, party, state, chamber));
+                        pastMembers.add(new CongressMember(id, name, party, state, chamber, seniority, nextElection));
                     }
-                    allMembers.add(new CongressMember(id, name, party, state, chamber));
+                    allMembers.add(new CongressMember(id, name, party, state, chamber, seniority, nextElection));
 
                 }
 
