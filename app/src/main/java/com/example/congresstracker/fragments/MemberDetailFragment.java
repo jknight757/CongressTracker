@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -75,6 +76,8 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
     private View otherInfoView;
     private TextView seniorityTV;
     private TextView committeesTV;
+    private TextView nextElectionTV;
+    private ListView committeeLV;
 
     Bitmap memImage;
 
@@ -157,7 +160,8 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
             otherInfoView = getView().findViewById(R.id.other_info_view);
             seniorityTV = getView().findViewById(R.id.seniority_txt);
             committeesTV = getView().findViewById(R.id.committees_txt);
-
+            nextElectionTV = getView().findViewById(R.id.next_election_txt);
+            committeeLV = getView().findViewById(R.id.committee_listview);
             if(selectedMember != null){
                 updateUI();
 
@@ -212,8 +216,17 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
 
                     ArrayList<Term> terms = selectedMember.getTerms();
                     ArrayList<String> committees = terms.get(0).getCommittees();
+                    String committeeStr = "Current Committees:";
+
+                    if(committeeLV != null && committees != null){
+                        ArrayAdapter<String> comAdapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_1, committees);
+                        committeeLV.setAdapter(comAdapter);
+                    }
+
 
                     seniorityTV.setText(seniority);
+                    nextElectionTV.setText(nextElection);
+                    //committeesTV.setText(committeeStr);
 
 
 //                    voteHistoryBtn.setBackgroundColor(getContext().getColor(R.color.lightBlueFade));

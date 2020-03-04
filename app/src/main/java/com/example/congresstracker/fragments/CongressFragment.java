@@ -380,6 +380,27 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
     }
     public void showFilteredList(){
         if (membersLV != null) {
+
+            if(filteredList != null) {
+
+
+                String[] stateAbr = filteredList.get(0).getStateAbList();
+                ArrayList<CongressMember> tempList = new ArrayList<>();
+
+                for (int i = 0; i < stateAbr.length; i++) {
+
+                    for (CongressMember m : filteredList) {
+                        stateAbr = m.getStateAbList();
+                        if (m.getState().equals(stateAbr[i])) {
+                            tempList.add(m);
+                        }
+
+
+                    }
+                }
+                filteredList = tempList;
+            }
+
             MemberAdapter adapter = new MemberAdapter(getContext(), filteredList);
             membersLV.setAdapter(adapter);
             searchBtn.setCheckable(true);
@@ -421,6 +442,21 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
             if(filteredList != null) {
                 if (membersLV != null) {
                     loadingPB.setVisibility(View.GONE);
+                    String[] stateAbr = filteredList.get(0).getStateAbList();
+                    ArrayList<CongressMember> tempList = new ArrayList<>();
+
+                    for (int i = 0; i < stateAbr.length; i++) {
+
+                        for (CongressMember m : filteredList) {
+                            stateAbr = m.getStateAbList();
+                            if (m.getState().equals(stateAbr[i])) {
+                                tempList.add(m);
+                            }
+
+
+                        }
+                    }
+                    filteredList = tempList;
                     MemberAdapter adapter = new MemberAdapter(getContext(), filteredList);
                     membersLV.setAdapter(adapter);
                     searchBtn.setCheckable(true);

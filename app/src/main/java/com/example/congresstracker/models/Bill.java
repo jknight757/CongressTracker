@@ -1,8 +1,11 @@
 package com.example.congresstracker.models;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class Bill implements Serializable {
+public class Bill implements Serializable, Comparable<Bill> {
     String chamber;
     String billNum;
     String billUri;
@@ -71,5 +74,22 @@ public class Bill implements Serializable {
 
     public String getSummary() {
         return summary;
+    }
+    public Date getDateAsO(){
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-dd-mm");
+        try{
+            Date date = format.parse(dateIntroduced);
+            return date;
+        }catch (ParseException e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public int compareTo(Bill o) {
+        return o.getDateAsO().compareTo(getDateAsO());
     }
 }

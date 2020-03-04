@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.widget.Toast;
 
 import com.example.congresstracker.R;
@@ -19,7 +20,8 @@ public class MyAreaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_my_area);
 
         if(getSupportActionBar() != null){
-            getSupportActionBar().setTitle(" Profile");
+            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Profile" + "</font>"));
+            //getSupportActionBar().setTitle(" Profile");
 
         }
 

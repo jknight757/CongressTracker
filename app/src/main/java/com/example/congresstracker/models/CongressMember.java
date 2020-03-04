@@ -48,6 +48,10 @@ public class CongressMember implements Serializable {
         this.party = party;
     }
 
+    public String[] getStateAbList() {
+        return stateAbList;
+    }
+
     public String getChamber() {
         return chamber;
     }

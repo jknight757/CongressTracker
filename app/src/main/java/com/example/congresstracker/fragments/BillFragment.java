@@ -52,11 +52,16 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
     public static final String EXTRA_HOUSE_BILLS = "EXTRA_HOUSE_BILLS";
     public static final String EXTRA_SENATE_BILLS = "EXTRA_SENATE_BILLS";
     public static final String EXTRA_ALL_BILLS = "EXTRA_ALL_BILLS";
+    public static final String EXTRA_ALL_ACTIVE_BILLS = "EXTRA_ALL_ACTIVE_BILLS";
+    public static final String EXTRA_SEARCH_TERM = "EXTRA_SEARCH_TERM";
+    public static final String EXTRA_SEARCH_RESULT = "EXTRA_SEARCH_RESULT";
 
     private ArrayList<Bill> introHouseBills;
     private ArrayList<Bill> introSenateBills;
     private ArrayList<Bill> allBills;
-    ArrayList<Bill> filteredList;
+    private ArrayList<Bill> allActiveBills;
+    private ArrayList<Bill> filteredList;
+    private ArrayList<Bill> searchResults;
 
     ListView billsListV;
     ProgressBar loadingPB;
@@ -65,6 +70,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
     BottomNavigationView bottomNav;
 
     private final BillsDataReceiver receiver = new BillsDataReceiver();
+    private final SearchResultReceiver searchResultReceiver = new SearchResultReceiver();
 
     private BillClickListener listener;
 
@@ -107,6 +113,11 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
         //getContext().registerReceiver(receiver,filter);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver,filter);
 
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BillDataPull.ACTION_SEND_RESULTS);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(searchResultReceiver,intentFilter);
+
+
     }
 
     @Override
@@ -114,6 +125,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
         super.onPause();
         //getContext().unregisterReceiver(receiver);
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(searchResultReceiver);
     }
 
     @Override
@@ -161,7 +173,8 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
                     filteredList = allBills;
                     showSearchResults();
                 }else {
-                    searchBillList(searchTxt);
+                    searchAPI(searchTxt);
+                    //searchBillList(searchTxt);
                 }
                 break;
         }
@@ -239,6 +252,12 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
         }
 
     }
+    public void searchAPI(String searchTxt){
+        Intent pullDataIntent = new Intent(getContext(), BillDataPull.class);
+        pullDataIntent.setAction(BillDataPull.ACTION_SEARCH_BILL);
+        pullDataIntent.putExtra(EXTRA_SEARCH_TERM, searchTxt);
+        getContext().startService(pullDataIntent);
+    }
 
     public void showSearchResults(){
         if (billsListV != null) {
@@ -259,16 +278,17 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
                 introHouseBills = (ArrayList<Bill>)intent.getSerializableExtra(EXTRA_HOUSE_BILLS);
                 introSenateBills = (ArrayList<Bill>)intent.getSerializableExtra(EXTRA_SENATE_BILLS);
                 allBills = (ArrayList<Bill>) intent.getSerializableExtra(EXTRA_ALL_BILLS);
+                allActiveBills = (ArrayList<Bill>) intent.getSerializableExtra(EXTRA_ALL_ACTIVE_BILLS);
                 updateList();
 
             }
         }
 
         public void updateList(){
-            if(allBills != null) {
+            if(allActiveBills != null) {
                 if (billsListV != null) {
                     loadingPB.setVisibility(View.GONE);
-                    BillAdapter adapter = new BillAdapter(getContext(), allBills);
+                    BillAdapter adapter = new BillAdapter(getContext(), allActiveBills);
                     billsListV.setAdapter(adapter);
                     searchBtn.setCheckable(true);
                 }
@@ -276,5 +296,31 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
                 Log.i(TAG, "updateList: members list null");
             }
         }
+    }
+
+    class SearchResultReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "Search Returned: ----------");
+            if(intent.hasExtra(EXTRA_SEARCH_RESULT)){
+                searchResults = (ArrayList<Bill>) intent.getSerializableExtra(EXTRA_SEARCH_RESULT);
+                updateList();
+            }
+        }
+        public void updateList(){
+            if(searchResults != null) {
+                if (billsListV != null) {
+                    loadingPB.setVisibility(View.GONE);
+                    BillAdapter adapter = new BillAdapter(getContext(), searchResults);
+                    billsListV.setAdapter(adapter);
+                    searchBtn.setCheckable(true);
+                }
+            }else{
+                Log.i(TAG, "updateList: members list null");
+            }
+        }
+
+
     }
 }

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -43,7 +44,8 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
         setContentView(R.layout.activity_congress);
 
         if(getSupportActionBar() != null){
-            getSupportActionBar().setTitle(" Congress");
+            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Congress" + "</font>"));
+            //getSupportActionBar().setTitle(" Congress");
         }
         congressFragment = CongressFragment.newInstance();
 
@@ -86,7 +88,8 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
     @Override
     public void updateTitle() {
         if(getSupportActionBar() != null){
-            getSupportActionBar().setTitle(" Congress");
+            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Congress" + "</font>"));
+            //getSupportActionBar().setTitle(" Congress");
         }
     }
 
@@ -107,7 +110,8 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
                         memImage = intent.getParcelableExtra(EXTRA_MEMBER_IMAGE);
 
                         if(getSupportActionBar() != null){
-                            getSupportActionBar().setTitle(" Member Detail");
+                            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Member Detail" + "</font>"));
+                            //getSupportActionBar().setTitle(" Member Detail");
                         }
                         progressBar.setVisibility(View.GONE);
                         getSupportFragmentManager().beginTransaction()

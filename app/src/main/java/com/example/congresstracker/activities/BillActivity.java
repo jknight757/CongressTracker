@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.fragments.BillDetailFragment;
@@ -23,7 +24,8 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
         setContentView(R.layout.activity_bill);
 
         if(getSupportActionBar() != null){
-            getSupportActionBar().setTitle(" Bills");
+            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Bills" + "</font>"));
+            //getSupportActionBar().setTitle(" Bills");
         }
 
         billFragment = BillFragment.newInstance();
@@ -40,7 +42,8 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
     public void BillClicked(Bill bill) {
 
         if(getSupportActionBar() != null){
-            getSupportActionBar().setTitle(" Bill Detail");
+            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Bill Detail" + "</font>"));
+            //getSupportActionBar().setTitle(" Bill Detail");
         }
 
         billDetailFragment = BillDetailFragment.newInstance(bill);
@@ -53,7 +56,8 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
     @Override
     public void updateTitle() {
         if(getSupportActionBar() != null){
-            getSupportActionBar().setTitle(" Bills");
+            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Bills" + "</font>"));
+            //getSupportActionBar().setTitle(" Bills");
         }
     }
 }
