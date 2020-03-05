@@ -90,7 +90,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
     }
 
     public interface BillClickListener {
-        void BillClicked(Bill bill);
+        void BillClicked();
     }
 
     @Override
@@ -194,7 +194,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
         getContext().startService(pullDataIntent);
 
 
-        listener.BillClicked(selectedBill);
+        listener.BillClicked();
     }
 
     @Override

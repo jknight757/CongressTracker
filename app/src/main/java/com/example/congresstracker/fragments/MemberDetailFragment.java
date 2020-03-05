@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -44,13 +45,14 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MemberDetailFragment extends Fragment implements BottomNavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+public class MemberDetailFragment extends Fragment implements BottomNavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemClickListener {
 
     public static final String TAG = "MemberDetail.TAG";
 
     private static final String EXTRA_SELECTED_MEMBER = "EXTRA_SELECTED_MEMBER";
     public static final String EXTRA_MEMBER_VOTES = "EXTRA_MEMBER_VOTES";
     public static final String EXTRA_MEMBER_IMAGE = "EXTRA_MEMBER_IMAGE";
+    public static final String EXTRA_SELECT_BILL = "EXTRA_SELECT_BILL";
 
     private int selectedSubTab = 0;
 
@@ -106,7 +108,6 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
 
 
 
-
     public interface MemberDetailListener{
         void updateTitle();
 
@@ -145,6 +146,7 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
             voteAPartyTV = getView().findViewById(R.id.vote_aparty_pct);
             progressBar = getView().findViewById(R.id.loadin_votes_pb);
             voteListView = getView().findViewById(android.R.id.list);
+            voteListView.setOnItemClickListener(this);
             profImage = getView().findViewById(R.id.prof_img);
             bottomNav = getView().findViewById(R.id.bottom_tab_bar);
             bottomNav.setOnNavigationItemSelectedListener(this);
@@ -192,9 +194,6 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
                     otherBtnSelect.setVisibility(View.VISIBLE);
 
 
-//                    voteHistoryBtn.setBackgroundColor(getContext().getColor(R.color.offWhite));
-//                    otherInfoBtn.setBackgroundColor(getContext().getColor(R.color.lightBlueFade));
-
                 }
                 break;
             case R.id.other_info_btn:
@@ -226,14 +225,29 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
 
                     seniorityTV.setText(seniority);
                     nextElectionTV.setText(nextElection);
-                    //committeesTV.setText(committeeStr);
 
-
-//                    voteHistoryBtn.setBackgroundColor(getContext().getColor(R.color.lightBlueFade));
-//                    otherInfoBtn.setBackgroundColor(getContext().getColor(R.color.offWhite));
 
                 }
                 break;
+        }
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
+        String billUri = memberVotes.get(position).getUri();
+        String billID = memberVotes.get(position).getId();
+        if(billID.contains("PN")){
+            Toast.makeText(getContext(), "No Nomination Details to Show", Toast.LENGTH_SHORT).show();
+
+        }else {
+            Intent billIntent = new Intent(getContext(), BillActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            billIntent.putExtra(EXTRA_SELECT_BILL,billUri);
+            startActivity(billIntent);
+
         }
 
     }

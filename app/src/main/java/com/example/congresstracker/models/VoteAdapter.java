@@ -75,11 +75,16 @@ public class VoteAdapter extends BaseAdapter {
             String votePosition = "Vote\n" + memberVotes.get(position).getPosition();
             vh.memberPositionTV.setText(votePosition);
 
-            if(memberVotes.get(position).getPosition().equals("Yes")){
-                vh.memberPositionTV.setTextColor(mContext.getResources().getColor( R.color.colorGreenLight));
+            if(!memberVotes.get(position).getPosition().equals("Not Voting")) {
 
-            }else if(memberVotes.get(position).getPosition().equals("No")){
-                vh.memberPositionTV.setTextColor(mContext.getResources().getColor( R.color.colorAccent));
+                if (memberVotes.get(position).getPosition().equals("Yes")) {
+                    vh.memberPositionTV.setTextColor(mContext.getResources().getColor(R.color.colorGreenLight));
+
+                }
+
+                if (memberVotes.get(position).getPosition().equals("No")) {
+                    vh.memberPositionTV.setTextColor(mContext.getResources().getColor(R.color.colorAccent));
+                }
             }
 
         }

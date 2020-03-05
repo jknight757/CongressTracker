@@ -17,6 +17,8 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
 
     private BillFragment billFragment;
     private BillDetailFragment billDetailFragment;
+    public static final String EXTRA_SELECT_BILL = "EXTRA_SELECT_BILL";
+    public static final String EXTRA_SELECTED_BILL = "EXTRA_SELECTED_BILL";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,18 +30,35 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
             //getSupportActionBar().setTitle(" Bills");
         }
 
-        billFragment = BillFragment.newInstance();
+        if(getIntent().hasExtra(EXTRA_SELECT_BILL)){
+            String billUri = getIntent().getStringExtra(EXTRA_SELECT_BILL);
 
-        getSupportFragmentManager().beginTransaction().add(R.id.bill_fragment_container,billFragment).commit();
+            billDetailFragment = BillDetailFragment.newInstance();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.bill_fragment_container,billDetailFragment)
+                    .commit();
+
+            Intent pullDataIntent = new Intent(this, BillDataPull.class);
+            pullDataIntent.setAction(BillDataPull.ACTION_PULL_ONE_BILL);
+            pullDataIntent.putExtra(EXTRA_SELECTED_BILL, billUri);
+            startService(pullDataIntent);
 
 
-        Intent pullDataIntent = new Intent(this, BillDataPull.class);
-        pullDataIntent.setAction(BillDataPull.ACTION_PULL_BILLS);
-        startService(pullDataIntent);
+        }else {
+            billFragment = BillFragment.newInstance();
+
+            getSupportFragmentManager().beginTransaction().add(R.id.bill_fragment_container,billFragment).commit();
+
+
+            Intent pullDataIntent = new Intent(this, BillDataPull.class);
+            pullDataIntent.setAction(BillDataPull.ACTION_PULL_BILLS);
+            startService(pullDataIntent);
+        }
+
     }
 
     @Override
-    public void BillClicked(Bill bill) {
+    public void BillClicked() {
 
         if(getSupportActionBar() != null){
             getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Bill Detail" + "</font>"));

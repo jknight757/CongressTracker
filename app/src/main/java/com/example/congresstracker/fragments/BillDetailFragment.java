@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +51,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
     private TextView republicanCoTV;
     private TextView democratCoTV;
     private Button fullSummaryBtn;
+    private ProgressBar loadingPb;
 
     private Bill selectedBill;
 
@@ -109,6 +111,8 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
             democratCoTV = getView().findViewById(R.id.demo_cosponsor_txt);
             fullSummaryBtn = getView().findViewById(R.id.view_full_sum_btn);
             fullSummaryBtn.setOnClickListener(this);
+            loadingPb = getView().findViewById(R.id.loading_selectbill_pb);
+            loadingPb.setVisibility(View.VISIBLE);
 
             bottomNav = getView().findViewById(R.id.bottom_tab_bar);
             bottomNav.setSelectedItemId(R.id.bill_tab_item);
@@ -234,6 +238,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
         }
 
         public void updateUI(){
+            loadingPb.setVisibility(View.GONE);
             billNameTV.setText(selectedBill.getShortTitle());
 
             String sponsor = "Sponsor: " + selectedBill.getSponsor();

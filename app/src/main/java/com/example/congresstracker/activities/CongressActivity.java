@@ -93,6 +93,7 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
         }
     }
 
+
     class MemberDataReceiver extends BroadcastReceiver {
 
         @Override
