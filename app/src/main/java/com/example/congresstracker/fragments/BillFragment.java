@@ -55,6 +55,8 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
     public static final String EXTRA_ALL_ACTIVE_BILLS = "EXTRA_ALL_ACTIVE_BILLS";
     public static final String EXTRA_SEARCH_TERM = "EXTRA_SEARCH_TERM";
     public static final String EXTRA_SEARCH_RESULT = "EXTRA_SEARCH_RESULT";
+    public static final String EXTRA_SELECTED_BILL = "EXTRA_SELECTED_BILL";
+
 
     private ArrayList<Bill> introHouseBills;
     private ArrayList<Bill> introSenateBills;
@@ -151,9 +153,9 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
             bottomNav.setSelectedItemId(R.id.bill_tab_item);
             bottomNav.setOnNavigationItemSelectedListener(this);
 
-            if(allBills != null){
+            if(allActiveBills != null){
                 loadingPB.setVisibility(View.GONE);
-                BillAdapter adapter = new BillAdapter(getContext(), allBills);
+                BillAdapter adapter = new BillAdapter(getContext(), allActiveBills);
                 billsListV.setAdapter(adapter);
                 searchBtn.setCheckable(true);
             }
@@ -183,7 +185,15 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Bill selectedBill = allBills.get(position);
+        Bill selectedBill = allActiveBills.get(position);
+        String billUri = selectedBill.getBillUri();
+
+        Intent pullDataIntent = new Intent(getContext(), BillDataPull.class);
+        pullDataIntent.setAction(BillDataPull.ACTION_PULL_ONE_BILL);
+        pullDataIntent.putExtra(EXTRA_SELECTED_BILL, billUri);
+        getContext().startService(pullDataIntent);
+
+
         listener.BillClicked(selectedBill);
     }
 
@@ -196,7 +206,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
                 startActivity(congressIntent);
                 break;
             case R.id.bill_tab_item:
-                filteredList = allBills;
+                filteredList = allActiveBills;
                 showSearchResults();
                 break;
             case R.id.local_tab_item:
@@ -229,29 +239,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
         return false;
     }
 
-    public void searchBillList(String searchTxt){
 
-        filteredList = new ArrayList<>();
-
-        for (Bill b: allBills) {
-            if(b.getShortTitle().toUpperCase().equals(searchTxt.toUpperCase())){
-                filteredList.add(b);
-
-            }
-
-            if(b.getShortTitle().toUpperCase().contains(searchTxt.toUpperCase())){
-                filteredList.add(b);
-            }
-
-        }
-
-        if(filteredList.size() > 0){
-            Toast.makeText(getContext(), "Search Matched", Toast.LENGTH_SHORT).show();
-            showSearchResults();
-
-        }
-
-    }
     public void searchAPI(String searchTxt){
         Intent pullDataIntent = new Intent(getContext(), BillDataPull.class);
         pullDataIntent.setAction(BillDataPull.ACTION_SEARCH_BILL);

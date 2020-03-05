@@ -17,6 +17,12 @@ public class Bill implements Serializable, Comparable<Bill> {
     int cosponsors;
     String url;
     String summary;
+    String summaryShort;
+    int republicanCosponsors;
+    int democratCosponsors;
+    String sponsorID;
+    String latestActionDate;
+
 
     public Bill(String chamber, String billNum, String billUri, String title, String shortTitle, String sponsor, String dateIntroduced, boolean active, int cosponsors, String url, String summary) {
         this.chamber = chamber;
@@ -30,6 +36,26 @@ public class Bill implements Serializable, Comparable<Bill> {
         this.cosponsors = cosponsors;
         this.url = url;
         this.summary = summary;
+    }
+
+    public String getSummaryShort() {
+        return summaryShort;
+    }
+
+    public int getRepublicanCosponsors() {
+        return republicanCosponsors;
+    }
+
+    public int getDemocratCosponsors() {
+        return democratCosponsors;
+    }
+
+    public String getSponsorID() {
+        return sponsorID;
+    }
+
+    public String getLatestActionDate() {
+        return latestActionDate;
     }
 
     public String getChamber() {
@@ -75,6 +101,27 @@ public class Bill implements Serializable, Comparable<Bill> {
     public String getSummary() {
         return summary;
     }
+
+    public void setSummaryShort(String summaryShort) {
+        this.summaryShort = summaryShort;
+    }
+
+    public void setRepublicanCosponsors(int republicanCosponsors) {
+        this.republicanCosponsors = republicanCosponsors;
+    }
+
+    public void setDemocratCosponsors(int democratCosponsors) {
+        this.democratCosponsors = democratCosponsors;
+    }
+
+    public void setSponsorID(String sponsorID) {
+        this.sponsorID = sponsorID;
+    }
+
+    public void setLatestActionDate(String latestActionDate) {
+        this.latestActionDate = latestActionDate;
+    }
+
     public Date getDateAsO(){
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-dd-mm");

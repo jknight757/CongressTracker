@@ -92,14 +92,49 @@
             <TextView
                 android:id="@+id/date_intro_txt"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textSize="16sp"/>
 
             <TextView
                 android:id="@+id/summary_txt"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textSize="16sp"/>
+            <TextView
+                android:id="@+id/latest_action_date_txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"/>
+            <TextView
+                android:id="@+id/visit_url_txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Go to bill website"
+                android:clickable="true"
+                android:textSize="16sp"/>
+            <TextView
+                android:id="@+id/repub_cosponsor_txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"/>
+            <TextView
+                android:id="@+id/demo_cosponsor_txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"/>
+
 
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/loading_selectbill_pb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/view_full_sum_btn"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="150dp"
+            android:layout_marginTop="100dp"
+            android:visibility="gone"/>
 
 
 

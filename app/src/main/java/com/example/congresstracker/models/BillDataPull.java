@@ -23,6 +23,7 @@ public class BillDataPull extends IntentService {
     public static final String ACTION_SEARCH_BILL = "com.example.congresstracker.models.action.SEARCH_BILL";
     public static final String ACTION_SEND_BILLS = "com.example.congresstracker.models.action.PULL_SEND_BILLS";
     public static final String ACTION_SEND_RESULTS = "com.example.congresstracker.models.action.PULL_SEND_RESULTS";
+    public static final String ACTION_SEND_SELECT_BILL = "com.example.congresstracker.models.action.SEND_SELECT_BILL";
 
 
     public static final String EXTRA_HOUSE_BILLS = "EXTRA_HOUSE_BILLS";
@@ -31,12 +32,16 @@ public class BillDataPull extends IntentService {
     public static final String EXTRA_ALL_ACTIVE_BILLS = "EXTRA_ALL_ACTIVE_BILLS";
     public static final String EXTRA_SEARCH_TERM = "EXTRA_SEARCH_TERM";
     public static final String EXTRA_SEARCH_RESULT = "EXTRA_SEARCH_RESULT";
+    public static final String EXTRA_SELECTED_BILL = "EXTRA_SELECTED_BILL";
+    public static final String EXTRA_SELECT_BILL = "EXTRA_SELECT_BILL";
 
     private ArrayList<Bill> introHouseBills;
     private ArrayList<Bill> introSenateBills;
     private ArrayList<Bill> allBills;
     private ArrayList<Bill> allActiveBills;
     private ArrayList<Bill> searchResults;
+
+    Bill selectedBill;
 
     public BillDataPull() {
         super("BillDataPull");
@@ -56,6 +61,18 @@ public class BillDataPull extends IntentService {
 
                     break;
                 case ACTION_PULL_ONE_BILL:
+                    String id = intent.getStringExtra(EXTRA_SELECTED_BILL);
+                    pullSelectedBill(id);
+
+                    if(selectedBill != null){
+                        Log.i(TAG, "One Bill Pulled: BillID: "+ selectedBill.getBillNum());
+                        Log.i(TAG, "One Bill Pulled: Republican Cosponsors: "+ selectedBill.getRepublicanCosponsors());
+                        Log.i(TAG, "One Bill Pulled: Democrat Cosponsors: "+ selectedBill.getDemocratCosponsors());
+                        Log.i(TAG, "One Bill Pulled: Last Date: "+ selectedBill.getLatestActionDate());
+                        broadCastSelectedBill();
+
+                    }
+
                     break;
                 case ACTION_SEARCH_BILL:
                     String keyword = intent.getStringExtra(EXTRA_SEARCH_TERM);
@@ -93,183 +110,79 @@ public class BillDataPull extends IntentService {
 
         }
     }
+    public void pullSelectedBill(String _billUri){
+
+
+        if(NetworkUtils.isConnected(getBaseContext())){
+            String url = _billUri;
+            String data = NetworkUtils.getNetworkData(url);
+
+            try{
+                JSONObject response = new JSONObject(data);
+                JSONArray resultsJson = response.getJSONArray("results");
+
+                    JSONObject obj = resultsJson.getJSONObject(0);
+
+                    String chamber = "";
+                    if(!obj.isNull("chamber")){
+                        chamber = obj.getString("chamber");
+                    }
+
+                    String billNum = obj.getString("number");
+                    String billUri = obj.getString("bill_uri");
+                    String title = obj.getString("title");
+                    String shortTitle  = obj.getString("short_title");
+                    String sponsor = obj.getString("sponsor");
+                    String sponsorId = obj.getString("sponsor_id");
+                    String dateIntroduced = obj.getString("introduced_date");
+                    boolean active = obj.getBoolean("active");
+                    int cosponsors = obj.getInt("cosponsors");
+                    String billUrl = obj.getString("congressdotgov_url");
+                    String summary = obj.getString("summary");
+                    String summaryShort = obj.getString("summary_short");
+                    String latestActionDate = obj.getString("latest_major_action_date");
+
+                    JSONObject nestedObj = obj.getJSONObject("cosponsors_by_party");
+
+                    int repCosponsors = 0;
+                    if(!nestedObj.isNull("R")){
+                        repCosponsors = nestedObj.getInt("R");
+                    }
+
+                    int demCosponsors = 0;
+                    if(!nestedObj.isNull("D")){
+                        demCosponsors = nestedObj.getInt("D");
+                    }
+
+                    selectedBill = new Bill(chamber,billNum,billUri,title,
+                            shortTitle,sponsor,dateIntroduced,active,cosponsors,billUrl,summary);
+
+                    selectedBill.setSponsorID(sponsorId);
+                    selectedBill.setLatestActionDate(latestActionDate);
+                    selectedBill.setRepublicanCosponsors(repCosponsors);
+                    selectedBill.setDemocratCosponsors(demCosponsors);
+                    selectedBill.setSummaryShort(summaryShort);
+
+
+
+
+            }catch (JSONException e){
+                e.printStackTrace();
+
+            }
+
+        }
+
+    }
 
     public void pullBills(){
         allBills = new ArrayList<>();
         allActiveBills = new ArrayList<>();
 
-        String url = "https://api.propublica.org/congress/v1/115/house/bills/introduced.json";
+        String url = "";
 
 
         if(NetworkUtils.isConnected(getBaseContext())) {
-            String data = NetworkUtils.getNetworkData(url);
-            try {
-                JSONObject response = new JSONObject(data);
-                JSONArray resultsJson = response.getJSONArray("results");
-                introHouseBills = new ArrayList<>();
-
-                for (int i = 0; i < resultsJson.length(); i++) {
-                    JSONObject obj = resultsJson.getJSONObject(i);
-                    JSONArray billsJson = obj.getJSONArray("bills");
-
-                    for (int x = 0; x < billsJson.length(); x++) {
-                        JSONObject nestedObj = billsJson.getJSONObject(x);
-
-                        String chamber = obj.getString("chamber");
-                        String billNum = nestedObj.getString("number");
-                        String billUri = nestedObj.getString("bill_uri");
-                        String title = nestedObj.getString("title");
-                        String shortTitle  = nestedObj.getString("short_title");
-                        String sponsor = nestedObj.getString("sponsor_name");
-                        String dateIntroduced = nestedObj.getString("introduced_date");
-                        boolean active = nestedObj.getBoolean("active");
-                        int cosponsors = nestedObj.getInt("cosponsors");
-                        String billUrl = nestedObj.getString("congressdotgov_url");
-                        String summary = nestedObj.getString("summary");
-
-                        introHouseBills.add(new Bill(chamber,billNum,billUri,title,
-                                shortTitle,sponsor,dateIntroduced,active,cosponsors,billUrl,summary));
-                        allBills.add(new Bill(chamber,billNum,billUri,title,
-                                shortTitle,sponsor,dateIntroduced,active,cosponsors,billUrl,summary));
-
-                    }
-
-                }
-
-
-
-            }catch (JSONException e){
-                e.printStackTrace();
-            }
-
-            url = "https://api.propublica.org/congress/v1/115/senate/bills/introduced.json";
-
-            data = NetworkUtils.getNetworkData(url);
-            try {
-                JSONObject response = new JSONObject(data);
-                JSONArray resultsJson = response.getJSONArray("results");
-                introSenateBills = new ArrayList<>();
-
-                for (int i = 0; i < resultsJson.length(); i++) {
-                    JSONObject obj = resultsJson.getJSONObject(i);
-                    JSONArray billsJson = obj.getJSONArray("bills");
-
-                    for (int x = 0; x < billsJson.length(); x++) {
-                        JSONObject nestedObj = billsJson.getJSONObject(x);
-
-                        String chamber = obj.getString("chamber");
-                        String billNum = nestedObj.getString("number");
-                        String billUri = nestedObj.getString("bill_uri");
-                        String title = nestedObj.getString("title");
-                        String shortTitle  = nestedObj.getString("short_title");
-                        String sponsor = nestedObj.getString("sponsor_name");
-                        String dateIntroduced = nestedObj.getString("introduced_date");
-                        boolean active = nestedObj.getBoolean("active");
-                        int cosponsors = nestedObj.getInt("cosponsors");
-                        String billUrl = nestedObj.getString("congressdotgov_url");
-                        String summary = nestedObj.getString("summary");
-
-                        introSenateBills.add(new Bill(chamber,billNum,billUri,title,
-                                shortTitle,sponsor,dateIntroduced,active,cosponsors,billUrl,summary));
-                        allBills.add(new Bill(chamber,billNum,billUri,title,
-                                shortTitle,sponsor,dateIntroduced,active,cosponsors,billUrl,summary));
-
-                    }
-
-                }
-
-
-
-            }catch (JSONException e){
-                e.printStackTrace();
-            }
-
-            url = "https://api.propublica.org/congress/v1/115/house/bills/updated.json";
-
-            data = NetworkUtils.getNetworkData(url);
-            try {
-                JSONObject response = new JSONObject(data);
-                JSONArray resultsJson = response.getJSONArray("results");
-
-                for (int i = 0; i < resultsJson.length(); i++) {
-                    JSONObject obj = resultsJson.getJSONObject(i);
-                    JSONArray billsJson = obj.getJSONArray("bills");
-
-                    for (int x = 0; x < billsJson.length(); x++) {
-                        JSONObject nestedObj = billsJson.getJSONObject(x);
-
-                        String chamber = obj.getString("chamber");
-                        String billNum = nestedObj.getString("number");
-                        String billUri = nestedObj.getString("bill_uri");
-                        String title = nestedObj.getString("title");
-                        String shortTitle  = nestedObj.getString("short_title");
-                        String sponsor = nestedObj.getString("sponsor_name");
-                        String dateIntroduced = nestedObj.getString("introduced_date");
-                        boolean active = nestedObj.getBoolean("active");
-                        int cosponsors = nestedObj.getInt("cosponsors");
-                        String billUrl = nestedObj.getString("congressdotgov_url");
-                        String summary = nestedObj.getString("summary");
-
-                        introHouseBills.add(new Bill(chamber,billNum,billUri,title,
-                                shortTitle,sponsor,dateIntroduced,active,cosponsors,billUrl,summary));
-
-                        allBills.add(new Bill(chamber,billNum,billUri,title,
-                                shortTitle,sponsor,dateIntroduced,active,cosponsors,billUrl,summary));
-
-                    }
-
-                }
-
-
-
-            }catch (JSONException e){
-                e.printStackTrace();
-            }
-
-            url = "https://api.propublica.org/congress/v1/115/senate/bills/updated.json";
-
-            data = NetworkUtils.getNetworkData(url);
-            try {
-                JSONObject response = new JSONObject(data);
-                JSONArray resultsJson = response.getJSONArray("results");
-
-
-                for (int i = 0; i < resultsJson.length(); i++) {
-                    JSONObject obj = resultsJson.getJSONObject(i);
-                    JSONArray billsJson = obj.getJSONArray("bills");
-
-                    for (int x = 0; x < billsJson.length(); x++) {
-                        JSONObject nestedObj = billsJson.getJSONObject(x);
-
-                        String chamber = obj.getString("chamber");
-                        String billNum = nestedObj.getString("number");
-                        String billUri = nestedObj.getString("bill_uri");
-                        String title = nestedObj.getString("title");
-                        String shortTitle  = nestedObj.getString("short_title");
-                        String sponsor = nestedObj.getString("sponsor_name");
-                        String dateIntroduced = nestedObj.getString("introduced_date");
-                        boolean active = nestedObj.getBoolean("active");
-                        int cosponsors = nestedObj.getInt("cosponsors");
-                        String billUrl = nestedObj.getString("congressdotgov_url");
-                        String summary = nestedObj.getString("summary");
-
-                        introSenateBills.add(new Bill(chamber,billNum,billUri,title,
-                                shortTitle,sponsor,dateIntroduced,active,cosponsors,billUrl,summary));
-                        allBills.add(new Bill(chamber,billNum,billUri,title,
-                                shortTitle,sponsor,dateIntroduced,active,cosponsors,billUrl,summary));
-
-                    }
-
-                }
-
-
-            }catch (JSONException e){
-                e.printStackTrace();
-            }
-
-
-
-
 
             ArrayList<Bill> temp;
 
@@ -379,6 +292,13 @@ public class BillDataPull extends IntentService {
         Intent broadcastIntent;
         broadcastIntent = new Intent(ACTION_SEND_RESULTS);
         broadcastIntent.putExtra(EXTRA_SEARCH_RESULT, searchResults);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
+    }
+
+    public void broadCastSelectedBill(){
+        Intent broadcastIntent;
+        broadcastIntent = new Intent(ACTION_SEND_SELECT_BILL);
+        broadcastIntent.putExtra(EXTRA_SELECT_BILL, selectedBill);
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
     }
 

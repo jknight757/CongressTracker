@@ -46,7 +46,7 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
             //getSupportActionBar().setTitle(" Bill Detail");
         }
 
-        billDetailFragment = BillDetailFragment.newInstance(bill);
+        billDetailFragment = BillDetailFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.bill_fragment_container,billDetailFragment)
                 .addToBackStack(billFragment.TAG)
