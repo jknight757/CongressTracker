@@ -22,6 +22,8 @@ public class Bill implements Serializable, Comparable<Bill> {
     int democratCosponsors;
     String sponsorID;
     String latestActionDate;
+    String lastVote;
+
 
 
     public Bill(String chamber, String billNum, String billUri, String title, String shortTitle, String sponsor, String dateIntroduced, boolean active, int cosponsors, String url, String summary) {
@@ -36,6 +38,10 @@ public class Bill implements Serializable, Comparable<Bill> {
         this.cosponsors = cosponsors;
         this.url = url;
         this.summary = summary;
+    }
+
+    public String getLastVote() {
+        return lastVote;
     }
 
     public String getSummaryShort() {
@@ -120,6 +126,10 @@ public class Bill implements Serializable, Comparable<Bill> {
 
     public void setLatestActionDate(String latestActionDate) {
         this.latestActionDate = latestActionDate;
+    }
+
+    public void setLastVote(String lastVote) {
+        this.lastVote = lastVote;
     }
 
     public Date getDateAsO(){

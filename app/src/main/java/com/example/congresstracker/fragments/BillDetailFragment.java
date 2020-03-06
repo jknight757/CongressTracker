@@ -2,10 +2,12 @@ package com.example.congresstracker.fragments;
 
 
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,18 +17,22 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.activities.CongressActivity;
 import com.example.congresstracker.activities.MainActivity;
 import com.example.congresstracker.activities.MyAreaActivity;
 import com.example.congresstracker.models.Bill;
+import com.example.congresstracker.other.BillTrackDatabaseHelper;
 import com.example.congresstracker.services.BillDataPull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -57,6 +63,9 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
     private BottomNavigationView bottomNav;
     private BillDetailListener listener;
 
+    BillTrackDatabaseHelper dbh;
+    Cursor cursor;
+
     private SelectBillReceiver receiver = new SelectBillReceiver();
 
     public BillDetailFragment() {
@@ -84,6 +93,18 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
         if(context instanceof BillDetailListener){
             listener = (BillDetailListener) context;
         }
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.track_menu, menu);
     }
 
     @Override
@@ -170,6 +191,39 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
     public void onDestroy() {
         super.onDestroy();
         listener.updateTitle();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        dbh = BillTrackDatabaseHelper.getInstance(getContext());
+
+        if(selectedBill != null){
+            // for updating tracked bill
+//            ContentValues cv = new ContentValues();
+//            cv.put(BillTrackDatabaseHelper.COLUMN_BILL_ID, selectedBill.getBillNum());
+//            cv.put(BillTrackDatabaseHelper.COLUMN_BILL_TITLE, selectedBill.getTitle());
+//            cv.put(BillTrackDatabaseHelper.COLUMN_LAST_DATE, selectedBill.getLatestActionDate());
+//            cv.put(BillTrackDatabaseHelper.COLUMN_LAST_VOTE, selectedBill.getLastVote());
+//
+            dbh.trackBill(selectedBill);
+        }
+
+        cursor = dbh.getAllBills();
+        if(cursor.getCount() > 0){
+            Toast.makeText(getContext(), "Stored", Toast.LENGTH_SHORT).show();
+            cursor.moveToLast();
+        }
+
+
+
+
+
+
+
+        //Toast.makeText(getContext(), "Bill Tracked!", Toast.LENGTH_SHORT).show();
+
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
