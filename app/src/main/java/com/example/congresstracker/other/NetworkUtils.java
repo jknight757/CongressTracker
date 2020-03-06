@@ -1,4 +1,4 @@
-package com.example.congresstracker.models;
+package com.example.congresstracker.other;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

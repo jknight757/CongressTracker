@@ -1,4 +1,4 @@
-package com.example.congresstracker.models;
+package com.example.congresstracker.services;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -6,6 +6,9 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.example.congresstracker.models.Bill;
+import com.example.congresstracker.other.NetworkUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;

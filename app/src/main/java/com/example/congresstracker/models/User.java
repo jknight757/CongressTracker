@@ -3,12 +3,12 @@ package com.example.congresstracker.models;
 import java.io.Serializable;
 
 public class User implements Serializable {
-    String name;
-    String email;
-    String password;
-    String party;
-    String zip;
-    boolean hasProfImg;
+    public String name;
+    public String email;
+    public String password;
+    public String party;
+    public String zip;
+    public boolean hasProfImg;
 
 
     public User(String name, String email, String password) {

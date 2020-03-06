@@ -11,12 +11,11 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.fragments.LoginFragment;
 import com.example.congresstracker.fragments.SignupFragment;
-import com.example.congresstracker.models.NetworkUtils;
+import com.example.congresstracker.other.NetworkUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 

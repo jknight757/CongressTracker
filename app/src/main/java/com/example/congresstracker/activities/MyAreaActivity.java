@@ -5,12 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
-import android.widget.Toast;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.fragments.MyAreaFragment;
-import com.example.congresstracker.models.MemberDataPull;
-import com.example.congresstracker.models.UserDataPull;
+import com.example.congresstracker.services.UserDataPull;
 
 public class MyAreaActivity extends AppCompatActivity {
 

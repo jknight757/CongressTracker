@@ -1,9 +1,7 @@
 package com.example.congresstracker.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import android.app.IntentService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,16 +17,14 @@ import com.example.congresstracker.R;
 import com.example.congresstracker.fragments.CongressFragment;
 import com.example.congresstracker.fragments.MemberDetailFragment;
 import com.example.congresstracker.models.CongressMember;
-import com.example.congresstracker.models.MemberAdapter;
-import com.example.congresstracker.models.MemberDataPull;
-
-import java.util.ArrayList;
+import com.example.congresstracker.services.MemberDataPull;
 
 public class CongressActivity extends AppCompatActivity implements CongressFragment.CongressClickListener, MemberDetailFragment.MemberDetailListener {
 
     public static final String TAG = "CongressActivity.TAG";
     public static final String EXTRA_SELECTED_MEMBER = "EXTRA_SELECTED_MEMBER";
     public static final String EXTRA_MEMBER_IMAGE = "EXTRA_MEMBER_IMAGE";
+    public static final String EXTRA_MEMBER_ID = "EXTRA_MEMBER_ID";
 
 
     private final MemberDataReceiver receiver = new MemberDataReceiver();
@@ -47,14 +43,30 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
             getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Congress" + "</font>"));
             //getSupportActionBar().setTitle(" Congress");
         }
-        congressFragment = CongressFragment.newInstance();
 
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.congress_fragment_container, congressFragment).commit();
+        if(getIntent().hasExtra(EXTRA_MEMBER_ID)){
 
-        Intent pullDataIntent = new Intent(this, MemberDataPull.class);
-        pullDataIntent.setAction(MemberDataPull.ACTION_PULL_ALL);
-        startService(pullDataIntent);
+            String id = getIntent().getStringExtra(EXTRA_MEMBER_ID);
+            progressBar = findViewById(R.id.mem_select_pb);
+            progressBar.setVisibility(View.VISIBLE);
+
+            Intent pullDataIntent = new Intent(this, MemberDataPull.class);
+            pullDataIntent.setAction(MemberDataPull.ACTION_PULL_SELECTED);
+            pullDataIntent.putExtra(MemberDataPull.EXTRA_SELECTED_MEMBER,id);
+            startService(pullDataIntent);
+
+
+        }else {
+            congressFragment = CongressFragment.newInstance();
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.congress_fragment_container, congressFragment).commit();
+
+            Intent pullDataIntent = new Intent(this, MemberDataPull.class);
+            pullDataIntent.setAction(MemberDataPull.ACTION_PULL_ALL);
+            startService(pullDataIntent);
+        }
+
     }
 
     @Override

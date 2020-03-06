@@ -9,9 +9,7 @@ import android.text.Html;
 import com.example.congresstracker.R;
 import com.example.congresstracker.fragments.BillDetailFragment;
 import com.example.congresstracker.fragments.BillFragment;
-import com.example.congresstracker.models.Bill;
-import com.example.congresstracker.models.BillDataPull;
-import com.example.congresstracker.models.MemberDataPull;
+import com.example.congresstracker.services.BillDataPull;
 
 public class BillActivity extends AppCompatActivity implements BillFragment.BillClickListener, BillDetailFragment.BillDetailListener {
 

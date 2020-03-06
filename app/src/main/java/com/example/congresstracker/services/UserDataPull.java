@@ -1,4 +1,4 @@
-package com.example.congresstracker.models;
+package com.example.congresstracker.services;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.congresstracker.other.NetworkUtils;
+import com.example.congresstracker.models.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,6 +19,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
 
 public class UserDataPull extends IntentService {
 

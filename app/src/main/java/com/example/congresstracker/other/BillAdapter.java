@@ -1,4 +1,4 @@
-package com.example.congresstracker.models;
+package com.example.congresstracker.other;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.congresstracker.R;
+import com.example.congresstracker.models.Bill;
 
 import java.util.ArrayList;
 

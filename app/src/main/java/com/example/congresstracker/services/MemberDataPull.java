@@ -1,4 +1,4 @@
-package com.example.congresstracker.models;
+package com.example.congresstracker.services;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -8,6 +8,11 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.example.congresstracker.models.BillVote;
+import com.example.congresstracker.models.CongressMember;
+import com.example.congresstracker.other.NetworkUtils;
+import com.example.congresstracker.models.Term;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -181,7 +186,7 @@ public class MemberDataPull extends IntentService {
                         String termId = nestedObj.getString("congress");
                         String chamber = nestedObj.getString("chamber");
                         String state = nestedObj.getString("state");
-                        //String seniority = nestedObj.getString("seniority");
+                        String seniority = nestedObj.getString("seniority");
                         String startDate = nestedObj.getString("start_date");
                         String endDate = nestedObj.getString("end_date");
                         String termEnd = nestedObj.getString("next_election");
@@ -236,7 +241,7 @@ public class MemberDataPull extends IntentService {
                         }
 
                         Term thisTerm = new Term(chamber,state,startDate,
-                                endDate,totalVotes,billsSponsored
+                                endDate,seniority,totalVotes,billsSponsored
                                 ,billsCosponsored,mvp,vwpp,vapp,termId);
                         thisTerm.setCommittees(committees);
                         thisTerm.setComCodes(comCodes);

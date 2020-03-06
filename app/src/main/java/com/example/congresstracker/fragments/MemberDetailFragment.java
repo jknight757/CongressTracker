@@ -34,10 +34,9 @@ import com.example.congresstracker.activities.MainActivity;
 import com.example.congresstracker.activities.MyAreaActivity;
 import com.example.congresstracker.models.BillVote;
 import com.example.congresstracker.models.CongressMember;
-import com.example.congresstracker.models.MemberAdapter;
-import com.example.congresstracker.models.MemberDataPull;
+import com.example.congresstracker.services.MemberDataPull;
 import com.example.congresstracker.models.Term;
-import com.example.congresstracker.models.VoteAdapter;
+import com.example.congresstracker.other.VoteAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -209,7 +208,7 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
 
 
                     String seniority =  "Seniority: ";
-                    seniority += selectedMember.getSeniority();
+                    seniority += selectedMember.getSeniorityFromTerms();
                     String nextElection = "Next Election: ";
                     nextElection += selectedMember.getNextElection();
 

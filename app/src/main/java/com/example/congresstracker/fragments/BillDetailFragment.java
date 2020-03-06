@@ -21,15 +21,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.congresstracker.R;
-import com.example.congresstracker.activities.BillActivity;
 import com.example.congresstracker.activities.CongressActivity;
 import com.example.congresstracker.activities.MainActivity;
 import com.example.congresstracker.activities.MyAreaActivity;
 import com.example.congresstracker.models.Bill;
-import com.example.congresstracker.models.BillDataPull;
+import com.example.congresstracker.services.BillDataPull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 /**
@@ -40,6 +38,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
     public static final String TAG = "BillDetail.TAG";
     public static final String EXTRA_BILL = "EXTRA_BILL";
     public static final String EXTRA_SELECT_BILL = "EXTRA_SELECT_BILL";
+    public static final String EXTRA_MEMBER_ID = "EXTRA_MEMBER_ID";
 
     private TextView billNameTV;
     private TextView sponsorTV;
@@ -101,6 +100,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
         if(getView()!= null){
             billNameTV = getView().findViewById(R.id.bill_txt_lbl);
             sponsorTV = getView().findViewById(R.id.sponsor_txt_lbl);
+            sponsorTV.setOnClickListener(this);
             statusTV = getView().findViewById(R.id.status_txt_lbl);
             dateTV = getView().findViewById(R.id.date_intro_txt);
             summaryTV = getView().findViewById(R.id.summary_txt);
@@ -179,6 +179,18 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
                 break;
             case R.id.view_full_sum_btn:
                 break;
+
+                // When the sponsors name is clicked
+            case R.id.sponsor_txt_lbl:
+                if(selectedBill != null) {
+
+                    String memberId = selectedBill.getSponsorID();
+
+                    Intent memberDetailIntent = new Intent(getContext(), CongressActivity.class);
+                    memberDetailIntent.putExtra(EXTRA_MEMBER_ID,memberId);
+                    startActivity(memberDetailIntent);
+                }
+                break;
         }
 
     }
@@ -223,6 +235,9 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
         return false;
     }
 
+
+    //Receiver handles a single bill request being returned
+    //Updates UI with data pulled
 
     class SelectBillReceiver extends BroadcastReceiver{
 

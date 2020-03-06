@@ -21,13 +21,13 @@
             android:windowSoftInputMode="adjustPan" />
 
         <service
-            android:name=".models.MemberDataPull"
+            android:name=".services.MemberDataPull"
             android:exported="false" />
         <service
-            android:name=".models.UserDataPull"
+            android:name=".services.UserDataPull"
             android:exported="false" />
         <service
-            android:name=".models.BillDataPull"
+            android:name=".services.BillDataPull"
             android:exported="false" />
 
         <activity

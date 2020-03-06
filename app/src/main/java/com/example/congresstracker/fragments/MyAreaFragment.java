@@ -23,7 +23,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,17 +31,13 @@ import com.example.congresstracker.R;
 import com.example.congresstracker.activities.BillActivity;
 import com.example.congresstracker.activities.CongressActivity;
 import com.example.congresstracker.activities.MainActivity;
-import com.example.congresstracker.activities.MyAreaActivity;
-import com.example.congresstracker.models.CongressMember;
-import com.example.congresstracker.models.MemberDataPull;
-import com.example.congresstracker.models.NetworkUtils;
+import com.example.congresstracker.other.NetworkUtils;
 import com.example.congresstracker.models.User;
-import com.example.congresstracker.models.UserDataPull;
+import com.example.congresstracker.services.UserDataPull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.bottomnavigation.BottomNavigationMenu;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthCredential;
@@ -51,8 +46,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.

@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.congresstracker.R;
-import com.example.congresstracker.models.NetworkUtils;
+import com.example.congresstracker.other.NetworkUtils;
 import com.example.congresstracker.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -43,7 +42,6 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 

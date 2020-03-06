@@ -116,6 +116,19 @@ public class CongressMember implements Serializable {
         this.seniority = seniority;
     }
 
+    public int getSeniorityFromTerms(){
+        if(terms != null){
+            int total = 0;
+
+                total += Integer.parseInt( terms.get(0).getSeniority());
+
+            return total;
+
+        }else {
+            return 0;
+        }
+    }
+
     public int getTotalVotes(){
         if(terms != null){
             int total = 0;
