@@ -1,6 +1,8 @@
 package com.example.congresstracker.fragments;
 
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -33,8 +35,12 @@ import com.example.congresstracker.activities.MainActivity;
 import com.example.congresstracker.activities.MyAreaActivity;
 import com.example.congresstracker.models.Bill;
 import com.example.congresstracker.other.BillTrackDatabaseHelper;
+import com.example.congresstracker.receivers.AlarmReceiver;
 import com.example.congresstracker.services.BillDataPull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -198,26 +204,77 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
         dbh = BillTrackDatabaseHelper.getInstance(getContext());
 
         if(selectedBill != null){
-            // for updating tracked bill
+
+            cursor = dbh.getAllBills();
+
+            if(!(cursor.getCount() > 0)){
+
+                dbh.trackBill(selectedBill);
+                Cursor c = dbh.getAllBills();
+                c.moveToLast();
+                String id = c.getString(c.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_ID));
+                Toast.makeText(getContext(), "Stored : id: "+ id, Toast.LENGTH_SHORT).show();
+
+                Calendar calendar = Calendar.getInstance();
+                long currentDateTime=calendar.getTimeInMillis();
+                calendar.setTime(new Date(currentDateTime+(60*1000)));// 1 minutes timeout
+                Intent myIntent = new Intent(getContext(), AlarmReceiver.class);
+                PendingIntent mAlarmSender = PendingIntent.getBroadcast(getContext(), 0, myIntent, 0);
+                AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+                alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), mAlarmSender);
+
+            }else {
+                cursor = dbh.getBillById(selectedBill.getBillNum());
+
+                if(cursor.getCount() > 0){
+                    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+                    builder.setTitle("Untrack Bill");
+                    builder.setMessage("You are already tracking this bill, would you like to stop tracking it?");
+
+                    builder.setPositiveButton("Untrack", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //// remove bill from database
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    builder.show();
+
+                }else {
+                    /// bill is not already stored we can go ahead and insert it into the database
+                    dbh.trackBill(selectedBill);
+
+                    Cursor c = dbh.getAllBills();
+                    c.moveToLast();
+                    String id = c.getString(c.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_ID));
+
+                    Toast.makeText(getContext(), "Stored : id: "+ id, Toast.LENGTH_SHORT).show();
+
+                    Calendar calendar = Calendar.getInstance();
+                    long currentDateTime=calendar.getTimeInMillis();
+                    calendar.setTime(new Date(currentDateTime+(10*1000)));// 1 minutes timeout
+                    Intent myIntent = new Intent(getContext(), AlarmReceiver.class);
+                    PendingIntent mAlarmSender = PendingIntent.getBroadcast(getContext(), 0, myIntent, 0);
+                    AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), mAlarmSender);
+                }
+            }
+
+        }
+
+
+        // for updating tracked bill
 //            ContentValues cv = new ContentValues();
 //            cv.put(BillTrackDatabaseHelper.COLUMN_BILL_ID, selectedBill.getBillNum());
 //            cv.put(BillTrackDatabaseHelper.COLUMN_BILL_TITLE, selectedBill.getTitle());
 //            cv.put(BillTrackDatabaseHelper.COLUMN_LAST_DATE, selectedBill.getLatestActionDate());
 //            cv.put(BillTrackDatabaseHelper.COLUMN_LAST_VOTE, selectedBill.getLastVote());
 //
-            dbh.trackBill(selectedBill);
-        }
-
-        cursor = dbh.getAllBills();
-        if(cursor.getCount() > 0){
-            Toast.makeText(getContext(), "Stored", Toast.LENGTH_SHORT).show();
-            cursor.moveToLast();
-        }
-
-
-
-
-
 
 
         //Toast.makeText(getContext(), "Bill Tracked!", Toast.LENGTH_SHORT).show();

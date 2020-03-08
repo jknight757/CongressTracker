@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.congresstracker.R;
@@ -30,6 +32,7 @@ import com.example.congresstracker.activities.MainActivity;
 import com.example.congresstracker.activities.MyAreaActivity;
 import com.example.congresstracker.models.Bill;
 import com.example.congresstracker.other.BillAdapter;
+import com.example.congresstracker.other.BillTrackDatabaseHelper;
 import com.example.congresstracker.services.BillDataPull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
@@ -51,6 +54,16 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
     public static final String EXTRA_SEARCH_TERM = "EXTRA_SEARCH_TERM";
     public static final String EXTRA_SEARCH_RESULT = "EXTRA_SEARCH_RESULT";
     public static final String EXTRA_SELECTED_BILL = "EXTRA_SELECTED_BILL";
+    public static final String EXTRA_TRACKED_BILLS = "EXTRA_TRACKED_BILLS";
+    public static final String EXTRA_TRACKED_RETURNED = "EXTRA_TRACKED_RETURNED";
+
+    private int selectedSubTab = 0;
+
+    public static final int ALL_BILL_TAB = 0;
+    public static final int TRACKED_BILL_TAB = 1;
+
+    BillTrackDatabaseHelper dbh;
+    Cursor cursor;
 
 
     private ArrayList<Bill> introHouseBills;
@@ -59,15 +72,21 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
     private ArrayList<Bill> allActiveBills;
     private ArrayList<Bill> filteredList;
     private ArrayList<Bill> searchResults;
+    private ArrayList<Bill> trackedBills;
 
-    ListView billsListV;
-    ProgressBar loadingPB;
-    TextInputEditText searchInputField;
-    MaterialButton searchBtn;
-    BottomNavigationView bottomNav;
+    private ListView billsListV;
+    private ProgressBar loadingPB;
+    private TextInputEditText searchInputField;
+    private MaterialButton searchBtn;
+    private BottomNavigationView bottomNav;
+    private TextView allBillsBtn;
+    private TextView trackedBillsBtn;
+    private View allTabSelect;
+    private View trackTabSelect;
 
     private final BillsDataReceiver receiver = new BillsDataReceiver();
     private final SearchResultReceiver searchResultReceiver = new SearchResultReceiver();
+    private final TrackedBillsReceiver trackedBillsReceiver = new TrackedBillsReceiver();
 
     private BillClickListener listener;
 
@@ -85,7 +104,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
     }
 
     public interface BillClickListener {
-        void BillClicked();
+        void BillClicked(String id);
     }
 
     @Override
@@ -114,6 +133,10 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
         intentFilter.addAction(BillDataPull.ACTION_SEND_RESULTS);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(searchResultReceiver,intentFilter);
 
+        IntentFilter trackedFilter = new IntentFilter();
+        trackedFilter.addAction(BillDataPull.ACTION_SEND_TRACKED_BILLS);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(trackedBillsReceiver,trackedFilter);
+
 
     }
 
@@ -123,6 +146,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
         //getContext().unregisterReceiver(receiver);
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(receiver);
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(searchResultReceiver);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(trackedBillsReceiver);
     }
 
     @Override
@@ -147,6 +171,15 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
             bottomNav = getView().findViewById(R.id.bottom_tab_bar);
             bottomNav.setSelectedItemId(R.id.bill_tab_item);
             bottomNav.setOnNavigationItemSelectedListener(this);
+
+            allBillsBtn = getView().findViewById(R.id.all_bill_btn);
+            allBillsBtn.setOnClickListener(this);
+
+            trackedBillsBtn = getView().findViewById(R.id.tracked_bill_btn);
+            trackedBillsBtn.setOnClickListener(this);
+
+            allTabSelect = getView().findViewById(R.id.all_bill_select);
+            trackTabSelect = getView().findViewById(R.id.track_bill_select);
 
             if(allActiveBills != null){
                 loadingPB.setVisibility(View.GONE);
@@ -174,7 +207,90 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
                     //searchBillList(searchTxt);
                 }
                 break;
+
+            case R.id.all_bill_btn:
+                if(selectedSubTab == TRACKED_BILL_TAB){
+                    billsListV.setVisibility(View.VISIBLE);
+
+                    if(allActiveBills != null) {
+                        if (billsListV != null) {
+                            BillAdapter adapter = new BillAdapter(getContext(), allActiveBills);
+                            billsListV.setAdapter(adapter);
+                        }
+                    }
+
+                    allTabSelect.setVisibility(View.INVISIBLE);
+                    trackTabSelect.setVisibility(View.VISIBLE);
+
+                    selectedSubTab = ALL_BILL_TAB;
+
+                }
+                break;
+            case R.id.tracked_bill_btn:
+                if(selectedSubTab == ALL_BILL_TAB){
+                    dbh = BillTrackDatabaseHelper.getInstance(getContext());
+                    cursor = dbh.getAllBills();
+
+                    if(trackedBills == null){
+                        getTrackedBills();
+                    }else if(trackedBills.size() < cursor.getCount()){
+                        getTrackedBills();
+                    } else {
+                        if (billsListV != null) {
+                            billsListV.setVisibility(View.VISIBLE);
+                            BillAdapter adapter = new BillAdapter(getContext(), trackedBills);
+                            billsListV.setAdapter(adapter);
+
+                        }
+                    }
+
+                    allTabSelect.setVisibility(View.VISIBLE);
+                    trackTabSelect.setVisibility(View.INVISIBLE);
+
+                    selectedSubTab = TRACKED_BILL_TAB;
+
+                }
+                break;
         }
+
+    }
+
+    public void getTrackedBills(){
+        dbh = BillTrackDatabaseHelper.getInstance(getContext());
+
+
+        cursor = dbh.getAllBills();
+
+
+        if(cursor.getCount() > 0) {
+            ArrayList<String> trackedBillIds = new ArrayList<>();
+            try {
+                while (cursor.moveToNext()) {
+                    String uri = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_URI));
+//                    String title = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_TITLE));
+//                    String sponsor = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_SPONSOR));
+//                    String dateIntro = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_DATE_INTRODUCED));
+//                    String lastDate = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_LAST_DATE));
+//                    int active = cursor.getInt(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_ID));
+                    trackedBillIds.add(uri);
+
+                }
+            } finally {
+                cursor.close();
+            }
+
+            if(trackedBillIds.size() > 0){
+                Toast.makeText(getContext(), "User Has Tracked Bills", Toast.LENGTH_SHORT).show();
+
+                Intent pullDataIntent = new Intent(getContext(), BillDataPull.class);
+                pullDataIntent.setAction(BillDataPull.ACTION_PULL_TRACKED);
+                pullDataIntent.putStringArrayListExtra(EXTRA_TRACKED_BILLS,trackedBillIds);
+                getContext().startService(pullDataIntent);
+
+            }
+
+        }
+
 
     }
 
@@ -189,7 +305,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
         getContext().startService(pullDataIntent);
 
 
-        listener.BillClicked();
+        listener.BillClicked(selectedBill.getBillNum());
     }
 
     @Override
@@ -304,6 +420,31 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
             }
         }
 
+    }
 
+    class TrackedBillsReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "onReceive: Tracked Bills Received");
+            Toast.makeText(context, "Tracked Bills Received", Toast.LENGTH_SHORT).show();
+            if(intent.hasExtra(EXTRA_TRACKED_RETURNED)){
+                trackedBills = (ArrayList<Bill>) intent.getSerializableExtra(EXTRA_TRACKED_RETURNED);
+                updateUI();
+            }
+        }
+        public void updateUI(){
+            if(trackedBills != null) {
+                if (billsListV != null) {
+                    billsListV.setVisibility(View.VISIBLE);
+                    loadingPB.setVisibility(View.GONE);
+                    BillAdapter adapter = new BillAdapter(getContext(), trackedBills);
+                    billsListV.setAdapter(adapter);
+                    searchBtn.setCheckable(true);
+                }
+            }else{
+                Log.i(TAG, "updateList: members list null");
+            }
+        }
     }
 }

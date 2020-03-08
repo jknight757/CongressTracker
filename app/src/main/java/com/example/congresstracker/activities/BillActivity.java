@@ -25,7 +25,6 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
 
         if(getSupportActionBar() != null){
             getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Bills" + "</font>"));
-            //getSupportActionBar().setTitle(" Bills");
         }
 
         if(getIntent().hasExtra(EXTRA_SELECT_BILL)){
@@ -56,11 +55,10 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
     }
 
     @Override
-    public void BillClicked() {
+    public void BillClicked(String id) {
 
         if(getSupportActionBar() != null){
-            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Bill Detail" + "</font>"));
-            //getSupportActionBar().setTitle(" Bill Detail");
+            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + id+ "</font>"));
         }
 
         billDetailFragment = BillDetailFragment.newInstance();
@@ -74,7 +72,7 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
     public void updateTitle() {
         if(getSupportActionBar() != null){
             getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Bills" + "</font>"));
-            //getSupportActionBar().setTitle(" Bills");
+
         }
     }
 }

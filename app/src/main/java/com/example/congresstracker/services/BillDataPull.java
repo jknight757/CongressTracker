@@ -3,6 +3,7 @@ package com.example.congresstracker.services;
 import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -27,6 +28,9 @@ public class BillDataPull extends IntentService {
     public static final String ACTION_SEND_BILLS = "com.example.congresstracker.models.action.PULL_SEND_BILLS";
     public static final String ACTION_SEND_RESULTS = "com.example.congresstracker.models.action.PULL_SEND_RESULTS";
     public static final String ACTION_SEND_SELECT_BILL = "com.example.congresstracker.models.action.SEND_SELECT_BILL";
+    public static final String ACTION_SEND_TRACKED_BILLS = "com.example.congresstracker.models.action.SEND_TRACKED_BILLS";
+
+    public static final String ACTION_PULL_TRACKED = "com.example.congresstracker.services.action.PULL_TRACKED";
 
 
     public static final String EXTRA_HOUSE_BILLS = "EXTRA_HOUSE_BILLS";
@@ -37,12 +41,16 @@ public class BillDataPull extends IntentService {
     public static final String EXTRA_SEARCH_RESULT = "EXTRA_SEARCH_RESULT";
     public static final String EXTRA_SELECTED_BILL = "EXTRA_SELECTED_BILL";
     public static final String EXTRA_SELECT_BILL = "EXTRA_SELECT_BILL";
+    public static final String EXTRA_TRACKED_BILLS = "EXTRA_TRACKED_BILLS";
+    public static final String EXTRA_TRACKED_RETURNED = "EXTRA_TRACKED_RETURNED";
+
 
     private ArrayList<Bill> introHouseBills;
     private ArrayList<Bill> introSenateBills;
     private ArrayList<Bill> allBills;
     private ArrayList<Bill> allActiveBills;
     private ArrayList<Bill> searchResults;
+    private ArrayList<Bill> trackedBills;
 
     Bill selectedBill;
 
@@ -109,6 +117,34 @@ public class BillDataPull extends IntentService {
                     }
                     break;
 
+                case ACTION_PULL_TRACKED:
+                    ArrayList<String> billIDs = intent.getStringArrayListExtra(EXTRA_TRACKED_BILLS);
+
+                    pullListOfBills(billIDs);
+
+                    for (Bill b:trackedBills) {
+                        Log.i(TAG, "onHandleIntent: Tracked Bill ID: " + b.getBillNum());
+                        Log.i(TAG, "onHandleIntent: ----------------");
+                        
+                    }
+                    if(trackedBills.size() > 0){
+                        broadCastTrackedBills();
+                    }
+                    break;
+
+
+
+            }
+
+        }
+    }
+    public void pullListOfBills(ArrayList<String> bills){
+        trackedBills = new ArrayList<>();
+
+        for (String id :bills) {
+            pullSelectedBill(id);
+            if(selectedBill != null){
+                trackedBills.add(selectedBill);
             }
 
         }
@@ -145,6 +181,12 @@ public class BillDataPull extends IntentService {
                     String summaryShort = obj.getString("summary_short");
                     String latestActionDate = obj.getString("latest_major_action_date");
 
+                    String lastVote = "";
+                    if(!obj.isNull("latest_major_action")){
+                        lastVote  = obj.getString("latest_major_action");
+                    }
+
+
                     JSONObject nestedObj = obj.getJSONObject("cosponsors_by_party");
 
                     int repCosponsors = 0;
@@ -165,6 +207,7 @@ public class BillDataPull extends IntentService {
                     selectedBill.setRepublicanCosponsors(repCosponsors);
                     selectedBill.setDemocratCosponsors(demCosponsors);
                     selectedBill.setSummaryShort(summaryShort);
+                    selectedBill.setLastVote(lastVote);
 
 
 
@@ -302,6 +345,12 @@ public class BillDataPull extends IntentService {
         Intent broadcastIntent;
         broadcastIntent = new Intent(ACTION_SEND_SELECT_BILL);
         broadcastIntent.putExtra(EXTRA_SELECT_BILL, selectedBill);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
+    }
+    public void broadCastTrackedBills(){
+        Intent broadcastIntent;
+        broadcastIntent = new Intent(ACTION_SEND_TRACKED_BILLS);
+        broadcastIntent.putExtra(EXTRA_TRACKED_RETURNED, trackedBills);
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
     }
 
