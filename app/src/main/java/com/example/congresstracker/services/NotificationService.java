@@ -61,8 +61,8 @@ public class NotificationService extends IntentService {
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,CHANNEL_ID);
-        builder.setSmallIcon(R.drawable.ic_notifications_black_24dp);
-        builder.setContentTitle("ALARM");
+        builder.setSmallIcon(R.drawable.ic_account_balance_black_24dp);
+        builder.setContentTitle("Bill Passed");
         builder.setContentText("This notification was triggered by an alarm");
 
         // create a pending intent to be attached to the notification, this tells the notification

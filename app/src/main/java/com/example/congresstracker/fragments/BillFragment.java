@@ -211,6 +211,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
             case R.id.all_bill_btn:
                 if(selectedSubTab == TRACKED_BILL_TAB){
                     billsListV.setVisibility(View.VISIBLE);
+                    filteredList = allActiveBills;
 
                     if(allActiveBills != null) {
                         if (billsListV != null) {
@@ -231,14 +232,16 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
                     dbh = BillTrackDatabaseHelper.getInstance(getContext());
                     cursor = dbh.getAllBills();
 
+
                     if(trackedBills == null){
                         getTrackedBills();
                     }else if(trackedBills.size() < cursor.getCount()){
                         getTrackedBills();
                     } else {
+                        filteredList = trackedBills;
                         if (billsListV != null) {
                             billsListV.setVisibility(View.VISIBLE);
-                            BillAdapter adapter = new BillAdapter(getContext(), trackedBills);
+                            BillAdapter adapter = new BillAdapter(getContext(), filteredList);
                             billsListV.setAdapter(adapter);
 
                         }
@@ -289,6 +292,9 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
 
             }
 
+        }else {
+            billsListV.setVisibility(View.INVISIBLE);
+            Toast.makeText(getContext(), "No Tracked Bills", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -296,7 +302,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Bill selectedBill = allActiveBills.get(position);
+        Bill selectedBill = filteredList.get(position);
         String billUri = selectedBill.getBillUri();
 
         Intent pullDataIntent = new Intent(getContext(), BillDataPull.class);
@@ -385,6 +391,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
 
         public void updateList(){
             if(allActiveBills != null) {
+                filteredList = allActiveBills;
                 if (billsListV != null) {
                     loadingPB.setVisibility(View.GONE);
                     BillAdapter adapter = new BillAdapter(getContext(), allActiveBills);
@@ -409,6 +416,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
         }
         public void updateList(){
             if(searchResults != null) {
+                filteredList = searchResults;
                 if (billsListV != null) {
                     loadingPB.setVisibility(View.GONE);
                     BillAdapter adapter = new BillAdapter(getContext(), searchResults);
@@ -435,6 +443,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
         }
         public void updateUI(){
             if(trackedBills != null) {
+                filteredList = trackedBills;
                 if (billsListV != null) {
                     billsListV.setVisibility(View.VISIBLE);
                     loadingPB.setVisibility(View.GONE);
