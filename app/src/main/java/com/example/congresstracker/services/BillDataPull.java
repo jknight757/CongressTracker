@@ -33,8 +33,8 @@ public class BillDataPull extends IntentService {
     public static final String ACTION_PULL_TRACKED = "com.example.congresstracker.services.action.PULL_TRACKED";
 
 
-    public static final String EXTRA_HOUSE_BILLS = "EXTRA_HOUSE_BILLS";
-    public static final String EXTRA_SENATE_BILLS = "EXTRA_SENATE_BILLS";
+    public static final String EXTRA_UPDATED_BILLS = "EXTRA_UPDATED_BILLS";
+    public static final String EXTRA_INTRODUCED_BILLS = "EXTRA_INTRODUCED_BILLS";
     public static final String EXTRA_ALL_BILLS = "EXTRA_ALL_BILLS";
     public static final String EXTRA_ALL_ACTIVE_BILLS = "EXTRA_ALL_ACTIVE_BILLS";
     public static final String EXTRA_SEARCH_TERM = "EXTRA_SEARCH_TERM";
@@ -51,6 +51,8 @@ public class BillDataPull extends IntentService {
     private ArrayList<Bill> allActiveBills;
     private ArrayList<Bill> searchResults;
     private ArrayList<Bill> trackedBills;
+    private ArrayList<Bill> recentlyIntroduced;
+    private ArrayList<Bill> recentlyUpdated;
 
     Bill selectedBill;
 
@@ -224,6 +226,8 @@ public class BillDataPull extends IntentService {
     public void pullBills(){
         allBills = new ArrayList<>();
         allActiveBills = new ArrayList<>();
+        recentlyIntroduced = new ArrayList<>();
+        recentlyUpdated = new ArrayList<>();
 
         String url = "";
 
@@ -245,17 +249,25 @@ public class BillDataPull extends IntentService {
             temp =  pullBillForURL(url);
             allActiveBills.addAll(temp);
 
-            url = "https://api.propublica.org/congress/v1/113/both/bills/active.json";
+            url = "https://api.propublica.org/congress/v1/116/both/bills/introduced.json";
             temp =  pullBillForURL(url);
-            allActiveBills.addAll(temp);
+            recentlyIntroduced.addAll(temp);
 
-            url = "https://api.propublica.org/congress/v1/112/both/bills/active.json";
+            url = "https://api.propublica.org/congress/v1/116/both/bills/updated.json";
             temp =  pullBillForURL(url);
-            allActiveBills.addAll(temp);
+            recentlyUpdated.addAll(temp);
 
-            url = "https://api.propublica.org/congress/v1/111/both/bills/active.json";
-            temp =  pullBillForURL(url);
-            allActiveBills.addAll(temp);
+//            url = "https://api.propublica.org/congress/v1/113/both/bills/active.json";
+//            temp =  pullBillForURL(url);
+//            allActiveBills.addAll(temp);
+//
+//            url = "https://api.propublica.org/congress/v1/112/both/bills/active.json";
+//            temp =  pullBillForURL(url);
+//            allActiveBills.addAll(temp);
+//
+//            url = "https://api.propublica.org/congress/v1/111/both/bills/active.json";
+//            temp =  pullBillForURL(url);
+//            allActiveBills.addAll(temp);
 
             Collections.sort(allActiveBills);
 
@@ -327,10 +339,10 @@ public class BillDataPull extends IntentService {
     public void broadCastBills(){
         Intent broadcastIntent;
         broadcastIntent = new Intent(ACTION_SEND_BILLS);
-        broadcastIntent.putExtra(EXTRA_HOUSE_BILLS, introHouseBills);
-        broadcastIntent.putExtra(EXTRA_SENATE_BILLS, introSenateBills);
         broadcastIntent.putExtra(EXTRA_ALL_BILLS,allBills);
         broadcastIntent.putExtra(EXTRA_ALL_ACTIVE_BILLS, allActiveBills);
+        broadcastIntent.putExtra(EXTRA_UPDATED_BILLS, recentlyUpdated);
+        broadcastIntent.putExtra(EXTRA_INTRODUCED_BILLS, recentlyIntroduced);
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
     }
 

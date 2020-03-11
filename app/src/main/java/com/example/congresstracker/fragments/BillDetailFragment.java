@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -58,7 +59,6 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
     private TextView dateTV;
     private TextView summaryTV;
     private TextView actionDateTV;
-    private TextView urlTxtBtn;
     private TextView republicanCoTV;
     private TextView democratCoTV;
     private Button fullSummaryBtn;
@@ -132,8 +132,6 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
             dateTV = getView().findViewById(R.id.date_intro_txt);
             summaryTV = getView().findViewById(R.id.summary_txt);
             actionDateTV = getView().findViewById(R.id.latest_action_date_txt);
-            urlTxtBtn = getView().findViewById(R.id.visit_url_txt);
-            urlTxtBtn.setOnClickListener(this);
             republicanCoTV = getView().findViewById(R.id.repub_cosponsor_txt);
             democratCoTV = getView().findViewById(R.id.demo_cosponsor_txt);
             fullSummaryBtn = getView().findViewById(R.id.view_full_sum_btn);
@@ -227,6 +225,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
                 cursor = dbh.getBillById(selectedBill.getBillNum());
 
                 if(cursor.getCount() > 0){
+
                     android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
                     builder.setTitle("Untrack Bill");
                     builder.setMessage("You are already tracking this bill, would you like to stop tracking it?");
@@ -234,7 +233,11 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
                     builder.setPositiveButton("Untrack", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            cursor.moveToFirst();
+                            String id = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_ID));
                             //// remove bill from database
+                            dbh.mDatabase.delete(BillTrackDatabaseHelper.TABLE_NAME,"_id="+ id,null);
+
                         }
                     });
                     builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -286,9 +289,11 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.visit_url_txt:
-                break;
+
             case R.id.view_full_sum_btn:
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(selectedBill.getUrl()));
+                startActivity(intent);
                 break;
 
                 // When the sponsors name is clicked

@@ -17,9 +17,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -47,8 +50,8 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
 
     public static final String TAG = "BillFragment.TAG";
 
-    public static final String EXTRA_HOUSE_BILLS = "EXTRA_HOUSE_BILLS";
-    public static final String EXTRA_SENATE_BILLS = "EXTRA_SENATE_BILLS";
+    public static final String EXTRA_UPDATED_BILLS = "EXTRA_UPDATED_BILLS";
+    public static final String EXTRA_INTRODUCED_BILLS = "EXTRA_INTRODUCED_BILLS";
     public static final String EXTRA_ALL_BILLS = "EXTRA_ALL_BILLS";
     public static final String EXTRA_ALL_ACTIVE_BILLS = "EXTRA_ALL_ACTIVE_BILLS";
     public static final String EXTRA_SEARCH_TERM = "EXTRA_SEARCH_TERM";
@@ -66,8 +69,8 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
     Cursor cursor;
 
 
-    private ArrayList<Bill> introHouseBills;
-    private ArrayList<Bill> introSenateBills;
+    private ArrayList<Bill> recentlyUpdated;
+    private ArrayList<Bill> recentlyIntroduced;
     private ArrayList<Bill> allBills;
     private ArrayList<Bill> allActiveBills;
     private ArrayList<Bill> filteredList;
@@ -83,6 +86,8 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
     private TextView trackedBillsBtn;
     private View allTabSelect;
     private View trackTabSelect;
+    private View emptyView;
+    private TextView emptyText;
 
     private final BillsDataReceiver receiver = new BillsDataReceiver();
     private final SearchResultReceiver searchResultReceiver = new SearchResultReceiver();
@@ -121,6 +126,13 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_bill, container, false);
     }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -150,6 +162,12 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
     }
 
     @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.bill_filter,menu);
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -158,11 +176,12 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
             billsListV.setOnItemClickListener(this);
             loadingPB = getView().findViewById(R.id.loadin_pb);
 
-            if(introHouseBills == null){
+            if(allActiveBills == null){
                 loadingPB.setVisibility(View.VISIBLE);
             }else {
                 loadingPB.setVisibility(View.GONE);
             }
+            selectedSubTab = ALL_BILL_TAB;
 
             searchInputField = getView().findViewById(R.id.search_textInput);
             searchBtn = getView().findViewById(R.id.search_btn);
@@ -181,6 +200,8 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
             allTabSelect = getView().findViewById(R.id.all_bill_select);
             trackTabSelect = getView().findViewById(R.id.track_bill_select);
 
+            emptyView = getView().findViewById(R.id.empty_view);
+            emptyText = getView().findViewById(R.id.empty_text);
             if(allActiveBills != null){
                 loadingPB.setVisibility(View.GONE);
                 BillAdapter adapter = new BillAdapter(getContext(), allActiveBills);
@@ -211,6 +232,8 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
             case R.id.all_bill_btn:
                 if(selectedSubTab == TRACKED_BILL_TAB){
                     billsListV.setVisibility(View.VISIBLE);
+                    emptyView.setVisibility(View.GONE);
+                    emptyText.setVisibility(View.GONE);
                     filteredList = allActiveBills;
 
                     if(allActiveBills != null) {
@@ -235,7 +258,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
 
                     if(trackedBills == null){
                         getTrackedBills();
-                    }else if(trackedBills.size() < cursor.getCount()){
+                    }else if(trackedBills.size() != cursor.getCount()){
                         getTrackedBills();
                     } else {
                         filteredList = trackedBills;
@@ -257,6 +280,29 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
         }
 
     }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.action_dropdown1:
+                filteredList = allActiveBills;
+                showSearchResults();
+                break;
+            case R.id.action_dropdown2:
+                filteredList = recentlyUpdated;
+                showSearchResults();
+                break;
+            case R.id.action_dropdown3:
+                filteredList = recentlyIntroduced;
+                showSearchResults();
+                break;
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
     public void getTrackedBills(){
         dbh = BillTrackDatabaseHelper.getInstance(getContext());
@@ -295,6 +341,8 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
         }else {
             billsListV.setVisibility(View.INVISIBLE);
             Toast.makeText(getContext(), "No Tracked Bills", Toast.LENGTH_SHORT).show();
+            emptyView.setVisibility(View.VISIBLE);
+            emptyText.setVisibility(View.VISIBLE);
         }
 
 
@@ -380,10 +428,10 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "onReceive: ");
             if(intent.hasExtra(EXTRA_ALL_BILLS)){
-                introHouseBills = (ArrayList<Bill>)intent.getSerializableExtra(EXTRA_HOUSE_BILLS);
-                introSenateBills = (ArrayList<Bill>)intent.getSerializableExtra(EXTRA_SENATE_BILLS);
                 allBills = (ArrayList<Bill>) intent.getSerializableExtra(EXTRA_ALL_BILLS);
                 allActiveBills = (ArrayList<Bill>) intent.getSerializableExtra(EXTRA_ALL_ACTIVE_BILLS);
+                recentlyIntroduced = (ArrayList<Bill>) intent.getSerializableExtra(EXTRA_INTRODUCED_BILLS);
+                recentlyUpdated = (ArrayList<Bill>) intent.getSerializableExtra(EXTRA_UPDATED_BILLS);
                 updateList();
 
             }
