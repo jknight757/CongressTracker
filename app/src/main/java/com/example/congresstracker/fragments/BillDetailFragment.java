@@ -260,7 +260,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
 
                     Calendar calendar = Calendar.getInstance();
                     long currentDateTime=calendar.getTimeInMillis();
-                    calendar.setTime(new Date(currentDateTime+(10*1000)));// 1 minutes timeout
+                    calendar.setTime(new Date(currentDateTime+(2*60*1000)));// 1 minutes timeout
                     Intent myIntent = new Intent(getContext(), AlarmReceiver.class);
                     PendingIntent mAlarmSender = PendingIntent.getBroadcast(getContext(), 0, myIntent, 0);
                     AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);

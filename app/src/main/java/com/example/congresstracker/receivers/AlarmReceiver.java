@@ -18,6 +18,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i("TAG", "onReceive: Alarm received starting service");
+
         Intent pullDataIntent = new Intent(context, NotificationService.class);
         context.startService(pullDataIntent);
 
