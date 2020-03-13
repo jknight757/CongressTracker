@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Si
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Beta comment
+        // Gold comment
 
         if(NetworkUtils.isConnected(this)) {
 
