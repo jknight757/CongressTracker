@@ -14,6 +14,7 @@ public class CongressMember implements Serializable {
     private String nextElection;
     private String seniority;
     private ArrayList<Term> terms;
+    private ArrayList<Bill> sponsoredBills;
 
     private String[] stateAbList = new String[] {"AK","AL","AR","AZ","CA","CO","CT","DC","DE","FL","GA","HI","IA","ID",
             "IL","IN","KS","KY","LA","MA","MD","ME","MI","MN","MO","MS","MT","NC","ND","NE","NH","NJ","NM","NV","NY",
@@ -50,6 +51,14 @@ public class CongressMember implements Serializable {
 
     public String[] getStateAbList() {
         return stateAbList;
+    }
+
+    public void setSponsoredBills(ArrayList<Bill> sponsoredBills) {
+        this.sponsoredBills = sponsoredBills;
+    }
+
+    public ArrayList<Bill> getSponsoredBills() {
+        return sponsoredBills;
     }
 
     public String getChamber() {
@@ -115,6 +124,21 @@ public class CongressMember implements Serializable {
     public void setSeniority(String seniority) {
         this.seniority = seniority;
     }
+
+    public int getNumSponsoredFromTerms(){
+        if(terms != null){
+            int total = 0;
+            for (int i = 0; i < terms.size(); i++) {
+                total +=  terms.get(i).getBillsSponsored();
+            }
+            return total;
+
+        }else {
+            return 0;
+        }
+    }
+
+
 
     public int getSeniorityFromTerms(){
         if(terms != null){

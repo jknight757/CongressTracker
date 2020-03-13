@@ -9,6 +9,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.congresstracker.models.Bill;
 import com.example.congresstracker.models.BillVote;
 import com.example.congresstracker.models.CongressMember;
 import com.example.congresstracker.other.NetworkUtils;
@@ -260,8 +261,62 @@ public class MemberDataPull extends IntentService {
 
 
             } catch (JSONException e) {
-            e.printStackTrace();
-        }
+                e.printStackTrace();
+            }
+
+            if(selectedMember.getTerms().size() > 0){
+                if(selectedMember.getNumSponsoredFromTerms() > 0){
+
+                     ArrayList<Bill> billsToReturn = new ArrayList<>();
+                     url = "https://api.propublica.org/congress/v1/members/"+ selectedMember.getId() +"/bills/introduced.json";
+                     data = NetworkUtils.getNetworkData(url);
+                    try {
+                            JSONObject response = new JSONObject(data);
+                            JSONArray resultsJson = response.getJSONArray("results");
+
+
+                            for (int i = 0; i < resultsJson.length(); i++) {
+                                JSONObject obj = resultsJson.getJSONObject(i);
+                                JSONArray billsJson = obj.getJSONArray("bills");
+
+                                for (int x = 0; x < billsJson.length(); x++) {
+                                    JSONObject nestedObj = billsJson.getJSONObject(x);
+
+                                    String chamber = "";
+                                    if(!obj.isNull("chamber")){
+                                        chamber = obj.getString("chamber");
+                                    }
+
+                                    String billNum = nestedObj.getString("number");
+                                    String billUri = nestedObj.getString("bill_uri");
+                                    String title = nestedObj.getString("title");
+                                    String shortTitle  = nestedObj.getString("short_title");
+                                    String sponsor = nestedObj.getString("sponsor_name");
+                                    String dateIntroduced = nestedObj.getString("introduced_date");
+                                    boolean active = nestedObj.getBoolean("active");
+                                    int cosponsors = nestedObj.getInt("cosponsors");
+                                    String billUrl = nestedObj.getString("congressdotgov_url");
+                                    String summary = nestedObj.getString("summary");
+
+
+                                    billsToReturn.add(new Bill(chamber,billNum,billUri,title,
+                                            shortTitle,sponsor,dateIntroduced,active,cosponsors,billUrl,summary));
+
+                                }
+
+                            }
+
+                            selectedMember.setSponsoredBills(billsToReturn);
+
+                    }catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+
+
         }
 
     }

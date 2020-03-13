@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -32,8 +33,10 @@ import com.example.congresstracker.R;
 import com.example.congresstracker.activities.BillActivity;
 import com.example.congresstracker.activities.MainActivity;
 import com.example.congresstracker.activities.MyAreaActivity;
+import com.example.congresstracker.models.Bill;
 import com.example.congresstracker.models.BillVote;
 import com.example.congresstracker.models.CongressMember;
+import com.example.congresstracker.other.BillAdapter;
 import com.example.congresstracker.services.MemberDataPull;
 import com.example.congresstracker.models.Term;
 import com.example.congresstracker.other.VoteAdapter;
@@ -79,6 +82,7 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
     private TextView committeesTV;
     private TextView nextElectionTV;
     private ListView committeeLV;
+    private TextView sponsoredBillsBtn;
 
     Bitmap memImage;
 
@@ -161,8 +165,12 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
             otherInfoView = getView().findViewById(R.id.other_info_view);
             seniorityTV = getView().findViewById(R.id.seniority_txt);
             committeesTV = getView().findViewById(R.id.committees_txt);
+            committeesTV.setOnClickListener(this);
+
+            sponsoredBillsBtn = getView().findViewById(R.id.sponsored_bills_txt);
+            sponsoredBillsBtn.setOnClickListener(this);
+
             nextElectionTV = getView().findViewById(R.id.next_election_txt);
-            committeeLV = getView().findViewById(R.id.committee_listview);
             if(selectedMember != null){
                 updateUI();
 
@@ -205,6 +213,7 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
 
                     voteBtnSelect.setVisibility(View.VISIBLE);
                     otherBtnSelect.setVisibility(View.INVISIBLE);
+                    committeesTV.setOnClickListener(this);
 
 
                     String seniority =  "Seniority: ";
@@ -212,14 +221,6 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
                     String nextElection = "Next Election: ";
                     nextElection += selectedMember.getNextElection();
 
-                    ArrayList<Term> terms = selectedMember.getTerms();
-                    ArrayList<String> committees = terms.get(0).getCommittees();
-                    String committeeStr = "Current Committees:";
-
-                    if(committeeLV != null && committees != null){
-                        ArrayAdapter<String> comAdapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_1, committees);
-                        committeeLV.setAdapter(comAdapter);
-                    }
 
 
                     seniorityTV.setText(seniority);
@@ -227,6 +228,85 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
 
 
                 }
+                break;
+            case R.id.committees_txt:
+                if(selectedSubTab == OTHER_INFO_TAB){
+                    final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+
+                    View view = getLayoutInflater().inflate(R.layout.committee_popup, null);
+                    ListView lv = view.findViewById(R.id.committee_listview_pu);
+                    ImageButton closeBtn = view.findViewById(R.id.popup_close_btn);
+
+                    ArrayList<Term> terms = selectedMember.getTerms();
+                    ArrayList<String> committees = terms.get(0).getCommittees();
+
+                    if(lv != null && committees != null){
+                        ArrayAdapter<String> comAdapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_1, committees);
+                        lv.setAdapter(comAdapter);
+                    }
+                    builder.setView(view);
+
+                    final android.app.AlertDialog alertDialog = builder.create();
+
+                    closeBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            alertDialog.dismiss();
+                        }
+                    });
+
+
+                    alertDialog.show();
+
+
+                }
+                break;
+
+            case R.id.sponsored_bills_txt:
+                if(selectedSubTab == OTHER_INFO_TAB){
+                    final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+
+                    View view = getLayoutInflater().inflate(R.layout.sponsored_bills_popup, null);
+                    ListView lv = view.findViewById(R.id.sponsored_listview_pu);
+                    ImageButton closeBtn = view.findViewById(R.id.popup_close_btn);
+
+                    final ArrayList<Bill> bills = selectedMember.getSponsoredBills();
+
+                    if(lv != null && bills != null){
+
+                        BillAdapter adapter = new BillAdapter(getContext(), bills);
+                        lv.setAdapter(adapter);
+
+                    }
+
+                    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                            String billUri = bills.get(position).getBillUri();
+                            Intent billIntent = new Intent(getContext(), BillActivity.class)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                            billIntent.putExtra(EXTRA_SELECT_BILL,billUri);
+                            startActivity(billIntent);
+                        }
+                    });
+                    builder.setView(view);
+
+                    final android.app.AlertDialog alertDialog = builder.create();
+
+                    closeBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            alertDialog.dismiss();
+                        }
+                    });
+
+
+                    alertDialog.show();
+
+
+                }
+
                 break;
         }
 
