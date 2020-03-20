@@ -69,6 +69,13 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
     }
 
     @Override
+    public void FilterClicked(String filter) {
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + filter+ "</font>"));
+        }
+    }
+
+    @Override
     public void updateTitle() {
         if(getSupportActionBar() != null){
             getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Bills" + "</font>"));

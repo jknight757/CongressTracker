@@ -9,12 +9,17 @@ public class User implements Serializable {
     public String party;
     public String zip;
     public boolean hasProfImg;
+    public String state;
 
 
     public User(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public String getState() {
+        return state;
     }
 
     public String getName() {
@@ -41,6 +46,9 @@ public class User implements Serializable {
         return hasProfImg;
     }
 
+    public void setState(String state) {
+        this.state = state;
+    }
     public void setParty(String party) {
         this.party = party;
     }

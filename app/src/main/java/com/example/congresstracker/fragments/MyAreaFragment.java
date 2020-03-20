@@ -23,7 +23,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,6 +71,13 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
     FirebaseUser user;
     private FirebaseFirestore fireStoreDB;
     User thisUser;
+
+    private String[] stateList = new String[] {"Alaska","Alabama","Arkansas","Arizona","California","Colorado","Connecticut",
+            "District of Columbia","Delaware","Florida","Georgia","Hawaii","Iowa","Idaho", "Illinois","Indiana","Kansas",
+            "Kentucky","Louisiana","Massachusetts","Maryland","Maine","Michigan", "Minnesota","Missouri","Mississippi",
+            "Montana","North Carolina","North Dakota","Nebraska","New Hampshire", "New Jersey","New Mexico","Nevada",
+            "New York", "Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota",
+            "Tennessee","Texas","Utah", "Virginia","Vermont","Washington","Wisconsin","West Virginia","Wyoming"};
 
     private final UserDataReceiver receiver = new UserDataReceiver();
 
@@ -133,6 +144,9 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
             case R.id.action_dropdown2:
                 signOut();
                 break;
+            case R.id.action_dropdown3:
+                changeLogin();
+                break;
         }
 
 
@@ -183,6 +197,133 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
         startActivity(signoutIntent);
 
     }
+    public void changeLogin(){
+        if(NetworkUtils.isConnected(getContext())) {
+
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            View view = getLayoutInflater().inflate(R.layout.change_login_alert, null);
+
+            final TextInputEditText emailInput = view.findViewById(R.id.email_textInput);
+            final TextInputEditText passwordInput = view.findViewById(R.id.password_textInput);
+            final String oldEmail = thisUser.getEmail();
+            final String oldPassword = thisUser.getPassword();
+            emailInput.setText(oldEmail);
+            passwordInput.setText(oldPassword);
+
+            builder.setView(view);
+            final android.app.AlertDialog alertDialog = builder.create();
+
+
+
+            view.findViewById(R.id.save_changes_btn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean emailChanged = false;
+                    boolean passwordChanged = false;
+
+                mAuth = FirebaseAuth.getInstance();
+                user = mAuth.getCurrentUser();
+                String userID = user.getUid();
+                fireStoreDB = FirebaseFirestore.getInstance();
+
+
+                final String email = emailInput.getText().toString();
+                final String password = passwordInput.getText().toString();
+
+
+
+
+
+                if (!email.isEmpty() && !email.equals(oldEmail)) {
+
+                    thisUser.setEmail(email);
+                    emailChanged = true;
+
+
+                }
+                if (!password.isEmpty() && !password.equals(oldPassword)) {
+                    thisUser.setPassword(password);
+                    passwordChanged = true;
+
+                }
+
+
+                if (emailChanged && passwordChanged) {
+                    AuthCredential credential = EmailAuthProvider.getCredential(oldEmail, oldPassword);
+                    user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            FirebaseUser _user = FirebaseAuth.getInstance().getCurrentUser();
+                            _user.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Toast.makeText(getContext(), "Account Updated", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                            _user.updatePassword(password).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+
+                                }
+                            });
+                        }
+                    });
+
+
+                } else {
+                    if (emailChanged) {
+                        AuthCredential credential = EmailAuthProvider.getCredential(oldEmail, oldPassword);
+                        user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                FirebaseUser _user = FirebaseAuth.getInstance().getCurrentUser();
+                                _user.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Toast.makeText(getContext(), "Email Updated", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+                    if (passwordChanged) {
+                        AuthCredential credential = EmailAuthProvider.getCredential(oldPassword, oldPassword);
+                        user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                FirebaseUser _user = FirebaseAuth.getInstance().getCurrentUser();
+                                _user.updatePassword(password).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(getContext(), "Password Updated", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+
+                }
+                }
+            });
+
+            view.findViewById(R.id.cancel_changes_btn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    alertDialog.dismiss();
+                }
+            });
+
+
+            alertDialog.show();
+
+        }
+    }
     public void editProfile(){
         if(NetworkUtils.isConnected(getContext())){
 
@@ -191,10 +332,34 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
             View view = getLayoutInflater().inflate(R.layout.edit_profile_alert, null);
 
             final TextInputEditText nameInput = view.findViewById(R.id.name_textInput);
-            final TextInputEditText emailInput = view.findViewById(R.id.email_textInput);
-            final TextInputEditText passwordInput = view.findViewById(R.id.password_textInput);
             final TextInputEditText partyInput = view.findViewById(R.id.party_textInput);
             final TextInputEditText zipInput = view.findViewById(R.id.zip_textInput);
+            final Spinner stateSpinner = view.findViewById(R.id.state_spinner);
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_1, stateList);
+            stateSpinner.setAdapter(adapter);
+
+            if(thisUser.getState() != null){
+                int position = 0;
+                for (int i = 0; i < stateList.length; i++) {
+                    if(thisUser.getState().equals(stateList[i])){
+                        position = i;
+                    }
+                }
+                stateSpinner.setSelection(position);
+            }
+
+            stateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    thisUser.setState(stateList[position]);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
 
             builder.setTitle("Edit Profile");
 
@@ -207,31 +372,15 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
                     fireStoreDB = FirebaseFirestore.getInstance();
 
                     String name = nameInput.getText().toString();
-                    final String email = emailInput.getText().toString();
-                    final String password = passwordInput.getText().toString();
                     String party = partyInput.getText().toString();
                     String zip = zipInput.getText().toString();
-                    boolean emailChanged = false;
-                    boolean passwordChanged = false;
-                    String oldEmail = thisUser.getEmail();
-                    String oldPassword = thisUser.getPassword();
+                    String state = (String)stateSpinner.getSelectedItem();
+
 
 
                     if(!name.isEmpty()){
 
                         thisUser.setName(name);
-
-                    }
-                    if(!email.isEmpty()){
-
-                        thisUser.setEmail(email);
-                        emailChanged = true;
-
-
-                    }
-                    if(!password.isEmpty()){
-                        thisUser.setPassword(password);
-                        passwordChanged = true;
 
                     }
                     if(!party.isEmpty()){
@@ -243,7 +392,7 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
 
                     }
 
-                    if(name.isEmpty() && email.isEmpty() && password.isEmpty() && party.isEmpty() && zip.isEmpty()){
+                    if(name.isEmpty() && party.isEmpty() && zip.isEmpty() && thisUser.getState() == null){
                         Toast.makeText(getContext(), "No Changes made!", Toast.LENGTH_SHORT).show();
                     }else {
 
@@ -263,81 +412,14 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
                                     }
                                 });
 
-
-                        if(emailChanged && passwordChanged){
-                            AuthCredential credential = EmailAuthProvider.getCredential(oldEmail, oldPassword);
-                            user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    FirebaseUser _user = FirebaseAuth.getInstance().getCurrentUser();
-                                    _user.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            Toast.makeText(getContext(), "Account Updated", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-
-                                    _user.updatePassword(password).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-
-                                        }
-                                    });
-                                }
-                            });
-
-
-                        }else {
-                            if(emailChanged){
-                                AuthCredential credential = EmailAuthProvider.getCredential(oldEmail, oldPassword);
-                                user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        FirebaseUser _user = FirebaseAuth.getInstance().getCurrentUser();
-                                        _user.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                Toast.makeText(getContext(), "Email Updated", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-
-                            if(passwordChanged){
-                                AuthCredential credential = EmailAuthProvider.getCredential(oldPassword, oldPassword);
-                                user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        FirebaseUser _user = FirebaseAuth.getInstance().getCurrentUser();
-                                        _user.updatePassword(password).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if(task.isSuccessful()){
-                                                    Toast.makeText(getContext(), "Password Updated", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        }
-
-
-
                         Intent pullDataIntent = new Intent(getContext(), UserDataPull.class);
                         pullDataIntent.setAction(UserDataPull.ACTION_PULL_PROFILE);
                         getContext().startService(pullDataIntent);
 
                     }
 
-
-
                 }
             });
-
-
-
             builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -347,8 +429,6 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
 
             builder.setView(view);
             builder.show();
-
-
 
 
         }

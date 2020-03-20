@@ -110,6 +110,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
 
     public interface BillClickListener {
         void BillClicked(String id);
+        void FilterClicked(String filter);
     }
 
     @Override
@@ -288,14 +289,17 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
             case R.id.action_dropdown1:
                 filteredList = allActiveBills;
                 showSearchResults();
+                listener.FilterClicked("All Active Bills");
                 break;
             case R.id.action_dropdown2:
                 filteredList = recentlyUpdated;
                 showSearchResults();
+                listener.FilterClicked("Recently Updated Bills");
                 break;
             case R.id.action_dropdown3:
                 filteredList = recentlyIntroduced;
                 showSearchResults();
+                listener.FilterClicked("Recently Introduced Bills");
                 break;
         }
 
