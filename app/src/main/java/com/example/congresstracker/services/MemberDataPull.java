@@ -12,6 +12,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.example.congresstracker.models.Bill;
 import com.example.congresstracker.models.BillVote;
 import com.example.congresstracker.models.CongressMember;
+import com.example.congresstracker.models.States;
 import com.example.congresstracker.other.NetworkUtils;
 import com.example.congresstracker.models.Term;
 
@@ -32,11 +33,13 @@ public class MemberDataPull extends IntentService {
     public static final String ACTION_RECEIVE_MSG = "com.example.congresstracker.models.action.RECEIVE_MSG";
     public static final String ACTION_SEND_MEM_DETAIL = "com.example.congresstracker.models.action.SEND_MEM_DETAIL";
     public static final String ACTION_SEND_MEM_VOTES = "com.example.congresstracker.models.action.SEND_MEM_VOTES";
+    public static final String ACTION_SEND_STATE_REPS = "com.example.congresstracker.models.action.SEND_STATE_REPS";
 
 
     public static final String ACTION_PULL_ALL = "com.example.congresstracker.models.action.PULL_ALL";
     public static final String ACTION_PULL_SELECTED = "com.example.congresstracker.models.action.PULL_SELECTED";
     public static final String ACTION_PULL_VOTES = "com.example.congresstracker.models.action.PULL_VOTES";
+    public static final String ACTION_PULL_STATE = "com.example.congresstracker.models.action.PULL_STATE";
 
     public static final String EXTRA_MEMBERS = "EXTRA_MEMBERS";
     public static final String EXTRA_SENATE = "EXTRA_SENATE";
@@ -46,6 +49,8 @@ public class MemberDataPull extends IntentService {
     public static final String EXTRA_SELECTED_MEMBER = "EXTRA_SELECTED_MEMBER";
     public static final String EXTRA_MEMBER_VOTES = "EXTRA_MEMBER_VOTES";
     public static final String EXTRA_MEMBER_IMAGE = "EXTRA_MEMBER_IMAGE";
+    public static final String EXTRA_USER_STATE = "EXTRA_USER_STATE";
+    public static final String EXTRA_STATE_REPS = "EXTRA_STATE_REPS";
 
     private final String TAG = "MemberDataPull";
 
@@ -54,6 +59,7 @@ public class MemberDataPull extends IntentService {
     ArrayList<CongressMember> house;
     ArrayList<CongressMember> pastMembers;
     ArrayList<CongressMember> allMembers;
+    ArrayList<CongressMember> myState;
     ArrayList<BillVote> memberVotes;
     CongressMember selectedMember;
 
@@ -62,6 +68,7 @@ public class MemberDataPull extends IntentService {
     private static final int BROADCAST_ALL_MEM = 0;
     private static final int BROADCAST_SELECTED_MEM = 1;
     private static final int BROADCAST_MEM_VOTES = 2;
+    private static final int BROADCAST_STATE_REPS = 3;
 
     private int broadCastCode;
 
@@ -134,8 +141,21 @@ public class MemberDataPull extends IntentService {
                         broadCastCode = BROADCAST_MEM_VOTES;
                         broadCastResults(broadCastCode);
                     }
+                    break;
 
+                case ACTION_PULL_STATE:
+                    String stateAbr = intent.getStringExtra(EXTRA_USER_STATE);
+                    requestStateMembers(stateAbr);
 
+                    if(myState != null){
+                        for(CongressMember m : myState){
+                            Log.i(TAG, "stateMember: name: " + m.getName());
+                            Log.i(TAG, "stateMember: party: " + m.getParty());
+                            Log.i(TAG, "stateMember: chamber: " + m.getChamber());
+                        }
+                        broadCastCode = BROADCAST_STATE_REPS;
+                        broadCastResults(broadCastCode);
+                    }
                     break;
 
             }
@@ -493,6 +513,82 @@ public class MemberDataPull extends IntentService {
 
 
     }
+    public void requestStateMembers(String state){
+
+        String url = "https://api.propublica.org/congress/v1/members/senate/"+state+"/current.json";
+        String data = NetworkUtils.getNetworkData(url);
+
+        if(NetworkUtils.isConnected(getBaseContext())){
+            myState = new ArrayList<>();
+
+            try {
+
+                JSONObject response = new JSONObject(data);
+                JSONArray resultsJson = response.getJSONArray("results");
+
+                for (int i = 0; i < resultsJson.length(); i++) {
+                    JSONObject obj = resultsJson.getJSONObject(i);
+                    String id = obj.getString("id");
+                    String firstName = obj.getString("first_name");
+                    String lastName = obj.getString("last_name");
+                    String party = obj.getString("party");
+                    String seniority = "0";
+                    if(!obj.isNull("seniority")){
+                        seniority = obj.getString("seniority");
+                    }
+                    String nextElection = obj.getString("next_election");
+
+                    String chamber = "Senate";
+                    String name = firstName + " " + lastName;
+
+                    myState.add(new CongressMember(id, name, party, state, chamber, seniority, nextElection));
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            int numDistricts = States.getDistricts(state);
+
+            for (int x = 1; x <= numDistricts; x++) {
+
+
+                url = "https://api.propublica.org/congress/v1/members/house/" + state + "/"+ x +"/current.json";
+                data = NetworkUtils.getNetworkData(url);
+
+                try {
+
+                    JSONObject response = new JSONObject(data);
+                    JSONArray resultsJson = response.getJSONArray("results");
+
+                    for (int i = 0; i < resultsJson.length(); i++) {
+                        JSONObject obj = resultsJson.getJSONObject(i);
+                        String id = obj.getString("id");
+                        String firstName = obj.getString("first_name");
+                        String lastName = obj.getString("last_name");
+                        String party = obj.getString("party");
+                        String seniority = "0";
+                        if (!obj.isNull("seniority")) {
+                            seniority = obj.getString("seniority");
+                        }
+                        String nextElection = obj.getString("next_election");
+
+                        String chamber = "House";
+                        String name = firstName + " " + lastName;
+
+                        myState.add(new CongressMember(id, name, party, state, chamber, seniority, nextElection));
+
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+    }
 
     public void requestMemberImage(String id){
 
@@ -531,6 +627,12 @@ public class MemberDataPull extends IntentService {
             case BROADCAST_MEM_VOTES:
                 broadcastIntent = new Intent(ACTION_SEND_MEM_VOTES);
                 broadcastIntent.putExtra(EXTRA_MEMBER_VOTES, memberVotes);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
+                break;
+
+            case BROADCAST_STATE_REPS:
+                broadcastIntent = new Intent(ACTION_SEND_STATE_REPS);
+                broadcastIntent.putExtra(EXTRA_STATE_REPS, myState);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
                 break;
         }

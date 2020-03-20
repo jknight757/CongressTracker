@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,8 +36,13 @@ import com.example.congresstracker.R;
 import com.example.congresstracker.activities.BillActivity;
 import com.example.congresstracker.activities.CongressActivity;
 import com.example.congresstracker.activities.MainActivity;
+import com.example.congresstracker.models.CongressMember;
+import com.example.congresstracker.models.States;
+import com.example.congresstracker.other.MemberAdapter;
 import com.example.congresstracker.other.NetworkUtils;
 import com.example.congresstracker.models.User;
+import com.example.congresstracker.other.StateRepsAdapter;
+import com.example.congresstracker.services.MemberDataPull;
 import com.example.congresstracker.services.UserDataPull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -51,10 +57,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MyAreaFragment extends Fragment implements BottomNavigationView.OnNavigationItemSelectedListener {
+public class MyAreaFragment extends Fragment implements BottomNavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     public static final String TAG = "MyArea.TAG";
     public static final String EXTRA_USER = "EXTRA_USER";
@@ -64,6 +74,8 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
     private TextView partyTV;
     private TextView stateTV;
     private ImageView profileImg;
+    private TextView setStateEmpty;
+    private ListView localRepsLV;
 
     private BottomNavigationView bottomNavigation;
 
@@ -72,16 +84,19 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
     private FirebaseFirestore fireStoreDB;
     User thisUser;
 
+    private ArrayList<CongressMember> myReps;
+
     private String[] stateList = new String[] {"Alaska","Alabama","Arkansas","Arizona","California","Colorado","Connecticut",
-            "District of Columbia","Delaware","Florida","Georgia","Hawaii","Iowa","Idaho", "Illinois","Indiana","Kansas",
+            "Delaware","Florida","Georgia","Hawaii","Iowa","Idaho", "Illinois","Indiana","Kansas",
             "Kentucky","Louisiana","Massachusetts","Maryland","Maine","Michigan", "Minnesota","Missouri","Mississippi",
             "Montana","North Carolina","North Dakota","Nebraska","New Hampshire", "New Jersey","New Mexico","Nevada",
             "New York", "Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota",
             "Tennessee","Texas","Utah", "Virginia","Vermont","Washington","Wisconsin","West Virginia","Wyoming"};
 
+
     private final UserDataReceiver receiver = new UserDataReceiver();
 
-
+    private final StateRepReceiver repReceiver = new StateRepReceiver();
     public MyAreaFragment() {
         // Required empty public constructor
     }
@@ -118,6 +133,10 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
             partyTV = getView().findViewById(R.id.party_txt_lbl);
             stateTV = getView().findViewById(R.id.state_txt_lbl);
             profileImg = getView().findViewById(R.id.prof_img);
+            setStateEmpty = getView().findViewById(R.id.empty_lv_text);
+            setStateEmpty.setOnClickListener(this);
+
+            localRepsLV = getView().findViewById(R.id.local_rep_listview);
 
             bottomNavigation = getView().findViewById(R.id.bottom_tab_bar);
             bottomNavigation.setSelectedItemId(R.id.local_tab_item);
@@ -162,6 +181,10 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
         //getContext().registerReceiver(receiver,filter);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver,filter);
 
+        IntentFilter repFilter = new IntentFilter();
+        repFilter.addAction(MemberDataPull.ACTION_SEND_STATE_REPS);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(repReceiver,repFilter);
+
     }
 
     @Override
@@ -169,6 +192,7 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
         super.onPause();
         //getContext().unregisterReceiver(receiver);
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(repReceiver);
     }
 
     @Override
@@ -435,7 +459,13 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
 
     }
 
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.empty_lv_text){
+            editProfile();
+        }
 
+    }
 
 
     class UserDataReceiver extends BroadcastReceiver {
@@ -472,9 +502,53 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
         if(user.getParty() != null){
             partyTV.setText(user.getParty());
         }
+        String state =user.getState();
+        if(state != null){
+            stateTV.setText(state);
+            // pull users state reps
 
-        if(user.getZip() != null){
-            stateTV.setText(user.getZip());
+
+
+                String abrv = States.getAbreviation(state);
+                Toast.makeText(getContext(), "" + abrv, Toast.LENGTH_SHORT).show();
+
+                Intent pullDataIntent = new Intent(getContext(), MemberDataPull.class);
+                pullDataIntent.setAction(MemberDataPull.ACTION_PULL_STATE);
+                pullDataIntent.putExtra(MemberDataPull.EXTRA_USER_STATE, abrv);
+                getContext().startService(pullDataIntent);
+
+
+
+        }else {
+            if(user.getZip() != null){
+                stateTV.setText(user.getZip());
+            }
+
+            setStateEmpty.setVisibility(View.VISIBLE);
+
+        }
+
+    }
+
+    class StateRepReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "onReceive: State Reps");
+            if(intent.hasExtra(MemberDataPull.EXTRA_STATE_REPS)){
+                myReps = (ArrayList<CongressMember>) intent.getSerializableExtra(MemberDataPull.EXTRA_STATE_REPS);
+                updateListView();
+
+            }
+        }
+
+        public void updateListView(){
+
+            if(myReps != null){
+                StateRepsAdapter adapter = new StateRepsAdapter(getContext(), myReps);
+                localRepsLV.setAdapter(adapter);
+            }
+
         }
     }
 }

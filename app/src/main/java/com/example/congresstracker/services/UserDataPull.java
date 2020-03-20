@@ -73,8 +73,10 @@ public class UserDataPull extends IntentService {
                         boolean hasImg = documentSnapshot.getBoolean("hasProfImg");
                         String name = documentSnapshot.getString("name");
                         String password = documentSnapshot.getString("password");
+                        String state = documentSnapshot.getString("state");
                         User me = new User(name,email,password);
                         me.setHasProfImg(hasImg);
+                        me.setState(state);
                         String party = "";
                         if(documentSnapshot.contains("party")){
                             party = documentSnapshot.getString("party");

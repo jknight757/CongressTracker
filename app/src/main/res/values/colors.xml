@@ -15,5 +15,6 @@
     <color name="lightGreySolid">#808080</color>
     <color name="offWhite">#EFEFEF</color>
     <color name="white">#FFFFFF</color>
+    <color name="hyperLinkBlue">#0000EE</color>
 
 </resources>
