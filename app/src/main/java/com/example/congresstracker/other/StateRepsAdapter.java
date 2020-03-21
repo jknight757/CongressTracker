@@ -1,11 +1,14 @@
 package com.example.congresstracker.other;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.models.CongressMember;
@@ -60,6 +63,32 @@ public class StateRepsAdapter extends BaseAdapter {
             vh.nameTV.setText(members.get(position).getName());
             vh.chamberTV.setText(members.get(position).getChamber());
             vh.partyTV.setText(members.get(position).getParty());
+
+            Typeface boldTypeface = Typeface.defaultFromStyle(Typeface.BOLD);
+            Typeface regTypeface = Typeface.defaultFromStyle(Typeface.NORMAL);
+
+
+            if(members.get(position).getChamber().equals("Senate")){
+                vh.nameTV.setTypeface(boldTypeface);
+                vh.chamberTV.setTypeface(boldTypeface);
+                vh.partyTV.setTypeface(boldTypeface);
+//                ViewGroup.LayoutParams params = vh.listItem.getLayoutParams();
+//                params.height = 200;
+//                vh.listItem.requestLayout();
+//                vh.nameTV.setTextSize(28);
+//                vh.chamberTV.setTextSize(24);
+                //vh.listItem.setBackgroundColor(ContextCompat.getColor(mContext,R.color.offWhite));
+            }else {
+                vh.nameTV.setTypeface(regTypeface);
+                vh.chamberTV.setTypeface(regTypeface);
+                vh.partyTV.setTypeface(regTypeface);
+                //vh.listItem.setBackgroundColor(ContextCompat.getColor(mContext,R.color.white));
+//                ViewGroup.LayoutParams params = vh.listItem.getLayoutParams();
+//                params.height = 150;
+//                vh.listItem.requestLayout();
+//                vh.nameTV.setTextSize(24);
+//                vh.chamberTV.setTextSize(18);
+            }
         }
         return convertView;
     }
@@ -68,11 +97,13 @@ public class StateRepsAdapter extends BaseAdapter {
         final TextView nameTV;
         final TextView chamberTV;
         final TextView partyTV;
+        final View listItem;
 
         public ViewHolder(View _layout) {
             this.nameTV = _layout.findViewById(R.id.name_lbl);
             this.chamberTV = _layout.findViewById(R.id.chamber_lbl);
             this.partyTV = _layout.findViewById(R.id.local_party_lbl);
+            this.listItem = _layout;
         }
     }
 }

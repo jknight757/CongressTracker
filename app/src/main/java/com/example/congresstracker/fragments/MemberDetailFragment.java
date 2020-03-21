@@ -216,10 +216,17 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
                     committeesTV.setOnClickListener(this);
 
 
-                    String seniority =  "Seniority: ";
-                    seniority += selectedMember.getSeniorityFromTerms();
-                    String nextElection = "Next Election: ";
+                    String seniority =  "Seniority\n";
+                    if(selectedMember.getSeniorityFromTerms() == 1){
+                        seniority +=  selectedMember.getSeniorityFromTerms()+ " Year";
+                    }else {
+                        seniority += selectedMember.getSeniorityFromTerms()+ " Years";
+                    }
+
+
+                    String nextElection = "Next Election\n";
                     nextElection += selectedMember.getNextElection();
+
 
 
 

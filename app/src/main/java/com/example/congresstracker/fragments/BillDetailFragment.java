@@ -16,9 +16,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -374,7 +376,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
 
             String sponsor = "Sponsor: " + selectedBill.getSponsor();
             sponsorTV.setText(sponsor);
-
+            sponsorTV.setTextColor(ContextCompat.getColor(getContext(),R.color.hyperLinkBlue));
             String status = "Status: ";
             if(selectedBill.isActive()){
                 status += "Active";

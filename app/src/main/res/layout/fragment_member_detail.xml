@@ -309,40 +309,45 @@
             app:layout_constraintStart_toEndOf="@id/vertical_start_guideline"
             app:layout_constraintEnd_toStartOf="@id/vertical_end_guideline"
             android:visibility="gone"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="25dp">
 
             <TextView
                 android:id="@+id/seniority_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Seniority:"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 android:layout_marginBottom="10dp"/>
             <TextView
                 android:id="@+id/next_election_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Next Election:"
-                android:textSize="18sp"
-                android:layout_marginBottom="10dp"/>
+                android:textSize="22sp"
+                android:layout_marginBottom="20dp"/>
             <TextView
                 android:id="@+id/committees_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="View Committees"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 android:clickable="true"
                 android:focusable="true"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:textAlignment="center"
+                android:background="@color/offWhite"
+                android:layout_marginBottom="10dp" />
             <TextView
                 android:id="@+id/sponsored_bills_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="View recent bills by this member"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 android:clickable="true"
                 android:focusable="true"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:textAlignment="center"
+                android:background="@color/offWhite"/>
 
 
         </LinearLayout>
