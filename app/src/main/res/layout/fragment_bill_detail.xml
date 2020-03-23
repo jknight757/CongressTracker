@@ -36,20 +36,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/vertical_start_guideline"
             app:layout_constraintEnd_toStartOf="@id/vertical_end_guideline"
-
             android:background="@color/offWhite"
             android:weightSum="5">
-
-            <TextView
-                android:id="@+id/bill_txt_lbl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:text="@string/place_holder"
-                android:textSize="26sp"
-                android:textStyle="bold"
-                android:maxLines="5"
-                android:ellipsize="end"/>
 
             <TextView
                 android:id="@+id/sponsor_txt_lbl"
@@ -58,13 +46,29 @@
                 android:text="Sponsor"
                 android:textSize="22sp"
                 android:layout_weight="1"
+                android:textAllCaps="true"
+                android:textStyle="bold"
                 android:clickable="true"/>
+
+            <TextView
+                android:id="@+id/bill_txt_lbl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:text="@string/place_holder"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:maxLines="10"
+                android:layout_marginTop="5dp"
+                android:ellipsize="end"/>
+
+
             <TextView
                 android:id="@+id/status_txt_lbl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Status"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:layout_weight="1"/>
 
 
@@ -147,12 +151,7 @@
             android:orientation="vertical"
             app:layout_constraintGuide_end="20dp" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/horizontal_guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.35" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

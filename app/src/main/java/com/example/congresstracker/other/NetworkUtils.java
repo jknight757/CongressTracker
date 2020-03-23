@@ -19,9 +19,11 @@ public class NetworkUtils {
         ConnectivityManager connectMgr = (ConnectivityManager)_context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+
             if(connectMgr != null){
-                NetworkCapabilities capabilities =
-                        connectMgr.getNetworkCapabilities(connectMgr.getActiveNetwork());
+
+                NetworkCapabilities capabilities = connectMgr.getNetworkCapabilities(connectMgr.getActiveNetwork());
+
                 if(capabilities != null){
                     if(capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)){
                         return true;

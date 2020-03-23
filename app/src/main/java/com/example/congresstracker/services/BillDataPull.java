@@ -235,27 +235,40 @@ public class BillDataPull extends IntentService {
         if(NetworkUtils.isConnected(getBaseContext())) {
 
             ArrayList<Bill> temp;
+            ArrayList<Bill> shortTitles = new ArrayList<>();
 
 
             url = "https://api.propublica.org/congress/v1/116/both/bills/active.json";
             temp =  pullBillForURL(url);
-            allActiveBills.addAll(temp);
+            for (Bill b: temp) {
+                pullSelectedBill(b.getBillUri());
+                shortTitles.add(selectedBill);
+            }
+            allActiveBills.addAll(shortTitles);
 
-            url = "https://api.propublica.org/congress/v1/115/both/bills/active.json";
-            temp =  pullBillForURL(url);
-            allActiveBills.addAll(temp);
+//            url = "https://api.propublica.org/congress/v1/115/both/bills/active.json";
+//            temp =  pullBillForURL(url);
+//            allActiveBills.addAll(temp);
 
-            url = "https://api.propublica.org/congress/v1/114/both/bills/active.json";
-            temp =  pullBillForURL(url);
-            allActiveBills.addAll(temp);
 
             url = "https://api.propublica.org/congress/v1/116/both/bills/introduced.json";
             temp =  pullBillForURL(url);
-            recentlyIntroduced.addAll(temp);
+            shortTitles = new ArrayList<>();
+            for (Bill b: temp) {
+                pullSelectedBill(b.getBillUri());
+                shortTitles.add(selectedBill);
+            }
+
+            recentlyIntroduced.addAll(shortTitles);
 
             url = "https://api.propublica.org/congress/v1/116/both/bills/updated.json";
             temp =  pullBillForURL(url);
-            recentlyUpdated.addAll(temp);
+            shortTitles = new ArrayList<>();
+            for (Bill b: temp) {
+                pullSelectedBill(b.getBillUri());
+                shortTitles.add(selectedBill);
+            }
+            recentlyUpdated.addAll(shortTitles);
 
 //            url = "https://api.propublica.org/congress/v1/113/both/bills/active.json";
 //            temp =  pullBillForURL(url);
