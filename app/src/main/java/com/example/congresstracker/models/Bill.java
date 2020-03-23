@@ -41,6 +41,15 @@ public class Bill implements Serializable, Comparable<Bill> {
         this.summary = summary;
         tracking = false;
     }
+    public Bill(String id, String title, String uri, String sponsor, String dateIntro, String lastDate, boolean active){
+        this.billNum = id;
+        this.title = title;
+        this.billUri = uri;
+        this.sponsor = sponsor;
+        this.dateIntroduced = dateIntro;
+        this.latestActionDate = lastDate;
+        this.active = active;
+    }
 
     public boolean isTracking() {
         return tracking;

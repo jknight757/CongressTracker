@@ -88,6 +88,7 @@ public class BillDataPull extends IntentService {
                         Log.i(TAG, "One Bill Pulled: Republican Cosponsors: "+ selectedBill.getRepublicanCosponsors());
                         Log.i(TAG, "One Bill Pulled: Democrat Cosponsors: "+ selectedBill.getDemocratCosponsors());
                         Log.i(TAG, "One Bill Pulled: Last Date: "+ selectedBill.getLatestActionDate());
+                        Log.i(TAG, "pullSelectedBill: Summary: "+ selectedBill.getSummary());
                         broadCastSelectedBill();
 
                     }
@@ -187,6 +188,10 @@ public class BillDataPull extends IntentService {
                     String billUrl = obj.getString("congressdotgov_url");
                     String summary = obj.getString("summary");
                     String summaryShort = obj.getString("summary_short");
+                    Log.i(TAG, "pullSelectedBill: Summary"+ summary);
+                    Log.i(TAG, "pullSelectedBill: ------------");
+                    Log.i(TAG, "pullSelectedBill: SummaryShort:"+ summaryShort);
+                     Log.i(TAG, "pullSelectedBill: ---------------------------------");
                     String latestActionDate = obj.getString("latest_major_action_date");
 
                     String lastVote = "";

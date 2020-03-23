@@ -13,8 +13,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.activities.MainActivity;
@@ -28,7 +31,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class NotificationService extends IntentService {
+public class NotificationService extends Worker {
+
+    public static final String TAG = "NotificationService.TAG";
 
     private static final int NOTIFICATION_ID = 0x0011;
     private static final String CHANNEL_ID = "BILL_CHANNEL";
@@ -36,41 +41,98 @@ public class NotificationService extends IntentService {
 
     private int mCounterID = 0;
     private ArrayList<Bill> trackedBills;
+    private ArrayList<Bill> trackedBillsLocal;
+    private ArrayList<Bill> updatedBillsR;
+    private ArrayList<Bill> updatedBillsL;
     private Bill selectedBill;
 
     ArrayList<String> trackedBillIds;
     ArrayList<String> trackedBillDates;
     ArrayList<String> trackedBillActive;
+    private Context mContext = getApplicationContext();
 
-    public NotificationService() {
-        super("NotificationService");
+    public NotificationService(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+        super(context, workerParams);
     }
 
-    @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
 
-        Log.i("TAG", "onHandleIntent: Notification");
+    @NonNull
+    @Override
+    public Result doWork() {
+        Log.i(TAG, "onHandleIntent: Notification");
 
 
         getLocalTracked();
+        checkUpdated();
+
+        if(updatedBillsR != null){
+            if(updatedBillsR.size() > 0){
+                buildUpdateMSG();
+            }
+        }
+        return Result.success();
+    }
+    public void checkUpdated(){
 
         if(trackedBills != null){
+            updatedBillsR = new ArrayList<>();
+            updatedBillsL = new ArrayList<>();
             if(trackedBills.size() > 0){
+                Bill localBill = null;
                 for (int i = 0; i < trackedBills.size(); i++) {
-                    if(trackedBills.get(i).getLatestActionDate() == trackedBillDates.get(i)){
-                        buildNotification();
+                    Bill b = trackedBills.get(i);
+                    for (int j = 0; j < trackedBillsLocal.size(); j++) {
+                        Bill temp = trackedBillsLocal.get(i);
+                        if(b.getBillNum().equals(temp.getBillNum())){
+                            localBill = temp;
+                        }
+
                     }
+
+                    if(b.getLatestActionDate() != null && localBill != null){
+                        if(!b.getLatestActionDate().equals(localBill.getLatestActionDate())){
+                            Log.i(TAG, "billsUpdated: "+ localBill.getBillNum() + "|| "+ b.getBillNum());
+                            Log.i(TAG, "billsUpdated: Previous Date:"+ localBill.getLatestActionDate());
+                            Log.i(TAG, "billsUpdated: New Date:"+ b.getLatestActionDate());
+                            Log.i(TAG, "--------------------------------");
+                            updatedBillsR.add(b);
+                            updatedBillsL.add(localBill);
+                        }
+
+                    }
+
+
+//                    if(trackedBillDates.contains(trackedBills.get(i).getLatestActionDate())){
+//                        buildNotification();
+//                    }
+
                 }
             }
 
         }
 
+    }
+    public void buildUpdateMSG(){
+        Bill b = updatedBillsR.get(0);
+        String title = "Update to Bill "+ updatedBillsR.get(0).getBillNum();
+        String msg ="";
+
+        if(updatedBillsR.get(0).isActive() && !updatedBillsL.get(0).isActive()){
+            msg = b.getShortTitle() + " has been Passed";
+            buildNotification(title, msg);
+        }
+
+
+
+
+
 
     }
+
     public void getLocalTracked(){
         BillTrackDatabaseHelper dbh;
         Cursor cursor;
-        dbh = BillTrackDatabaseHelper.getInstance(this);
+        dbh = BillTrackDatabaseHelper.getInstance(mContext);
 
 
         cursor = dbh.getAllBills();
@@ -81,23 +143,28 @@ public class NotificationService extends IntentService {
             trackedBillIds = new ArrayList<>();
             trackedBillActive = new ArrayList<>();
             trackedBillDates = new ArrayList<>();
+            trackedBillsLocal = new ArrayList<>();
             try {
                 while (cursor.moveToNext()) {
                     String uri = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_URI));
                     String id = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_ID));
-//                    String title = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_TITLE));
-//                    String sponsor = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_SPONSOR));
-//                    String dateIntro = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_DATE_INTRODUCED));
+                    String title = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_TITLE));
+                    String sponsor = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_SPONSOR));
+                    String dateIntro = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_DATE_INTRODUCED));
                     String lastDate = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_LAST_DATE));
                     int active = cursor.getInt(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_IS_ACTIVE));
+
+
 
 
                     trackedBillUris.add(uri);
                     trackedBillIds.add(id);
                     trackedBillDates.add(lastDate);
                     if(active == 1){
+                        trackedBillsLocal.add(new Bill(id,title,uri,sponsor,dateIntro,lastDate,true));
                         trackedBillActive.add("Active");
                     }else {
+                        trackedBillsLocal.add(new Bill(id,title,uri,sponsor,dateIntro,lastDate,false));
                         trackedBillActive.add("Inactive");
                     }
 
@@ -128,7 +195,7 @@ public class NotificationService extends IntentService {
     public void pullSelectedBill(String _billUri){
 
 
-        if(NetworkUtils.isConnected(getBaseContext())){
+        if(NetworkUtils.isConnected(getApplicationContext())){
             String url = _billUri;
             String data = NetworkUtils.getNetworkData(url);
 
@@ -198,7 +265,7 @@ public class NotificationService extends IntentService {
     }
 
 
-    private void buildNotification(){
+    private void buildNotification(String title, String msg){
         // check build version
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
@@ -206,25 +273,25 @@ public class NotificationService extends IntentService {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Main Channel", NotificationManager.IMPORTANCE_HIGH);
             channel.setDescription("Channel Description");
 
-            NotificationManager mgr = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager mgr = (NotificationManager)mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
             if(mgr != null){
                 mgr.createNotificationChannel(channel);
             }
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,CHANNEL_ID);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext,CHANNEL_ID);
         builder.setSmallIcon(R.drawable.ic_account_balance_black_24dp);
-        builder.setContentTitle("Bill Passed");
-        builder.setContentText("This notification was triggered by an alarm");
+        builder.setContentTitle(title);
+        builder.setContentText(msg);
 
         // create a pending intent to be attached to the notification, this tells the notification
         // what to do when teh notification is clicked
-        Intent intent = new Intent(this, MainActivity.class);
-        PendingIntent pi = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent intent = new Intent(mContext, MainActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(mContext,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pi);
 
-        NotificationManager mgr = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager mgr = (NotificationManager)mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
 
         if(mgr != null){
@@ -233,4 +300,6 @@ public class NotificationService extends IntentService {
         }
 
     }
+
+
 }

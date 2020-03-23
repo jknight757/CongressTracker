@@ -4,7 +4,6 @@ package com.example.congresstracker.fragments;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,7 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,7 +37,6 @@ import com.example.congresstracker.activities.MainActivity;
 import com.example.congresstracker.activities.MyAreaActivity;
 import com.example.congresstracker.models.Bill;
 import com.example.congresstracker.other.BillTrackDatabaseHelper;
-import com.example.congresstracker.receivers.AlarmReceiver;
 import com.example.congresstracker.services.BillDataPull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -213,15 +211,8 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
                 Cursor c = dbh.getAllBills();
                 c.moveToLast();
                 String id = c.getString(c.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_ID));
-                Toast.makeText(getContext(), "Stored : id: "+ id, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),  id + " Saved", Toast.LENGTH_SHORT).show();
 
-                Calendar calendar = Calendar.getInstance();
-                long currentDateTime=calendar.getTimeInMillis();
-                calendar.setTime(new Date(currentDateTime+(60*1000)));// 1 minutes timeout
-                Intent myIntent = new Intent(getContext(), AlarmReceiver.class);
-                PendingIntent mAlarmSender = PendingIntent.getBroadcast(getContext(), 0, myIntent, 0);
-                AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-                alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), mAlarmSender);
 
             }else {
                 cursor = dbh.getBillById(selectedBill.getBillNum());
@@ -258,15 +249,8 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
                     c.moveToLast();
                     String id = c.getString(c.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_ID));
 
-                    Toast.makeText(getContext(), "Stored : id: "+ id, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),  id + " Saved", Toast.LENGTH_SHORT).show();
 
-                    Calendar calendar = Calendar.getInstance();
-                    long currentDateTime=calendar.getTimeInMillis();
-                    calendar.setTime(new Date(currentDateTime+(2*60*1000)));// 1 minutes timeout
-                    Intent myIntent = new Intent(getContext(), AlarmReceiver.class);
-                    PendingIntent mAlarmSender = PendingIntent.getBroadcast(getContext(), 0, myIntent, 0);
-                    AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), mAlarmSender);
                 }
             }
 
@@ -388,6 +372,10 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
             String date = "Date Introduced: ";
             date += selectedBill.getDateIntroduced();
             dateTV.setText(date);
+            if(!selectedBill.getSummary().isEmpty()){
+                billNameTV.setText(selectedBill.getSummary());
+            }
+            Log.i(TAG, "updateUI: Summary: "+ selectedBill.getSummary());
 
 //            String sum = "Summary: ";
 //            sum += selectedBill.getSummaryShort();

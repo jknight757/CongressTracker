@@ -80,7 +80,11 @@ public class BillTrackDatabaseHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_BILL_SPONSOR, bill.getSponsor());
         cv.put(COLUMN_DATE_INTRODUCED, bill.getDateIntroduced());
         cv.put(COLUMN_LAST_DATE, bill.getLatestActionDate());
-        cv.put(COLUMN_IS_ACTIVE, bill.isActive());
+        int active = 0;
+        if(bill.isActive()){
+            active = 1;
+        }
+        cv.put(COLUMN_IS_ACTIVE, active);
         cv.put(COLUMN_LAST_VOTE, bill.getLastVote());
         cv.put(COLUMN_BILL_URI, bill.getBillUri());
         mDatabase.insert(TABLE_NAME, null, cv);

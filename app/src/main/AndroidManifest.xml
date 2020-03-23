@@ -37,11 +37,14 @@
 
         <service
             android:name=".services.NotificationService"
-            android:exported="true" />
+            android:process=":remote" />
 
-        <receiver android:name=".receivers.AlarmReceiver"
-            android:enabled="true"
-            android:exported="true"/>
+        <receiver android:name=".receivers.BootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".activities.CongressActivity"
