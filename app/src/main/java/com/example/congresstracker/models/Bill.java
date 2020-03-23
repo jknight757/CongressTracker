@@ -23,6 +23,7 @@ public class Bill implements Serializable, Comparable<Bill> {
     String sponsorID;
     String latestActionDate;
     String lastVote;
+    boolean tracking;
 
 
 
@@ -38,7 +39,13 @@ public class Bill implements Serializable, Comparable<Bill> {
         this.cosponsors = cosponsors;
         this.url = url;
         this.summary = summary;
+        tracking = false;
     }
+
+    public boolean isTracking() {
+        return tracking;
+    }
+
 
     public String getLastVote() {
         return lastVote;
@@ -108,6 +115,10 @@ public class Bill implements Serializable, Comparable<Bill> {
         return summary;
     }
 
+    public void setTracking(boolean tracking) {
+        this.tracking = tracking;
+    }
+
     public void setSummaryShort(String summaryShort) {
         this.summaryShort = summaryShort;
     }
@@ -136,7 +147,12 @@ public class Bill implements Serializable, Comparable<Bill> {
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-dd-mm");
         try{
+
             Date date = format.parse(dateIntroduced);
+            if(latestActionDate != null){
+                 date = format.parse(latestActionDate);
+            }
+
             return date;
         }catch (ParseException e){
             e.printStackTrace();
@@ -144,6 +160,7 @@ public class Bill implements Serializable, Comparable<Bill> {
 
         return null;
     }
+
 
     @Override
     public int compareTo(Bill o) {

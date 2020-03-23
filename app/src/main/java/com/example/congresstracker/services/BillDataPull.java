@@ -2,6 +2,7 @@ package com.example.congresstracker.services;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.database.Cursor;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -9,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.congresstracker.models.Bill;
+import com.example.congresstracker.other.BillTrackDatabaseHelper;
 import com.example.congresstracker.other.NetworkUtils;
 
 import org.json.JSONArray;
@@ -35,6 +37,7 @@ public class BillDataPull extends IntentService {
 
     public static final String EXTRA_UPDATED_BILLS = "EXTRA_UPDATED_BILLS";
     public static final String EXTRA_INTRODUCED_BILLS = "EXTRA_INTRODUCED_BILLS";
+    public static final String EXTRA_PASSED_BILLS = "EXTRA_PASSED_BILLS";
     public static final String EXTRA_ALL_BILLS = "EXTRA_ALL_BILLS";
     public static final String EXTRA_ALL_ACTIVE_BILLS = "EXTRA_ALL_ACTIVE_BILLS";
     public static final String EXTRA_SEARCH_TERM = "EXTRA_SEARCH_TERM";
@@ -51,8 +54,10 @@ public class BillDataPull extends IntentService {
     private ArrayList<Bill> allActiveBills;
     private ArrayList<Bill> searchResults;
     private ArrayList<Bill> trackedBills;
+    private ArrayList<String> trackedBillIDs;
     private ArrayList<Bill> recentlyIntroduced;
     private ArrayList<Bill> recentlyUpdated;
+    private ArrayList<Bill> recentlyPassed;
 
     Bill selectedBill;
 
@@ -66,6 +71,7 @@ public class BillDataPull extends IntentService {
             switch (intent.getAction()){
                 case ACTION_PULL_BILLS:
                     Log.i(TAG, "onHandleIntent: action Pull All");
+                    trackedBillIDs = getMyTrackedBills();
                     pullBills();
 
                     if(allBills != null){
@@ -143,8 +149,8 @@ public class BillDataPull extends IntentService {
     public void pullListOfBills(ArrayList<String> bills){
         trackedBills = new ArrayList<>();
 
-        for (String id :bills) {
-            pullSelectedBill(id);
+        for (String uri :bills) {
+            pullSelectedBill(uri);
             if(selectedBill != null){
                 trackedBills.add(selectedBill);
             }
@@ -228,6 +234,7 @@ public class BillDataPull extends IntentService {
         allActiveBills = new ArrayList<>();
         recentlyIntroduced = new ArrayList<>();
         recentlyUpdated = new ArrayList<>();
+        recentlyPassed = new ArrayList<>();
 
         String url = "";
 
@@ -240,11 +247,15 @@ public class BillDataPull extends IntentService {
 
             url = "https://api.propublica.org/congress/v1/116/both/bills/active.json";
             temp =  pullBillForURL(url);
-            for (Bill b: temp) {
-                pullSelectedBill(b.getBillUri());
-                shortTitles.add(selectedBill);
-            }
-            allActiveBills.addAll(shortTitles);
+            allActiveBills.addAll(temp);
+//            for (Bill b: temp) {
+//                pullSelectedBill(b.getBillUri());
+//                shortTitles.add(selectedBill);
+//            }
+//            allActiveBills.addAll(shortTitles);
+
+
+
 
 //            url = "https://api.propublica.org/congress/v1/115/both/bills/active.json";
 //            temp =  pullBillForURL(url);
@@ -253,22 +264,30 @@ public class BillDataPull extends IntentService {
 
             url = "https://api.propublica.org/congress/v1/116/both/bills/introduced.json";
             temp =  pullBillForURL(url);
-            shortTitles = new ArrayList<>();
-            for (Bill b: temp) {
-                pullSelectedBill(b.getBillUri());
-                shortTitles.add(selectedBill);
-            }
+            recentlyIntroduced.addAll(temp);
+//            shortTitles = new ArrayList<>();
+//            for (Bill b: temp) {
+//                pullSelectedBill(b.getBillUri());
+//                shortTitles.add(selectedBill);
+//            }
+//            recentlyIntroduced.addAll(shortTitles);
 
-            recentlyIntroduced.addAll(shortTitles);
+
 
             url = "https://api.propublica.org/congress/v1/116/both/bills/updated.json";
             temp =  pullBillForURL(url);
-            shortTitles = new ArrayList<>();
-            for (Bill b: temp) {
-                pullSelectedBill(b.getBillUri());
-                shortTitles.add(selectedBill);
-            }
-            recentlyUpdated.addAll(shortTitles);
+            recentlyUpdated.addAll(temp);
+//            shortTitles = new ArrayList<>();
+//            for (Bill b: temp) {
+//                pullSelectedBill(b.getBillUri());
+//                shortTitles.add(selectedBill);
+//            }
+//            recentlyUpdated.addAll(shortTitles);
+
+            url = "https://api.propublica.org/congress/v1/116/both/bills/passed.json";
+            temp =  pullBillForURL(url);
+            recentlyPassed.addAll(temp);
+
 
 //            url = "https://api.propublica.org/congress/v1/113/both/bills/active.json";
 //            temp =  pullBillForURL(url);
@@ -283,6 +302,9 @@ public class BillDataPull extends IntentService {
 //            allActiveBills.addAll(temp);
 
             Collections.sort(allActiveBills);
+            Collections.sort(recentlyUpdated);
+            Collections.sort(recentlyIntroduced);
+            Collections.sort(recentlyPassed);
 
         }
     }
@@ -321,14 +343,22 @@ public class BillDataPull extends IntentService {
                     String shortTitle  = nestedObj.getString("short_title");
                     String sponsor = nestedObj.getString("sponsor_name");
                     String dateIntroduced = nestedObj.getString("introduced_date");
+                    String latestActionDate = nestedObj.getString("latest_major_action_date");
                     boolean active = nestedObj.getBoolean("active");
                     int cosponsors = nestedObj.getInt("cosponsors");
                     String billUrl = nestedObj.getString("congressdotgov_url");
                     String summary = nestedObj.getString("summary");
 
+                    Bill b = new Bill(chamber,billNum,billUri,title,
+                            shortTitle,sponsor,dateIntroduced,active,cosponsors,billUrl,summary);
+                    b.setLatestActionDate(latestActionDate);
 
-                    billsToReturn.add(new Bill(chamber,billNum,billUri,title,
-                            shortTitle,sponsor,dateIntroduced,active,cosponsors,billUrl,summary));
+                    if(trackedBillIDs != null){
+                        if(trackedBillIDs.contains(b.getBillNum())){
+                            b.setTracking(true);
+                        }
+                    }
+                    billsToReturn.add(b);
 
                 }
 
@@ -349,6 +379,37 @@ public class BillDataPull extends IntentService {
 
     }
 
+    public ArrayList<String> getMyTrackedBills(){
+
+        ArrayList<String> trackedBillIds;
+        BillTrackDatabaseHelper dbh;
+        Cursor cursor;
+        dbh = BillTrackDatabaseHelper.getInstance(this);
+        cursor = dbh.getAllBills();
+
+        if(cursor.getCount() > 0) {
+            trackedBillIds = new ArrayList<>();
+            try {
+                while (cursor.moveToNext()) {
+                    String uri = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_URI));
+                    String id = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_ID));
+//                    String title = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_TITLE));
+//                    String sponsor = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_SPONSOR));
+//                    String dateIntro = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_DATE_INTRODUCED));
+//                    String lastDate = cursor.getString(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_LAST_DATE));
+//                    int active = cursor.getInt(cursor.getColumnIndex(BillTrackDatabaseHelper.COLUMN_BILL_ID));
+                    trackedBillIds.add(id);
+
+                }
+            } finally {
+                cursor.close();
+            }
+            return trackedBillIds;
+
+        }
+        return null;
+    }
+
     public void broadCastBills(){
         Intent broadcastIntent;
         broadcastIntent = new Intent(ACTION_SEND_BILLS);
@@ -356,6 +417,7 @@ public class BillDataPull extends IntentService {
         broadcastIntent.putExtra(EXTRA_ALL_ACTIVE_BILLS, allActiveBills);
         broadcastIntent.putExtra(EXTRA_UPDATED_BILLS, recentlyUpdated);
         broadcastIntent.putExtra(EXTRA_INTRODUCED_BILLS, recentlyIntroduced);
+        broadcastIntent.putExtra(EXTRA_PASSED_BILLS, recentlyPassed);
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
     }
 

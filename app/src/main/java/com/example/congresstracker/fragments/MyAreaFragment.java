@@ -28,6 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,11 +65,12 @@ import java.util.Map;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MyAreaFragment extends Fragment implements BottomNavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+public class MyAreaFragment extends Fragment implements BottomNavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemClickListener {
 
     public static final String TAG = "MyArea.TAG";
     public static final String EXTRA_USER = "EXTRA_USER";
     public static final String EXTRA_IMAGE = "EXTRA_IMAGE";
+    public static final String EXTRA_MEMBER_ID = "EXTRA_MEMBER_ID";
 
     private TextView nameTV;
     private TextView partyTV;
@@ -76,6 +78,7 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
     private ImageView profileImg;
     private TextView setStateEmpty;
     private ListView localRepsLV;
+    private ProgressBar loadingPB;
 
     private BottomNavigationView bottomNavigation;
 
@@ -137,6 +140,10 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
             setStateEmpty.setOnClickListener(this);
 
             localRepsLV = getView().findViewById(R.id.local_rep_listview);
+            localRepsLV.setOnItemClickListener(this);
+
+            loadingPB = getView().findViewById(R.id.loading_local_pb);
+            loadingPB.setVisibility(View.VISIBLE);
 
             bottomNavigation = getView().findViewById(R.id.bottom_tab_bar);
             bottomNavigation.setSelectedItemId(R.id.local_tab_item);
@@ -467,6 +474,17 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
 
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        String memberId = myReps.get(position).getId();
+
+        Intent memberDetailIntent = new Intent(getContext(), CongressActivity.class);
+        memberDetailIntent.putExtra(EXTRA_MEMBER_ID,memberId);
+        startActivity(memberDetailIntent);
+
+    }
+
 
     class UserDataReceiver extends BroadcastReceiver {
 
@@ -492,6 +510,7 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
     }
 
     public void updateUI(User user, byte[] img){
+        loadingPB.setVisibility(View.GONE);
         nameTV.setText(user.getName());
 
         if(img != null){
@@ -506,6 +525,8 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
         if(state != null){
             stateTV.setText(state);
             // pull users state reps
+
+            loadingPB.setVisibility(View.VISIBLE);
 
 
 
@@ -538,6 +559,7 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
             if(intent.hasExtra(MemberDataPull.EXTRA_STATE_REPS)){
                 myReps = (ArrayList<CongressMember>) intent.getSerializableExtra(MemberDataPull.EXTRA_STATE_REPS);
                 updateListView();
+                loadingPB.setVisibility(View.GONE);
 
             }
         }

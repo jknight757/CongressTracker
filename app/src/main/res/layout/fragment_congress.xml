@@ -148,10 +148,8 @@
         android:id="@+id/loadin_pb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/header_layout"
-        app:layout_constraintStart_toEndOf="@id/vertical_margin_start"
-        android:layout_marginStart="150dp"
-        android:layout_marginTop="155dp"
+        app:layout_constraintTop_toBottomOf="@id/horizontal_center_guideline"
+        app:layout_constraintStart_toEndOf="@id/vertical_center_guideline"
         android:visibility="gone"/>
 
 
@@ -169,6 +167,19 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_end="20dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/vertical_center_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".45" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontal_center_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".45" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -59,6 +59,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
     public static final String EXTRA_SELECTED_BILL = "EXTRA_SELECTED_BILL";
     public static final String EXTRA_TRACKED_BILLS = "EXTRA_TRACKED_BILLS";
     public static final String EXTRA_TRACKED_RETURNED = "EXTRA_TRACKED_RETURNED";
+    public static final String EXTRA_PASSED_BILLS = "EXTRA_PASSED_BILLS";
 
     private int selectedSubTab = 0;
 
@@ -71,9 +72,11 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
 
     private ArrayList<Bill> recentlyUpdated;
     private ArrayList<Bill> recentlyIntroduced;
+    private ArrayList<Bill> recentlyPassed;
     private ArrayList<Bill> allBills;
     private ArrayList<Bill> allActiveBills;
     private ArrayList<Bill> filteredList;
+    private ArrayList<Bill> lastShownList;
     private ArrayList<Bill> searchResults;
     private ArrayList<Bill> trackedBills;
 
@@ -203,9 +206,13 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
 
             emptyView = getView().findViewById(R.id.empty_view);
             emptyText = getView().findViewById(R.id.empty_text);
-            if(allActiveBills != null){
+
+            if(filteredList != null){
+                if(lastShownList != null){
+                    filteredList = lastShownList;
+                }
                 loadingPB.setVisibility(View.GONE);
-                BillAdapter adapter = new BillAdapter(getContext(), allActiveBills);
+                BillAdapter adapter = new BillAdapter(getContext(), filteredList);
                 billsListV.setAdapter(adapter);
                 searchBtn.setCheckable(true);
             }
@@ -235,11 +242,11 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
                     billsListV.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
                     emptyText.setVisibility(View.GONE);
-                    filteredList = allActiveBills;
+                    filteredList = lastShownList;
 
-                    if(allActiveBills != null) {
+                    if(filteredList != null) {
                         if (billsListV != null) {
-                            BillAdapter adapter = new BillAdapter(getContext(), allActiveBills);
+                            BillAdapter adapter = new BillAdapter(getContext(), filteredList);
                             billsListV.setAdapter(adapter);
                         }
                     }
@@ -255,6 +262,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
                 if(selectedSubTab == ALL_BILL_TAB){
                     dbh = BillTrackDatabaseHelper.getInstance(getContext());
                     cursor = dbh.getAllBills();
+                    lastShownList = filteredList;
 
 
                     if(trackedBills == null){
@@ -301,6 +309,12 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
                 showSearchResults();
                 listener.FilterClicked("Recently Introduced Bills");
                 break;
+            case R.id.action_dropdown4:
+                filteredList = recentlyPassed;
+                showSearchResults();
+                listener.FilterClicked("Recently Passed Bills");
+                break;
+
         }
 
 
@@ -309,6 +323,8 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
 
 
     public void getTrackedBills(){
+
+
         dbh = BillTrackDatabaseHelper.getInstance(getContext());
 
 
@@ -333,7 +349,6 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
             }
 
             if(trackedBillIds.size() > 0){
-                Toast.makeText(getContext(), "User Has Tracked Bills", Toast.LENGTH_SHORT).show();
 
                 Intent pullDataIntent = new Intent(getContext(), BillDataPull.class);
                 pullDataIntent.setAction(BillDataPull.ACTION_PULL_TRACKED);
@@ -375,7 +390,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
                 startActivity(congressIntent);
                 break;
             case R.id.bill_tab_item:
-                filteredList = allActiveBills;
+                filteredList = recentlyUpdated;
                 showSearchResults();
                 break;
             case R.id.local_tab_item:
@@ -436,17 +451,18 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
                 allActiveBills = (ArrayList<Bill>) intent.getSerializableExtra(EXTRA_ALL_ACTIVE_BILLS);
                 recentlyIntroduced = (ArrayList<Bill>) intent.getSerializableExtra(EXTRA_INTRODUCED_BILLS);
                 recentlyUpdated = (ArrayList<Bill>) intent.getSerializableExtra(EXTRA_UPDATED_BILLS);
+                recentlyPassed = (ArrayList<Bill>) intent.getSerializableExtra(EXTRA_PASSED_BILLS);
                 updateList();
 
             }
         }
 
         public void updateList(){
-            if(allActiveBills != null) {
-                filteredList = allActiveBills;
+            if(recentlyPassed != null) {
+                filteredList = recentlyPassed;
                 if (billsListV != null) {
                     loadingPB.setVisibility(View.GONE);
-                    BillAdapter adapter = new BillAdapter(getContext(), allActiveBills);
+                    BillAdapter adapter = new BillAdapter(getContext(), filteredList);
                     billsListV.setAdapter(adapter);
                     searchBtn.setCheckable(true);
                 }
@@ -487,7 +503,6 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "onReceive: Tracked Bills Received");
-            Toast.makeText(context, "Tracked Bills Received", Toast.LENGTH_SHORT).show();
             if(intent.hasExtra(EXTRA_TRACKED_RETURNED)){
                 trackedBills = (ArrayList<Bill>) intent.getSerializableExtra(EXTRA_TRACKED_RETURNED);
                 updateUI();

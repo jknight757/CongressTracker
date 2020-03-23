@@ -372,7 +372,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
 
         public void updateUI(){
             loadingPb.setVisibility(View.GONE);
-            billNameTV.setText(selectedBill.getSummary());
+            billNameTV.setText(selectedBill.getTitle());
 
             String sponsor = "Sponsor: " + selectedBill.getSponsor();
             sponsorTV.setText(sponsor);

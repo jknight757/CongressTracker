@@ -17,6 +17,7 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
     private BillDetailFragment billDetailFragment;
     public static final String EXTRA_SELECT_BILL = "EXTRA_SELECT_BILL";
     public static final String EXTRA_SELECTED_BILL = "EXTRA_SELECTED_BILL";
+    private String currentFilter = " Recently Passed Bills";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +25,7 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
         setContentView(R.layout.activity_bill);
 
         if(getSupportActionBar() != null){
-            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Bills" + "</font>"));
+            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + currentFilter + "</font>"));
         }
 
         if(getIntent().hasExtra(EXTRA_SELECT_BILL)){
@@ -70,6 +71,7 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
 
     @Override
     public void FilterClicked(String filter) {
+        currentFilter = filter;
         if(getSupportActionBar() != null){
             getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + filter+ "</font>"));
         }
@@ -78,7 +80,7 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
     @Override
     public void updateTitle() {
         if(getSupportActionBar() != null){
-            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Bills" + "</font>"));
+            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + currentFilter  + "</font>"));
 
         }
     }

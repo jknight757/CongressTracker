@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.congresstracker.R;
@@ -62,7 +63,19 @@ public class BillAdapter extends BaseAdapter {
         if(bills != null){
 
             vh.billIdTV.setText(bills.get(position).getBillNum());
-            vh.billDateTV.setText(bills.get(position).getDateIntroduced());
+
+            if(bills.get(position).getLatestActionDate() != null){
+                vh.billDateTV.setText(bills.get(position).getLatestActionDate());
+            }else {
+                vh.billDateTV.setText(bills.get(position).getDateIntroduced());
+            }
+
+            if(bills.get(position).isTracking()){
+                vh.trackingIV.setVisibility(View.VISIBLE);
+            }else {
+                vh.trackingIV.setVisibility(View.GONE);
+            }
+
             String title = "";
 
             title = bills.get(position).getShortTitle();
@@ -84,12 +97,14 @@ public class BillAdapter extends BaseAdapter {
         final TextView billDateTV;
         final TextView billTitleTV;
         final TextView billResultTV;
+        final ImageView trackingIV;
 
         public ViewHolder(View _layout) {
             this.billIdTV = _layout.findViewById(R.id.bill_id);
             this.billDateTV = _layout.findViewById(R.id.bill_date);
             this.billTitleTV = _layout.findViewById(R.id.bill_title);
             this.billResultTV = _layout.findViewById(R.id.bill_result);
+            this.trackingIV = _layout.findViewById(R.id.tracked_icon);
         }
     }
 }

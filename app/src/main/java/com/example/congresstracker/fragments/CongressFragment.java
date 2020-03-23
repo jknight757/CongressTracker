@@ -410,8 +410,6 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
         String memberID = selectedMember.getId();
         String seniority = selectedMember.getSeniority();
         listener.MemberClicked(memberID, seniority);
-
-
     }
 
     // Receiver gets filtered congress member lists
