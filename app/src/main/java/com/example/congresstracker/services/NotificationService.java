@@ -122,11 +122,6 @@ public class NotificationService extends Worker {
             buildNotification(title, msg);
         }
 
-
-
-
-
-
     }
 
     public void getLocalTracked(){

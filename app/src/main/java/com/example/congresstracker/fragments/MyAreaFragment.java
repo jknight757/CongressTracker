@@ -516,6 +516,8 @@ public class MyAreaFragment extends Fragment implements BottomNavigationView.OnN
         if(img != null){
             Bitmap bitmap = BitmapFactory.decodeByteArray(img,0,img.length);
             profileImg.setImageBitmap(bitmap);
+        }else {
+            profileImg.setVisibility(View.GONE);
         }
 
         if(user.getParty() != null){
