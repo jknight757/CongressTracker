@@ -1,8 +1,6 @@
 package com.example.congresstracker.fragments;
 
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -33,15 +31,10 @@ import android.widget.Toast;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.activities.CongressActivity;
-import com.example.congresstracker.activities.MainActivity;
-import com.example.congresstracker.activities.MyAreaActivity;
 import com.example.congresstracker.models.Bill;
 import com.example.congresstracker.other.BillTrackDatabaseHelper;
 import com.example.congresstracker.services.BillDataPull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -307,31 +300,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
                 break;
             case R.id.bill_tab_item:
                 break;
-            case R.id.local_tab_item:
-                if(MainActivity.validUser){
-                    Intent localIntent = new Intent(getContext(), MyAreaActivity.class)
-                            .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    startActivity(localIntent);
-                }else {
-                    new AlertDialog.Builder(getContext())
-                            .setTitle("Not Signed In")
-                            .setMessage("You must be signed in to use this feature. Would you like to go back to the login screen?")
-                            .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            })
-                            .setNegativeButton("Back to Login", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Intent signoutIntent = new Intent(getContext(), MainActivity.class);
-                                    startActivity(signoutIntent);
 
-                                }
-                            })
-                            .show();
-                }
-                break;
         }
 
         return false;

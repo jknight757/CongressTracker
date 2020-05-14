@@ -25,7 +25,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -36,10 +35,8 @@ import android.widget.Toast;
 import com.example.congresstracker.R;
 import com.example.congresstracker.activities.BillActivity;
 import com.example.congresstracker.activities.CongressActivity;
-import com.example.congresstracker.activities.MainActivity;
 import com.example.congresstracker.models.CongressMember;
 import com.example.congresstracker.models.States;
-import com.example.congresstracker.other.MemberAdapter;
 import com.example.congresstracker.other.NetworkUtils;
 import com.example.congresstracker.models.User;
 import com.example.congresstracker.other.StateRepsAdapter;
@@ -59,8 +56,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.

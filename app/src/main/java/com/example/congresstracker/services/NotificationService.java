@@ -1,7 +1,5 @@
 package com.example.congresstracker.services;
 
-import android.app.IntentService;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,17 +8,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.example.congresstracker.R;
-import com.example.congresstracker.activities.MainActivity;
+import com.example.congresstracker.activities.CongressActivity;
 import com.example.congresstracker.models.Bill;
 import com.example.congresstracker.other.BillTrackDatabaseHelper;
 import com.example.congresstracker.other.NetworkUtils;
@@ -282,7 +277,7 @@ public class NotificationService extends Worker {
 
         // create a pending intent to be attached to the notification, this tells the notification
         // what to do when teh notification is clicked
-        Intent intent = new Intent(mContext, MainActivity.class);
+        Intent intent = new Intent(mContext, CongressActivity.class);
         PendingIntent pi = PendingIntent.getActivity(mContext,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pi);
 

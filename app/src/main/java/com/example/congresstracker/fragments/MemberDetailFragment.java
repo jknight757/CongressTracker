@@ -31,8 +31,6 @@ import android.widget.Toast;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.activities.BillActivity;
-import com.example.congresstracker.activities.MainActivity;
-import com.example.congresstracker.activities.MyAreaActivity;
 import com.example.congresstracker.models.Bill;
 import com.example.congresstracker.models.BillVote;
 import com.example.congresstracker.models.CongressMember;
