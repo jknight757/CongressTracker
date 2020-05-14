@@ -26,8 +26,6 @@ import android.widget.Spinner;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.activities.BillActivity;
-import com.example.congresstracker.activities.MainActivity;
-import com.example.congresstracker.activities.MyAreaActivity;
 import com.example.congresstracker.models.CongressMember;
 import com.example.congresstracker.other.MemberAdapter;
 import com.example.congresstracker.services.MemberDataPull;
@@ -183,32 +181,7 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
                         .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(billIntent);
                 break;
-            case R.id.local_tab_item:
-                if(MainActivity.validUser){
-                    Intent localIntent = new Intent(getContext(), MyAreaActivity.class)
-                            .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    startActivity(localIntent);
-                }else {
-                    new androidx.appcompat.app.AlertDialog.Builder(getContext())
-                            .setTitle("Not Signed In")
-                            .setMessage("You must be signed in to use this feature. Would you like to go back to the login screen?")
-                            .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            })
-                            .setNegativeButton("Back to Login", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Intent signoutIntent = new Intent(getContext(), MainActivity.class);
-                                    startActivity(signoutIntent);
 
-                                }
-                            })
-                            .show();
-                }
-
-                break;
         }
 
         return false;

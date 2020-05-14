@@ -22,7 +22,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -31,8 +30,6 @@ import android.widget.Toast;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.activities.CongressActivity;
-import com.example.congresstracker.activities.MainActivity;
-import com.example.congresstracker.activities.MyAreaActivity;
 import com.example.congresstracker.models.Bill;
 import com.example.congresstracker.other.BillAdapter;
 import com.example.congresstracker.other.BillTrackDatabaseHelper;
@@ -378,31 +375,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
                 filteredList = allActiveBills;
                 showSearchResults();
                 break;
-            case R.id.local_tab_item:
-                if(MainActivity.validUser){
-                    Intent localIntent = new Intent(getContext(), MyAreaActivity.class)
-                            .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    startActivity(localIntent);
-                }else {
-                    new AlertDialog.Builder(getContext())
-                            .setTitle("Not Signed In")
-                            .setMessage("You must be signed in to use this feature. Would you like to go back to the login screen?")
-                            .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            })
-                            .setNegativeButton("Back to Login", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Intent signoutIntent = new Intent(getContext(), MainActivity.class);
-                                    startActivity(signoutIntent);
 
-                                }
-                            })
-                            .show();
-                }
-                break;
         }
 
         return false;
