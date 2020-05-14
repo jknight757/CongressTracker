@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,9 +33,12 @@ import android.widget.Toast;
 import com.example.congresstracker.R;
 import com.example.congresstracker.activities.CongressActivity;
 import com.example.congresstracker.models.Bill;
+import com.example.congresstracker.other.BillDetailAdapter;
 import com.example.congresstracker.other.BillTrackDatabaseHelper;
 import com.example.congresstracker.services.BillDataPull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,6 +50,8 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
     public static final String EXTRA_SELECT_BILL = "EXTRA_SELECT_BILL";
     public static final String EXTRA_MEMBER_ID = "EXTRA_MEMBER_ID";
 
+    private ArrayList<String> mDetails;
+
     private TextView billNameTV;
     private TextView sponsorTV;
     private TextView statusTV;
@@ -56,6 +62,8 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
     private TextView democratCoTV;
     private Button fullSummaryBtn;
     private ProgressBar loadingPb;
+
+    private ListView detailsLV;
 
     private Bill selectedBill;
 
@@ -119,14 +127,6 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
 
         if(getView()!= null){
             billNameTV = getView().findViewById(R.id.bill_txt_lbl);
-            sponsorTV = getView().findViewById(R.id.sponsor_txt_lbl);
-            sponsorTV.setOnClickListener(this);
-            statusTV = getView().findViewById(R.id.status_txt_lbl);
-            dateTV = getView().findViewById(R.id.date_intro_txt);
-            summaryTV = getView().findViewById(R.id.summary_txt);
-            actionDateTV = getView().findViewById(R.id.latest_action_date_txt);
-            republicanCoTV = getView().findViewById(R.id.repub_cosponsor_txt);
-            democratCoTV = getView().findViewById(R.id.demo_cosponsor_txt);
             fullSummaryBtn = getView().findViewById(R.id.view_full_sum_btn);
             fullSummaryBtn.setOnClickListener(this);
             loadingPb = getView().findViewById(R.id.loading_selectbill_pb);
@@ -136,13 +136,18 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
             bottomNav.setSelectedItemId(R.id.bill_tab_item);
             bottomNav.setOnNavigationItemSelectedListener(this);
 
+            detailsLV = getView().findViewById(android.R.id.list);
+
 
 
             if(selectedBill != null){
+
+                mDetails = new ArrayList<>();
+
+
                 billNameTV.setText(selectedBill.getShortTitle());
 
                 String sponsor = "Sponsor: " + selectedBill.getSponsor();
-                sponsorTV.setText(sponsor);
 
                 String status = "Status: ";
                 if(selectedBill.isActive()){
@@ -150,16 +155,17 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
                 }else {
                     status+= "Inactive";
                 }
-                statusTV.setText(status);
 
                 String date = "Date Introduced: ";
                 date += selectedBill.getDateIntroduced();
-                dateTV.setText(date);
 
                 String sum = "Summary: ";
 
                 sum += selectedBill.getSummary();
-                summaryTV.setText(sum);
+
+                mDetails.add(sponsor);
+                mDetails.add(status);
+                mDetails.add(date);
             }
 
 
@@ -180,7 +186,6 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
     @Override
     public void onPause() {
         super.onPause();
-
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(receiver);
     }
 
@@ -276,16 +281,16 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
                 break;
 
                 // When the sponsors name is clicked
-            case R.id.sponsor_txt_lbl:
-                if(selectedBill != null) {
-
-                    String memberId = selectedBill.getSponsorID();
-
-                    Intent memberDetailIntent = new Intent(getContext(), CongressActivity.class);
-                    memberDetailIntent.putExtra(EXTRA_MEMBER_ID,memberId);
-                    startActivity(memberDetailIntent);
-                }
-                break;
+//            case R.id.sponsor_txt_lbl:
+//                if(selectedBill != null) {
+//
+//                    String memberId = selectedBill.getSponsorID();
+//
+//                    Intent memberDetailIntent = new Intent(getContext(), CongressActivity.class);
+//                    memberDetailIntent.putExtra(EXTRA_MEMBER_ID,memberId);
+//                    startActivity(memberDetailIntent);
+//                }
+//                break;
         }
 
     }
@@ -314,6 +319,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "onReceive: Select Bill Received");
             if(intent.hasExtra(EXTRA_SELECT_BILL)){
                 selectedBill = (Bill) intent.getSerializableExtra(EXTRA_SELECT_BILL);
 
@@ -324,45 +330,54 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
         }
 
         public void updateUI(){
+            mDetails = new ArrayList<>();
+
             loadingPb.setVisibility(View.GONE);
             billNameTV.setText(selectedBill.getTitle());
 
             String sponsor = "Sponsor: " + selectedBill.getSponsor();
-            sponsorTV.setText(sponsor);
-            sponsorTV.setTextColor(ContextCompat.getColor(getContext(),R.color.hyperLinkBlue));
+            //sponsorTV.setTextColor(ContextCompat.getColor(getContext(),R.color.hyperLinkBlue));
             String status = "Status: ";
             if(selectedBill.isActive()){
                 status += "Active";
             }else {
                 status+= "Inactive";
             }
-            statusTV.setText(status);
+
 
             String date = "Date Introduced: ";
             date += selectedBill.getDateIntroduced();
-            dateTV.setText(date);
+
             if(!selectedBill.getSummary().isEmpty()){
                 billNameTV.setText(selectedBill.getSummary());
             }
             Log.i(TAG, "updateUI: Summary: "+ selectedBill.getSummary());
 
-//            String sum = "Summary: ";
-//            sum += selectedBill.getSummaryShort();
-//            summaryTV.setText(sum);
+
 
             String latestDate = "Latest Action Date: ";
             latestDate += selectedBill.getLatestActionDate();
-            actionDateTV.setText(latestDate);
 
 
             String repCo = "Republican Cosponsors: ";
             repCo += selectedBill.getRepublicanCosponsors();
 
-            republicanCoTV.setText(repCo);
 
             String demCo = "Democrat Cosponsors: ";
-            demCo += selectedBill.getDemocratCosponsors();
-            democratCoTV.setText(demCo);
+
+
+
+            mDetails.add(sponsor);
+            mDetails.add(status);
+            mDetails.add(date);
+            mDetails.add(latestDate);
+            mDetails.add(repCo);
+            mDetails.add(demCo);
+
+            if(detailsLV != null && mDetails != null){
+                BillDetailAdapter adapter =  new BillDetailAdapter(getContext(), mDetails);
+                detailsLV.setAdapter(adapter);
+            }
         }
     }
 }

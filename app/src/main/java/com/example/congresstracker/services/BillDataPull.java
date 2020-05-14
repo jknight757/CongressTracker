@@ -191,7 +191,7 @@ public class BillDataPull extends IntentService {
                     Log.i(TAG, "pullSelectedBill: Summary"+ summary);
                     Log.i(TAG, "pullSelectedBill: ------------");
                     Log.i(TAG, "pullSelectedBill: SummaryShort:"+ summaryShort);
-                     Log.i(TAG, "pullSelectedBill: ---------------------------------");
+                    Log.i(TAG, "pullSelectedBill: ---------------------------------");
                     String latestActionDate = obj.getString("latest_major_action_date");
 
                     String lastVote = "";
@@ -294,18 +294,6 @@ public class BillDataPull extends IntentService {
             recentlyPassed.addAll(temp);
 
 
-//            url = "https://api.propublica.org/congress/v1/113/both/bills/active.json";
-//            temp =  pullBillForURL(url);
-//            allActiveBills.addAll(temp);
-//
-//            url = "https://api.propublica.org/congress/v1/112/both/bills/active.json";
-//            temp =  pullBillForURL(url);
-//            allActiveBills.addAll(temp);
-//
-//            url = "https://api.propublica.org/congress/v1/111/both/bills/active.json";
-//            temp =  pullBillForURL(url);
-//            allActiveBills.addAll(temp);
-
             Collections.sort(allActiveBills);
             Collections.sort(recentlyUpdated);
             Collections.sort(recentlyIntroduced);
@@ -349,7 +337,10 @@ public class BillDataPull extends IntentService {
                     String sponsor = nestedObj.getString("sponsor_name");
                     String dateIntroduced = nestedObj.getString("introduced_date");
                     String latestActionDate = nestedObj.getString("latest_major_action_date");
-                    boolean active = nestedObj.getBoolean("active");
+                    boolean active = false;
+                    if(!nestedObj.isNull("active")){
+                        active = nestedObj.getBoolean("active");
+                    }
                     int cosponsors = nestedObj.getInt("cosponsors");
                     String billUrl = nestedObj.getString("congressdotgov_url");
                     String summary = nestedObj.getString("summary");
@@ -438,12 +429,14 @@ public class BillDataPull extends IntentService {
         broadcastIntent = new Intent(ACTION_SEND_SELECT_BILL);
         broadcastIntent.putExtra(EXTRA_SELECT_BILL, selectedBill);
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
+        Log.i(TAG, "broadCastSelectedBill: Sending Selected bill");
     }
     public void broadCastTrackedBills(){
         Intent broadcastIntent;
         broadcastIntent = new Intent(ACTION_SEND_TRACKED_BILLS);
         broadcastIntent.putExtra(EXTRA_TRACKED_RETURNED, trackedBills);
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
+        Log.i(TAG, "broadCastSelectedBill: Sending Tracked bills");
     }
 
 
