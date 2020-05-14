@@ -348,31 +348,7 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
                         .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(billIntent);
                 break;
-            case R.id.local_tab_item:
-                if(MainActivity.validUser){
-                    Intent localIntent = new Intent(getContext(), MyAreaActivity.class)
-                            .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    startActivity(localIntent);
-                }else {
-                    new AlertDialog.Builder(getContext())
-                            .setTitle("Not Signed In")
-                            .setMessage("You must be signed in to use this feature. Would you like to go back to the login screen?")
-                            .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            })
-                            .setNegativeButton("Back to Login", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Intent signoutIntent = new Intent(getContext(), MainActivity.class);
-                                    startActivity(signoutIntent);
 
-                                }
-                            })
-                            .show();
-                }
-                break;
         }
         return false;
     }
