@@ -375,6 +375,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
 
 
             String demCo = "Democrat Cosponsors: ";
+            demCo += selectedBill.getDemocratCosponsors();
 
 
 
