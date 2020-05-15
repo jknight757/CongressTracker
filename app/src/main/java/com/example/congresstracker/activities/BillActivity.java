@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.fragments.BillDetailFragment;
@@ -35,6 +36,15 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.bill_fragment_container,billDetailFragment)
                     .commit();
+            if(getSupportActionBar() != null){
+                Log.i("TAG", "onCreate: " + billUri);
+                String[] splits = billUri.split("/");
+                String billId = splits[7];
+
+                billId = billId.substring(0,billId.length() - 5);
+
+                getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + billId + "</font>"));
+            }
 
             Intent pullDataIntent = new Intent(this, BillDataPull.class);
             pullDataIntent.setAction(BillDataPull.ACTION_PULL_ONE_BILL);
@@ -56,11 +66,15 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
     }
 
     @Override
-    public void BillClicked(String id) {
+    public void BillClicked(String id, String uri) {
 
         if(getSupportActionBar() != null){
             getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + id+ "</font>"));
         }
+        Intent pullDataIntent = new Intent(this, BillDataPull.class);
+        pullDataIntent.setAction(BillDataPull.ACTION_PULL_ONE_BILL);
+        pullDataIntent.putExtra(EXTRA_SELECTED_BILL, uri);
+        startService(pullDataIntent);
 
         billDetailFragment = BillDetailFragment.newInstance();
         getSupportFragmentManager().beginTransaction()

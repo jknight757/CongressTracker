@@ -109,7 +109,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
     }
 
     public interface BillClickListener {
-        void BillClicked(String id);
+        void BillClicked(String id, String uri);
         void FilterClicked(String filter);
     }
 
@@ -368,14 +368,12 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Bill selectedBill = filteredList.get(position);
         String billUri = selectedBill.getBillUri();
-
-        Intent pullDataIntent = new Intent(getContext(), BillDataPull.class);
-        pullDataIntent.setAction(BillDataPull.ACTION_PULL_ONE_BILL);
-        pullDataIntent.putExtra(EXTRA_SELECTED_BILL, billUri);
-        getContext().startService(pullDataIntent);
+        listener.BillClicked(selectedBill.getBillNum(), billUri);
 
 
-        listener.BillClicked(selectedBill.getBillNum());
+
+
+
     }
 
     @Override

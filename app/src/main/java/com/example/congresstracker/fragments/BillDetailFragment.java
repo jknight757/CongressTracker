@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -53,13 +54,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
     private ArrayList<String> mDetails;
 
     private TextView billNameTV;
-    private TextView sponsorTV;
-    private TextView statusTV;
-    private TextView dateTV;
-    private TextView summaryTV;
-    private TextView actionDateTV;
-    private TextView republicanCoTV;
-    private TextView democratCoTV;
+    private TextView billSummaryTV;
     private Button fullSummaryBtn;
     private ProgressBar loadingPb;
 
@@ -124,9 +119,14 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BillDataPull.ACTION_SEND_SELECT_BILL);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver,filter);
 
         if(getView()!= null){
-            billNameTV = getView().findViewById(R.id.bill_txt_lbl);
+            billNameTV = getView().findViewById(R.id.bill_title_lbl);
+            billSummaryTV = getView().findViewById(R.id.bill_txt_lbl);
+            billSummaryTV.setMovementMethod(new ScrollingMovementMethod());
             fullSummaryBtn = getView().findViewById(R.id.view_full_sum_btn);
             fullSummaryBtn.setOnClickListener(this);
             loadingPb = getView().findViewById(R.id.loading_selectbill_pb);
@@ -145,7 +145,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
                 mDetails = new ArrayList<>();
 
 
-                billNameTV.setText(selectedBill.getShortTitle());
+                billSummaryTV.setText(selectedBill.getShortTitle());
 
                 String sponsor = "Sponsor: " + selectedBill.getSponsor();
 
@@ -178,6 +178,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
         IntentFilter filter = new IntentFilter();
         filter.addAction(BillDataPull.ACTION_SEND_SELECT_BILL);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver,filter);
+        //getContext().registerReceiver(receiver,filter);
 
 
 
@@ -187,6 +188,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
     public void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(receiver);
+        //getContext().unregisterReceiver(receiver);
     }
 
     @Override
@@ -330,10 +332,13 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
         }
 
         public void updateUI(){
+            String[] sumTitle;
+
             mDetails = new ArrayList<>();
 
             loadingPb.setVisibility(View.GONE);
-            billNameTV.setText(selectedBill.getTitle());
+            String title = selectedBill.getTitle();
+            billSummaryTV.setText(title);
 
             String sponsor = "Sponsor: " + selectedBill.getSponsor();
             //sponsorTV.setTextColor(ContextCompat.getColor(getContext(),R.color.hyperLinkBlue));
@@ -349,8 +354,14 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
             date += selectedBill.getDateIntroduced();
 
             if(!selectedBill.getSummary().isEmpty()){
-                billNameTV.setText(selectedBill.getSummary());
+                //billSummaryTV.setText(selectedBill.getSummary());
+                sumTitle = selectedBill.getSummary().split("This");
+                billNameTV.setText(sumTitle[0]);
+                title += "\n" +  selectedBill.getSummary().substring(sumTitle[0].length());
+                billSummaryTV.setText(title);
             }
+
+
             Log.i(TAG, "updateUI: Summary: "+ selectedBill.getSummary());
 
 
