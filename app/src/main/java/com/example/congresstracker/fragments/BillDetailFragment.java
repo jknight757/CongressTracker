@@ -25,6 +25,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -44,7 +45,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BillDetailFragment extends Fragment implements BottomNavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+public class BillDetailFragment extends Fragment implements BottomNavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemClickListener {
 
     public static final String TAG = "BillDetail.TAG";
     public static final String EXTRA_BILL = "EXTRA_BILL";
@@ -83,6 +84,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
         fragment.setArguments(args);
         return fragment;
     }
+
 
 
     public interface BillDetailListener{
@@ -137,6 +139,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
             bottomNav.setOnNavigationItemSelectedListener(this);
 
             detailsLV = getView().findViewById(android.R.id.list);
+            detailsLV.setOnItemClickListener(this);
 
 
 
@@ -272,6 +275,21 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
         return super.onOptionsItemSelected(item);
     }
 
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (selectedBill != null && position == 0) {
+
+            String memberId = selectedBill.getSponsorID();
+
+            Intent memberDetailIntent = new Intent(getContext(), CongressActivity.class);
+            memberDetailIntent.putExtra(EXTRA_MEMBER_ID,memberId);
+            startActivity(memberDetailIntent);
+
+
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -284,13 +302,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
 
                 // When the sponsors name is clicked
 //            case R.id.sponsor_txt_lbl:
-//                if(selectedBill != null) {
 //
-//                    String memberId = selectedBill.getSponsorID();
-//
-//                    Intent memberDetailIntent = new Intent(getContext(), CongressActivity.class);
-//                    memberDetailIntent.putExtra(EXTRA_MEMBER_ID,memberId);
-//                    startActivity(memberDetailIntent);
 //                }
 //                break;
         }
@@ -350,7 +362,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
             }
 
 
-            String date = "Date Introduced: ";
+            String date = "Introduced: ";
             date += selectedBill.getDateIntroduced();
 
             if(!selectedBill.getSummary().isEmpty()){
@@ -366,7 +378,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
 
 
 
-            String latestDate = "Latest Action Date: ";
+            String latestDate = "Last Action: ";
             latestDate += selectedBill.getLatestActionDate();
 
 
@@ -380,7 +392,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
 
 
             mDetails.add(sponsor);
-            mDetails.add(status);
+            //mDetails.add(status);
             mDetails.add(date);
             mDetails.add(latestDate);
             mDetails.add(repCo);

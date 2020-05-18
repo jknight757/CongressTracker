@@ -39,11 +39,14 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
             if(getSupportActionBar() != null){
                 Log.i("TAG", "onCreate: " + billUri);
                 String[] splits = billUri.split("/");
-                String billId = splits[7];
+                if(splits.length >=6) {
 
-                billId = billId.substring(0,billId.length() - 5);
+                    String billId = splits[7];
 
-                getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + billId + "</font>"));
+                    billId = billId.substring(0, billId.length() - 5);
+
+                    getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + billId + "</font>"));
+                }
             }
 
             Intent pullDataIntent = new Intent(this, BillDataPull.class);

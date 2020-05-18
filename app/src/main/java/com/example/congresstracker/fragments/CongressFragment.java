@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -217,17 +218,26 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
     }
 
     public void searchMembersList(String _searchTxt){
+
         ArrayList<CongressMember> searchResults = new ArrayList<>();
-        for (CongressMember m:filteredList) {
+        for (CongressMember m:members) {
             if(m.getName().toUpperCase().equals(_searchTxt.toUpperCase())){
                 searchResults.add(m);
             }else if(m.getName().toUpperCase().contains(_searchTxt.toUpperCase())){
+                searchResults.add(m);
+            }
+            if(m.getUnabreviated().toUpperCase().equals(_searchTxt.toUpperCase())){
+                searchResults.add(m);
+            }else if(m.getUnabreviated().toUpperCase().contains(_searchTxt.toUpperCase())){
                 searchResults.add(m);
             }
         }
 
         if(searchResults.size() > 0){
             showSearchResults(searchResults);
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(searchInputField.getWindowToken(),0);
+
         }else{
             loadingPB.setVisibility(View.GONE);
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -269,6 +279,7 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
             filteredList = _searchResults;
         }
     }
+
 
     // Gets the selected item for each filter
     @Override

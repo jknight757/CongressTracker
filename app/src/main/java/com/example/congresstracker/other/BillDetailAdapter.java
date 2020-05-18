@@ -1,6 +1,7 @@
 package com.example.congresstracker.other;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.congresstracker.R;
+import com.google.android.material.resources.TextAppearance;
 
 import java.util.ArrayList;
 
@@ -59,6 +61,13 @@ public class BillDetailAdapter extends BaseAdapter {
         if(mDetails != null){
             String text = mDetails.get(position);
             vh.detailText.setText(text);
+            if(position == 0){
+                vh.detailText.setTextColor(mContext.getResources().getColor(R.color.hyperLinkBlue));
+                vh.detailText.setTypeface(Typeface.DEFAULT_BOLD);
+            }else{
+                vh.detailText.setTextColor(mContext.getResources().getColor(R.color.textColor));
+                vh.detailText.setTypeface(Typeface.DEFAULT);
+            }
         }
 
 
