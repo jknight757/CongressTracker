@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -62,6 +64,22 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
     private ListView detailsLV;
 
     private Bill selectedBill;
+
+    // Bill Status textviews
+
+    private TextView passed0;
+    private TextView passed1;
+    private TextView passed2;
+    private TextView passed3;
+    private TextView passed4;
+    private TextView passed5;
+    private TextView passed6;
+    private TextView passed7;
+    private View linLay0;
+    private View linLay1;
+    private View linLay2;
+    private View linLay3;
+
 
     private BottomNavigationView bottomNav;
     private BillDetailListener listener;
@@ -140,6 +158,23 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
 
             detailsLV = getView().findViewById(android.R.id.list);
             detailsLV.setOnItemClickListener(this);
+
+            passed0 = getView().findViewById(R.id.txt_passed1_0);
+            passed1 = getView().findViewById(R.id.txt_passed1_1);
+            passed2 = getView().findViewById(R.id.txt_passed2_0);
+            passed3 = getView().findViewById(R.id.txt_passed2_1);
+            passed4 = getView().findViewById(R.id.txt_passed3_0);
+            passed5 = getView().findViewById(R.id.txt_passed3_1);
+            passed6 = getView().findViewById(R.id.txt_passed4_0);
+            passed7 = getView().findViewById(R.id.txt_passed4_1);
+
+            linLay0 = getView().findViewById(R.id.lay_passed0);
+            linLay1 = getView().findViewById(R.id.lay_passed1);
+            linLay2 = getView().findViewById(R.id.lay_passed2);
+            linLay3 = getView().findViewById(R.id.lay_passed3);
+
+
+
 
 
 
@@ -344,6 +379,110 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
         }
 
         public void updateUI(){
+            String billNum = selectedBill.getBillNum();
+
+
+                linLay0.setBackgroundColor(getContext().getResources().getColor(R.color.lightGreySolid));
+                linLay1.setBackgroundColor(getContext().getResources().getColor(R.color.lightGreySolid));
+                linLay2.setBackgroundColor(getContext().getResources().getColor(R.color.lightGreySolid));
+                linLay3.setBackgroundColor(getContext().getResources().getColor(R.color.lightGreySolid));
+                passed0.setTextColor(getContext().getResources().getColor(R.color.white));
+                passed1.setTextColor(getContext().getResources().getColor(R.color.white));
+                passed2.setTextColor(getContext().getResources().getColor(R.color.white));
+                passed3.setTextColor(getContext().getResources().getColor(R.color.white));
+                passed4.setTextColor(getContext().getResources().getColor(R.color.white));
+                passed5.setTextColor(getContext().getResources().getColor(R.color.white));
+                passed6.setTextColor(getContext().getResources().getColor(R.color.white));
+                passed7.setTextColor(getContext().getResources().getColor(R.color.white));
+                passed6.setTypeface(Typeface.DEFAULT_BOLD);
+                passed7.setTypeface(Typeface.DEFAULT_BOLD);
+
+
+
+            if(billNum.substring(0,1).toUpperCase().equals("H")){
+                passed1.setText("House");
+                passed3.setText("Senate");
+
+                if(!selectedBill.isActive()){
+                    linLay3.setBackgroundColor(getContext().getResources().getColor(R.color.offWhite));
+                    passed6.setTypeface(Typeface.DEFAULT);
+                    passed7.setTypeface(Typeface.DEFAULT);
+                    passed6.setTextColor(getContext().getResources().getColor(R.color.textColor));
+                    passed7.setTextColor(getContext().getResources().getColor(R.color.textColor));
+
+                    if(selectedBill.isSenatePassage()){
+                        passed4.setTypeface(Typeface.DEFAULT_BOLD);
+                        passed5.setTypeface(Typeface.DEFAULT_BOLD);
+
+                    }else if(selectedBill.isHousePassage()){
+                        linLay2.setBackgroundColor(getContext().getResources().getColor(R.color.offWhite));
+                        passed2.setTypeface(Typeface.DEFAULT_BOLD);
+                        passed3.setTypeface(Typeface.DEFAULT_BOLD);
+                        passed2.setTextColor(getContext().getResources().getColor(R.color.textColor));
+                        passed3.setTextColor(getContext().getResources().getColor(R.color.textColor));
+
+                    }else{
+                        linLay1.setBackgroundColor(getContext().getResources().getColor(R.color.offWhite));
+                        passed1.setTypeface(Typeface.DEFAULT_BOLD);
+                        passed2.setTypeface(Typeface.DEFAULT_BOLD);
+                        passed1.setTextColor(getContext().getResources().getColor(R.color.textColor));
+                        passed2.setTextColor(getContext().getResources().getColor(R.color.textColor));
+                    }
+
+                }
+
+            }else if(billNum.substring(0,1).toUpperCase().equals("S")){
+                if(billNum.substring(0,3).toUpperCase().equals("S.R")){
+                    passed0.setText("Introduced");
+                    passed1.setVisibility(View.INVISIBLE);
+                    passed3.setText("Senate");
+                    linLay2.setVisibility(View.INVISIBLE);
+                    linLay3.setVisibility(View.INVISIBLE);
+
+
+                }else{
+                    passed1.setText("Senate");
+                    passed3.setText("House");
+
+                    if(!selectedBill.isActive()){
+                        linLay3.setBackgroundColor(getContext().getResources().getColor(R.color.offWhite));
+                        passed6.setTypeface(Typeface.DEFAULT);
+                        passed7.setTypeface(Typeface.DEFAULT);
+                        passed6.setTextColor(getContext().getResources().getColor(R.color.textColor));
+                        passed7.setTextColor(getContext().getResources().getColor(R.color.textColor));
+
+                        if(selectedBill.isHousePassage()){
+                            passed4.setTypeface(Typeface.DEFAULT_BOLD);
+                            passed5.setTypeface(Typeface.DEFAULT_BOLD);
+
+                        }else if(selectedBill.isSenatePassage()){
+                            linLay1.setBackgroundColor(getContext().getResources().getColor(R.color.offWhite));
+                            linLay2.setBackgroundColor(getContext().getResources().getColor(R.color.offWhite));
+                            passed0.setTypeface(Typeface.DEFAULT_BOLD);
+                            passed1.setTypeface(Typeface.DEFAULT_BOLD);
+                            passed2.setTextColor(getContext().getResources().getColor(R.color.textColor));
+                            passed3.setTextColor(getContext().getResources().getColor(R.color.textColor));
+
+                        }else{
+                            linLay0.setBackgroundColor(getContext().getResources().getColor(R.color.offWhite));
+                            linLay1.setBackgroundColor(getContext().getResources().getColor(R.color.offWhite));
+                            linLay2.setBackgroundColor(getContext().getResources().getColor(R.color.offWhite));
+                            passed1.setTextColor(getContext().getResources().getColor(R.color.textColor));
+                            passed0.setTextColor(getContext().getResources().getColor(R.color.textColor));
+                            passed2.setTextColor(getContext().getResources().getColor(R.color.textColor));
+                            passed3.setTextColor(getContext().getResources().getColor(R.color.textColor));
+                            passed4.setTextColor(getContext().getResources().getColor(R.color.textColor));
+                            passed5.setTextColor(getContext().getResources().getColor(R.color.textColor));
+
+                        }
+
+                    }
+                }
+
+            }
+
+
+
             String[] sumTitle;
 
             mDetails = new ArrayList<>();

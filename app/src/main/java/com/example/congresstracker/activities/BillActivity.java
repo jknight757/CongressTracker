@@ -74,16 +74,18 @@ public class BillActivity extends AppCompatActivity implements BillFragment.Bill
         if(getSupportActionBar() != null){
             getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + id+ "</font>"));
         }
-        Intent pullDataIntent = new Intent(this, BillDataPull.class);
-        pullDataIntent.setAction(BillDataPull.ACTION_PULL_ONE_BILL);
-        pullDataIntent.putExtra(EXTRA_SELECTED_BILL, uri);
-        startService(pullDataIntent);
+
 
         billDetailFragment = BillDetailFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.bill_fragment_container,billDetailFragment)
                 .addToBackStack(billFragment.TAG)
                 .commit();
+
+        Intent pullDataIntent = new Intent(this, BillDataPull.class);
+        pullDataIntent.setAction(BillDataPull.ACTION_PULL_ONE_BILL);
+        pullDataIntent.putExtra(EXTRA_SELECTED_BILL, uri);
+        startService(pullDataIntent);
     }
 
     @Override

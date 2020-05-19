@@ -345,9 +345,21 @@ public class BillDataPull extends IntentService {
                     String billUrl = nestedObj.getString("congressdotgov_url");
                     String summary = nestedObj.getString("summary");
 
+                    boolean housePassage = false;
+                    boolean senatePassage = false;
+                    if(!nestedObj.isNull("house_passage")){
+                        housePassage = true;
+                    }
+
+                    if(!nestedObj.isNull("senate_passage")){
+                        senatePassage = true;
+                    }
+
                     Bill b = new Bill(chamber,billNum,billUri,title,
                             shortTitle,sponsor,dateIntroduced,active,cosponsors,billUrl,summary);
                     b.setLatestActionDate(latestActionDate);
+                    b.setHousePassage(housePassage);
+                    b.setSenatePassage(senatePassage);
 
                     if(trackedBillIDs != null){
                         if(trackedBillIDs.contains(b.getBillNum())){

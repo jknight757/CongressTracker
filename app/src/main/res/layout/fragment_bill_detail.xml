@@ -88,6 +88,7 @@
             android:orientation="horizontal">
 
             <LinearLayout
+                android:id="@+id/lay_passed0"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -96,21 +97,28 @@
                 android:layout_marginEnd="1dp"
                 android:background="@color/offWhite">
                 <TextView
+                    android:id="@+id/txt_passed1_0"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Passed"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:layout_marginBottom="-1dp"
+                    android:layout_marginTop="2dp"/>
                 <TextView
+                    android:id="@+id/txt_passed1_1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="House"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:layout_marginTop="-1dp"
+                    android:layout_marginBottom="2dp"/>
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/lay_passed1"
                  android:layout_width="0dp"
                  android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -119,20 +127,27 @@
                 android:background="@color/offWhite"
                 android:layout_marginEnd="1dp">
                 <TextView
+                    android:id="@+id/txt_passed2_0"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Passed"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:layout_marginBottom="-1dp"
+                    android:layout_marginTop="2dp"/>
                 <TextView
+                    android:id="@+id/txt_passed2_1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Senate"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:layout_marginTop="-1dp"
+                    android:layout_marginBottom="2dp"/>
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/lay_passed2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -142,20 +157,27 @@
                 android:background="@color/offWhite">
 
                 <TextView
+                    android:id="@+id/txt_passed3_0"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Sent to"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:layout_marginBottom="-1dp"
+                    android:layout_marginTop="2dp"/>
                 <TextView
+                    android:id="@+id/txt_passed3_1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="President"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:layout_marginTop="-1dp"
+                    android:layout_marginBottom="2dp"/>
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/lay_passed3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -164,17 +186,23 @@
                 android:background="@color/offWhite">
 
                 <TextView
+                    android:id="@+id/txt_passed4_0"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Became"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:layout_marginBottom="-1dp"
+                    android:layout_marginTop="2dp"/>
                 <TextView
+                    android:id="@+id/txt_passed4_1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Law"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:layout_marginTop="-1dp"
+                    android:layout_marginBottom="2dp"/>
             </LinearLayout>
 
 

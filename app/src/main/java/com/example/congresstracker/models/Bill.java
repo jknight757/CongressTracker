@@ -24,6 +24,8 @@ public class Bill implements Serializable, Comparable<Bill> {
     String latestActionDate;
     String lastVote;
     boolean tracking;
+    boolean housePassage;
+    boolean senatePassage;
 
 
 
@@ -124,6 +126,14 @@ public class Bill implements Serializable, Comparable<Bill> {
         return summary;
     }
 
+    public boolean isHousePassage() {
+        return housePassage;
+    }
+
+    public boolean isSenatePassage() {
+        return senatePassage;
+    }
+
     public void setTracking(boolean tracking) {
         this.tracking = tracking;
     }
@@ -150,6 +160,14 @@ public class Bill implements Serializable, Comparable<Bill> {
 
     public void setLastVote(String lastVote) {
         this.lastVote = lastVote;
+    }
+
+    public void setHousePassage(boolean housePassage) {
+        this.housePassage = housePassage;
+    }
+
+    public void setSenatePassage(boolean senatePassage) {
+        this.senatePassage = senatePassage;
     }
 
     public Date getDateAsO(){
