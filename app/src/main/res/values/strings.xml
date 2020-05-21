@@ -26,6 +26,7 @@
     <string name="place_holder">Reducing Employer burdens, unleasing innovation, ad labor development act of 2013</string>
     <string name="change_name">Change Name</string>
     <string name="account_settings">Account Settings</string>
+    <string name="data_disclaimer">All data points found in this application are either pulled directly from ProPublica Congress API or based on averages derived from data pulled from ProPublica Congress API. For More information on the data found in this application please reach out to our support team.</string>
 
     <string-array name="top_spinner_items">
         <item>All</item>
@@ -45,7 +46,6 @@
         <item>Republican</item>
         <item>Independent</item>
     </string-array>
-
 
 
 </resources>

@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.congresstracker.R;
 import com.example.congresstracker.fragments.CongressFragment;
@@ -25,6 +27,7 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
     public static final String EXTRA_SELECTED_MEMBER = "EXTRA_SELECTED_MEMBER";
     public static final String EXTRA_MEMBER_IMAGE = "EXTRA_MEMBER_IMAGE";
     public static final String EXTRA_MEMBER_ID = "EXTRA_MEMBER_ID";
+    public static final String EXTRA_FROM_BILL = "EXTRA_FROM_BILL";
 
 
     private final MemberDataReceiver receiver = new MemberDataReceiver();
@@ -33,11 +36,17 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
     private CongressMember selectedMember;
     private Bitmap memImage;
     private String seniority;
+    private View congressContainer;
+    private boolean fromBill = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_congress);
+
+
+        congressContainer = findViewById(R.id.congress_fragment_container);
 
         if(getSupportActionBar() != null){
             getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#EFEFEF\">" + " Congress" + "</font>"));
@@ -56,9 +65,10 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
             startService(pullDataIntent);
 
 
-        }else {
-            congressFragment = CongressFragment.newInstance();
+        }
+        else {
 
+            congressFragment = CongressFragment.newInstance();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.congress_fragment_container, congressFragment).commit();
 
@@ -68,6 +78,9 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
         }
 
     }
+
+
+
 
     @Override
     protected void onResume() {
@@ -95,6 +108,11 @@ public class CongressActivity extends AppCompatActivity implements CongressFragm
         pullDataIntent.setAction(MemberDataPull.ACTION_PULL_SELECTED);
         pullDataIntent.putExtra(MemberDataPull.EXTRA_SELECTED_MEMBER,id);
         startService(pullDataIntent);
+    }
+
+    @Override
+    public void DataReceived(boolean received) {
+
     }
 
     @Override

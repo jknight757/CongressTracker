@@ -17,6 +17,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -123,11 +125,23 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if(context instanceof MemberDetailListener){
             listener = (MemberDetailListener) context;
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.info_menu, menu);
     }
 
     @Override
@@ -333,6 +347,28 @@ public class MemberDetailFragment extends Fragment implements BottomNavigationVi
             startActivity(billIntent);
 
         }
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if(item.getItemId() == R.id.app_info_btn){
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            View view = getLayoutInflater().inflate(R.layout.info_window, null);
+            builder.setView(view);
+            builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            builder.show();
+
+
+        }
+
+        return super.onOptionsItemSelected(item);
 
     }
 

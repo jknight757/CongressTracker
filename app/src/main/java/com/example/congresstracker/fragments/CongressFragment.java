@@ -102,6 +102,7 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
 
     public interface CongressClickListener{
         void MemberClicked(String id, String _seniority);
+        void DataReceived(boolean received);
     }
 
     @Override
@@ -439,6 +440,7 @@ public class CongressFragment extends Fragment implements View.OnClickListener, 
                     MemberAdapter adapter = new MemberAdapter(getContext(), filteredList);
                     membersLV.setAdapter(adapter);
                     searchBtn.setCheckable(true);
+                    //listener.DataReceived(true);
                 }
             }else{
                 Log.i(TAG, "updateList: members list null");

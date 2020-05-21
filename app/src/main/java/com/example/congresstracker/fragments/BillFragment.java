@@ -57,6 +57,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
     public static final String EXTRA_TRACKED_BILLS = "EXTRA_TRACKED_BILLS";
     public static final String EXTRA_TRACKED_RETURNED = "EXTRA_TRACKED_RETURNED";
     public static final String EXTRA_PASSED_BILLS = "EXTRA_PASSED_BILLS";
+    public static final String EXTRA_FROM_BILL = "EXTRA_FROM_BILL";
 
     private int selectedSubTab = 0;
 
@@ -382,6 +383,7 @@ public class BillFragment extends Fragment implements View.OnClickListener, Adap
             case R.id.congress_tab_item:
                 Intent congressIntent = new Intent(getContext(), CongressActivity.class)
                         .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                congressIntent.putExtra(EXTRA_FROM_BILL,true);
                 startActivity(congressIntent);
                 break;
             case R.id.bill_tab_item:

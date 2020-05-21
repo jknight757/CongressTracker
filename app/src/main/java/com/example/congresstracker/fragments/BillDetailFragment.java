@@ -53,6 +53,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
     public static final String EXTRA_BILL = "EXTRA_BILL";
     public static final String EXTRA_SELECT_BILL = "EXTRA_SELECT_BILL";
     public static final String EXTRA_MEMBER_ID = "EXTRA_MEMBER_ID";
+    public static final String EXTRA_FROM_BILL = "EXTRA_FROM_BILL";
 
     private ArrayList<String> mDetails;
 
@@ -172,6 +173,11 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
             linLay1 = getView().findViewById(R.id.lay_passed1);
             linLay2 = getView().findViewById(R.id.lay_passed2);
             linLay3 = getView().findViewById(R.id.lay_passed3);
+
+            linLay0.setVisibility(View.GONE);
+            linLay1.setVisibility(View.GONE);
+            linLay2.setVisibility(View.GONE);
+            linLay3.setVisibility(View.GONE);
 
 
 
@@ -350,6 +356,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
             case R.id.congress_tab_item:
                 Intent congressIntent = new Intent(getContext(), CongressActivity.class)
                         .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                congressIntent.putExtra(EXTRA_FROM_BILL,true);
                 startActivity(congressIntent);
                 break;
             case R.id.bill_tab_item:
@@ -531,7 +538,7 @@ public class BillDetailFragment extends Fragment implements BottomNavigationView
 
 
             mDetails.add(sponsor);
-            //mDetails.add(status);
+            mDetails.add(status);
             mDetails.add(date);
             mDetails.add(latestDate);
             mDetails.add(repCo);
