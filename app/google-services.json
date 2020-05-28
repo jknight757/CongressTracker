@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:337091363818:android:4df078ab388bab10fb6893",
         "android_client_info": {
-          "package_name": "com.example.congresstracker"
+          "package_name": "com.jeffDev.congresstracker"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "337091363818-fl4qq8dmki1fttiv39amu5eh6g7vin6v.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.congresstracker",
+            "package_name": "com.jeffDev.congresstracker",
             "certificate_hash": "cd5ab933b27874ce28521a7b62d3a4728f0c7749"
           }
         },

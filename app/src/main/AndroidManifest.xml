@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.congresstracker">
+    package="com.jeffDev.congresstracker">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -15,24 +15,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.BillActivity"
+        <activity android:name="com.jeffDev.congresstracker.activities.BillActivity"
             android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
 
         <service
-            android:name=".services.MemberDataPull"
+            android:name="com.jeffDev.congresstracker.services.MemberDataPull"
             android:exported="false" />
         <service
-            android:name=".services.UserDataPull"
-            android:exported="false" />
-        <service
-            android:name=".services.BillDataPull"
+            android:name="com.jeffDev.congresstracker.services.BillDataPull"
             android:exported="false" />
 
-        <service
-            android:name=".services.NotificationService"
-            android:process=":remote" />
         <!--
         <receiver android:name=".receivers.BootReceiver">
             <intent-filter>
@@ -42,7 +36,7 @@
         </receiver>
         -->
         <activity
-            android:name=".activities.SplashScreen"
+            android:name="com.jeffDev.congresstracker.activities.SplashScreen"
             android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
@@ -56,7 +50,7 @@
         </activity>
 
         <activity
-            android:name=".activities.CongressActivity"
+            android:name="com.jeffDev.congresstracker.activities.CongressActivity"
             android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation"
             android:screenOrientation="portrait">

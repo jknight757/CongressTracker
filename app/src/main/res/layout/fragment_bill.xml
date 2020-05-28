@@ -179,7 +179,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/button_select_layout"
             android:layout_marginTop="75dp"
-            android:text="No Bills are currently being tracked!"
+            android:text="You have no saved Bills"
             android:textSize="20sp"
             android:textAlignment="center"
             android:visibility="gone"/>
